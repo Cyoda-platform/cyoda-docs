@@ -9,7 +9,7 @@ header {
     justify-content: space-between;
     align-items: center;
     padding: 0.75rem 1.5rem;
-    background: linear-gradient(to right, #4FB8B0, #FD9E29);
+    background: #4FB8B0;
     color: white;
 }
 
@@ -29,9 +29,13 @@ header {
 }
 
 .github-link:hover {
-    color: #5A18AC; /* Purple on hover */
+    color: #0c1017;
 }
 
-elements-api {
-    margin: 1rem;
+footer {
+    background-color: #6B6A6D;
+    color: #ffffff;
+    text-align: center;
+    padding: 1rem 0;
+    font-size: 0.9rem;
 }
