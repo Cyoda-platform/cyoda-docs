@@ -1,0 +1,3814 @@
+{
+  "openapi": "3.1.0",
+  "info": {
+    "title": "OpenAPI definition",
+    "version": "v0"
+  },
+  "servers": [
+    {
+      "url": "https://api.cyoda.net",
+      "description": "Generated server url"
+    }
+  ],
+  "paths": {
+    "/sql/schema/putDefault/{schemaName}": {
+      "put": {
+        "tags": [
+          "SQL"
+        ],
+        "operationId": "putSchema",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SchemaConfigDto"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/search/snapshot/{snapshotId}/cancel": {
+      "put": {
+        "tags": [
+          "Search"
+        ],
+        "operationId": "cancelOfCreatingSnapshot",
+        "parameters": [
+          {
+            "name": "snapshotId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/hal+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CancelSnapshotDto"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/model/{entityName}/{modelVersion}/unlock": {
+      "put": {
+        "tags": [
+          "Entity model"
+        ],
+        "operationId": "unlockEntityModel",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {}
+          }
+        }
+      }
+    },
+    "/model/{entityName}/{modelVersion}/lock": {
+      "put": {
+        "tags": [
+          "Entity model"
+        ],
+        "operationId": "lockEntityModel",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {}
+          }
+        }
+      }
+    },
+    "/entity/{format}": {
+      "put": {
+        "tags": [
+          "Entity Interactions"
+        ],
+        "summary": "Update Collection",
+        "description": "Updates a collection of entities. If any of the entities are not found, the request will fail and no entities will be updated If the save is transactionalthe collection will be saved in a single transaction up to a maximum number of entities given by the transactionWindow. Collections exceeding the transactionWindow size will be saved in separatechunked transactions of the transactionWindow size.",
+        "operationId": "updateCollection",
+        "parameters": [
+          {
+            "name": "format",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "enum": [
+                "JSON",
+                "XML"
+              ]
+            }
+          },
+          {
+            "name": "transactional",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "boolean",
+              "default": true
+            }
+          },
+          {
+            "name": "transactionWindow",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "format": "int32",
+              "default": 100
+            }
+          },
+          {
+            "name": "transactionTimeoutMillis",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "format": "int64",
+              "default": 10000
+            }
+          },
+          {
+            "name": "waitForConsistencyAfter",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "boolean",
+              "default": false
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "array",
+                "items": {
+                  "$ref": "#/components/schemas/UpdatePayload"
+                }
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/EntityTransactionResponseUUID"
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "tags": [
+          "Entity Interactions"
+        ],
+        "summary": "Create Collection",
+        "description": "Saves a collection of entities. Each entity can be from a different model and version. If the save is transactionalthe collection will be saved in a single transaction up to a maximum number of entities given by the transactionWindow. Collections exceeding the transactionWindow size will be saved in separatechunked transactions of the transactionWindow size.",
+        "operationId": "createCollection",
+        "parameters": [
+          {
+            "name": "format",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "enum": [
+                "JSON",
+                "XML"
+              ]
+            }
+          },
+          {
+            "name": "transactional",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "boolean",
+              "default": true
+            }
+          },
+          {
+            "name": "transactionWindow",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "format": "int32",
+              "default": 100
+            }
+          },
+          {
+            "name": "transactionTimeoutMillis",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "format": "int64",
+              "default": 10000
+            }
+          },
+          {
+            "name": "waitForConsistencyAfter",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "boolean",
+              "default": false
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "array",
+                "items": {
+                  "$ref": "#/components/schemas/CreatePayload"
+                }
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/EntityTransactionResponseUUID"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/entity/{format}/{entityId}/{transition}": {
+      "put": {
+        "tags": [
+          "Entity Interactions"
+        ],
+        "summary": "Update Single",
+        "description": "Updates a single entity. If the save is transactionalthe collection will be saved in a single transaction up to a maximum number of entities given by the transactionWindow. Collections exceeding the transactionWindow size will be saved in separatechunked transactions of the transactionWindow size.",
+        "operationId": "updateSingle",
+        "parameters": [
+          {
+            "name": "arg4",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "boolean",
+              "default": true
+            }
+          },
+          {
+            "name": "arg5",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "format": "int64",
+              "default": 10000
+            }
+          },
+          {
+            "name": "arg6",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "boolean",
+              "default": false
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "string"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/EntityTransactionResponseUUID"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/sql/schema/updateTables/{metaId}": {
+      "post": {
+        "tags": [
+          "SQL"
+        ],
+        "operationId": "updateTables",
+        "parameters": [
+          {
+            "name": "metaId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "array",
+                "items": {
+                  "$ref": "#/components/schemas/TableConfigDto"
+                }
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/TableConfigDto"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/sql/schema/": {
+      "get": {
+        "tags": [
+          "SQL"
+        ],
+        "operationId": "getSchemaByName",
+        "parameters": [
+          {
+            "name": "arg0",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SchemaConfigDto"
+                }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "tags": [
+          "SQL"
+        ],
+        "operationId": "saveSchema",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/SchemaConfigDto"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "string",
+                  "format": "uuid"
+                }
+              }
+            }
+          }
+        }
+      },
+      "delete": {
+        "tags": [
+          "SQL"
+        ],
+        "operationId": "deleteSchemaByName",
+        "parameters": [
+          {
+            "name": "arg0",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/TrinoSchemaDefinitionEntity"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/search/snapshot/{entityName}/{modelVersion}": {
+      "post": {
+        "tags": [
+          "Search"
+        ],
+        "operationId": "saveSnapshotWithData",
+        "parameters": [
+          {
+            "name": "arg2",
+            "in": "query",
+            "description": "The point-in-time for the report, in ISO 8601 format (e.g., '2035-01-01T12:00:00Z'). Defaults to the current consistency time of the system if not provided.",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "format": "date-time"
+            },
+            "example": "2035-01-01T12:00:00Z"
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/GroupConditionDto"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/hal+json": {
+                "schema": {
+                  "type": "string",
+                  "format": "uuid"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/model/{entityName}/{modelVersion}/changeLevel/{changeLevel}": {
+      "post": {
+        "tags": [
+          "Entity model"
+        ],
+        "operationId": "setEntityModelChangeLevel",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {}
+          }
+        }
+      }
+    },
+    "/model/import/{dataFormat}/{converter}/{entityName}/{modelVersion}": {
+      "post": {
+        "tags": [
+          "Entity model"
+        ],
+        "operationId": "importEntityModel",
+        "parameters": [],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "string"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/hal+json": {
+                "schema": {
+                  "type": "string",
+                  "format": "uuid"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/message/new/{subject}": {
+      "post": {
+        "tags": [
+          "Edge message"
+        ],
+        "operationId": "newMessage",
+        "parameters": [
+          {
+            "name": "subject",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "Content-Type",
+            "in": "header",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "Content-Length",
+            "in": "header",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int64"
+            }
+          },
+          {
+            "name": "Content-Encoding",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "X-Message-ID",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "X-User-ID",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "X-Recipient",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "X-Reply-To",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "X-Correlation-ID",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "transactionTimeoutMillis",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "format": "int64",
+              "default": 10000
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "string"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/hal+json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/EntityTransactionResponseUUID"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/entity/{format}/{entityName}/{modelVersion}": {
+      "post": {
+        "tags": [
+          "Entity Interactions"
+        ],
+        "summary": "Create New",
+        "description": "Saves a new entity or a collection of entities of the same type. If the save is transactionalthe collection will be saved in a single transaction up to a maximum number of entities given by the transactionWindow. Collections exceeding the transactionWindow size will be saved in separatechunked transactions of the transactionWindow size.",
+        "operationId": "create",
+        "parameters": [
+          {
+            "name": "format",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "enum": [
+                "JSON",
+                "XML"
+              ]
+            }
+          },
+          {
+            "name": "entityName",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "modelVersion",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            }
+          },
+          {
+            "name": "transactional",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "boolean",
+              "default": true
+            }
+          },
+          {
+            "name": "transactionWindow",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "format": "int32",
+              "default": 100
+            }
+          },
+          {
+            "name": "transactionTimeoutMillis",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "format": "int64",
+              "default": 10000
+            }
+          },
+          {
+            "name": "waitForConsistencyAfter",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "boolean",
+              "default": false
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "string"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/EntityTransactionResponseUUID"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/user/account/subscriptions": {
+      "get": {
+        "tags": [
+          "User, Account"
+        ],
+        "summary": "Retrieve all subscriptions available for the current user's legal entity.",
+        "description": "Fetch all subscription details associated with the legal entity of the current user.",
+        "operationId": "userAccountSubscriptionsGet",
+        "responses": {
+          "200": {
+            "description": "Collection of all subscriptions for the user's legal entity",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SubscriptionsResponseDto"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/user/account/info": {
+      "get": {
+        "tags": [
+          "User, Account"
+        ],
+        "summary": "Retrieve information about the current user's account, including current subscription.",
+        "description": "Fetch information related to the current user's account, such as legal entity, roles, and current subscription.",
+        "operationId": "userAccountInfoGet",
+        "responses": {
+          "200": {
+            "description": "Current user's account information with current subscription details",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/UserAccountInfoResponseDto"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/sql/schema/{schemaId}": {
+      "get": {
+        "tags": [
+          "SQL"
+        ],
+        "operationId": "getSchema",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SchemaConfigDto"
+                }
+              }
+            }
+          }
+        }
+      },
+      "delete": {
+        "tags": [
+          "SQL"
+        ],
+        "operationId": "deleteSchema",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {}
+          }
+        }
+      }
+    },
+    "/sql/schema/listAll": {
+      "get": {
+        "tags": [
+          "SQL"
+        ],
+        "operationId": "getSchemas",
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/SchemaConfigDto"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/sql/schema/genTables/{metaId}": {
+      "get": {
+        "tags": [
+          "SQL"
+        ],
+        "operationId": "genTables",
+        "parameters": [
+          {
+            "name": "metaId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/TableConfigDto"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/search/{entityName}/{modelVersion}": {
+      "get": {
+        "tags": [
+          "Search"
+        ],
+        "summary": "Synchronous, non-distributed search for entities",
+        "operationId": "search",
+        "parameters": [
+          {
+            "name": "entityName",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "modelVersion",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            }
+          },
+          {
+            "name": "clientPointTime",
+            "in": "query",
+            "description": "The point-in-time for searching the entities, in ISO 8601 format. Defaults to the consistency time of the system if not provided.",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "format": "date-time"
+            },
+            "example": "2035-01-01T12:00:00Z"
+          },
+          {
+            "name": "limit",
+            "in": "query",
+            "description": "The maximum number of rows to return. You can specify a limit of up to 10000 and defaults to 1000 if not provided.",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "format": "int32",
+              "default": 1000
+            },
+            "example": 25
+          },
+          {
+            "name": "timeoutMillis",
+            "in": "query",
+            "description": "The maximum time to wait for the query to complete, in milliseconds, and defaults to60000 if not provided.",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "format": "int32",
+              "default": 60000
+            },
+            "example": 1000
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/GroupConditionDto"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/hal+json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/JsonNode"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/search/snapshot/{snapshotId}": {
+      "get": {
+        "tags": [
+          "Search"
+        ],
+        "operationId": "getSnapshotResults",
+        "parameters": [
+          {
+            "name": "snapshotId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          },
+          {
+            "name": "pageSize",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "format": "int32",
+              "default": 10
+            }
+          },
+          {
+            "name": "pageNumber",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "format": "int32",
+              "default": 0
+            }
+          },
+          {
+            "name": "clientPointTime",
+            "in": "query",
+            "description": "The point-in-time for loading the entities, in ISO 8601 format (e.g., '2035-01-01T12:00:00Z'). Defaults to the point-in-time of the report if not provided.",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "format": "date-time"
+            },
+            "example": "2035-01-01T12:00:00Z"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/hal+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PagedModelJsonNode"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/search/snapshot/{snapshotId}/status": {
+      "get": {
+        "tags": [
+          "Search"
+        ],
+        "operationId": "getStatusForSavingSnapshot",
+        "parameters": [
+          {
+            "name": "snapshotId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/hal+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SnapshotStatusDto"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/model/export/{converter}/{entityName}/{modelVersion}": {
+      "get": {
+        "tags": [
+          "Entity model"
+        ],
+        "operationId": "exportMetadata",
+        "parameters": [
+          {
+            "name": "entityName",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "modelVersion",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            }
+          },
+          {
+            "name": "converter",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "enum": [
+                "SAMPLE_DATA",
+                "JSON_SCHEMA",
+                "SIMPLE_VIEW"
+              ]
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/hal+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/JsonObject"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/model/": {
+      "get": {
+        "tags": [
+          "Entity model"
+        ],
+        "operationId": "getAvailableEntityModels",
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/hal+json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/EntityModelDto"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/message/get/{messageId}": {
+      "get": {
+        "tags": [
+          "Edge message"
+        ],
+        "operationId": "getMessage",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/hal+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/EdgeMessageDto"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/entity/{entityName}/{modelVersion}": {
+      "get": {
+        "tags": [
+          "Entity Interactions"
+        ],
+        "summary": "Get All Entities",
+        "description": "Gets all entities (paged) for a given model name and version",
+        "operationId": "getAllEntities",
+        "parameters": [
+          {
+            "name": "entityName",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "modelVersion",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            }
+          },
+          {
+            "name": "pageSize",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "format": "int32",
+              "default": 20
+            }
+          },
+          {
+            "name": "pageNumber",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "format": "int32",
+              "default": 1
+            }
+          },
+          {
+            "name": "pointInTime",
+            "in": "query",
+            "description": "The point-in-time for loading the entities, in ISO 8601 format (e.g., '2035-01-01T12:00:00Z'). Defaults to the current consistency time of the system if not provided.",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "format": "date-time"
+            },
+            "example": "2035-01-01T12:00:00Z"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/JsonNode"
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "delete": {
+        "tags": [
+          "Entity Interactions"
+        ],
+        "summary": "Delete all Entities of a model and version",
+        "description": "Deletes all entities for a given model name and version which existed at the consistency time of the system when the request is launched.",
+        "operationId": "deleteAllEntities",
+        "parameters": [
+          {
+            "name": "entityName",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "modelVersion",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            }
+          },
+          {
+            "name": "transactionSize",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "format": "int32",
+              "default": 1000
+            }
+          },
+          {
+            "name": "pointInTime",
+            "in": "query",
+            "description": "The point-in-time for selecting the entities for deletion, in ISO 8601 format (e.g., '2035-01-01T12:00:00Z'). Defaults to the consistency time of the system if not provided.",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "format": "date-time"
+            },
+            "example": "2035-01-01T12:00:00Z"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/StreamDeleteResult"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/entity/{entityId}": {
+      "get": {
+        "tags": [
+          "Entity Interactions"
+        ],
+        "summary": "Get Entity",
+        "description": "Gets a single entity",
+        "operationId": "getOneEntity",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/JsonNode"
+                }
+              }
+            }
+          }
+        }
+      },
+      "delete": {
+        "tags": [
+          "Entity Interactions"
+        ],
+        "summary": "Delete Single Entity",
+        "description": "Deletes a single entity by Id",
+        "operationId": "deleteSingleEntity",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SingleDeleteResult"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/entity/stats": {
+      "get": {
+        "tags": [
+          "Entity Interactions"
+        ],
+        "summary": "Retrieve entity statistics",
+        "description": "Returns statistics for entities grouped by model name and version.",
+        "operationId": "getEntityStatistics",
+        "parameters": [
+          {
+            "name": "pointInTime",
+            "in": "query",
+            "description": "The point-in-time for statistics, in ISO 8601 format (e.g., '2035-01-01T12:00:00Z'). Defaults to the current consistency time of the system if not provided.",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "format": "date-time"
+            },
+            "example": "2035-01-01T12:00:00Z"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/ModelStatsDto"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/entity/stats/states": {
+      "get": {
+        "tags": [
+          "Entity Interactions"
+        ],
+        "summary": "Retrieve entity statistics by state",
+        "description": "Returns statistics for entities grouped by model name, version, and state.",
+        "operationId": "getEntityStatisticsByState",
+        "parameters": [
+          {
+            "name": "pointInTime",
+            "in": "query",
+            "description": "The point in time for statistics in ISO 8601 format (e.g., '2023-01-01T12:00:00Z'). Defaults to the current consistency time of the system if not provided.",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "format": "date-time"
+            },
+            "example": "2023-01-01T12:00:00Z"
+          },
+          {
+            "name": "states",
+            "in": "query",
+            "description": "Optional list of states for which to calculate statistics. If not provided, statistics will be calculated for all current workflow states.",
+            "required": false,
+            "schema": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              },
+              "uniqueItems": true
+            },
+            "example": [
+              "ACTIVE",
+              "PENDING"
+            ]
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/ModelStateStatsDto"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/auth/token": {
+      "get": {
+        "tags": [
+          "token-controller"
+        ],
+        "operationId": "accessToken",
+        "responses": {
+          "400": {
+            "description": "Bad Request",
+            "content": {
+              "application/hal+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/JwtResponse"
+                }
+              }
+            }
+          },
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AccessJwtToken"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/auth/token/parse": {
+      "get": {
+        "tags": [
+          "token-controller"
+        ],
+        "operationId": "testParse",
+        "parameters": [
+          {
+            "name": "jwt",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "400": {
+            "description": "Bad Request",
+            "content": {
+              "application/hal+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/JwtResponse"
+                }
+              }
+            }
+          },
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/hal+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/JwtResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/auth/token/isexpired": {
+      "get": {
+        "tags": [
+          "token-controller"
+        ],
+        "operationId": "isTokenExpired",
+        "parameters": [
+          {
+            "name": "jwt",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "400": {
+            "description": "Bad Request",
+            "content": {
+              "application/hal+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/JwtResponse"
+                }
+              }
+            }
+          },
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/hal+json": {
+                "schema": {
+                  "type": "boolean"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/model/{entityName}/{modelVersion}": {
+      "delete": {
+        "tags": [
+          "Entity model"
+        ],
+        "operationId": "deleteEntityModel",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {}
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "Claims": {
+        "type": "object",
+        "additionalProperties": {
+          "type": "object",
+          "deprecated": true
+        },
+        "deprecated": true,
+        "properties": {
+          "notBefore": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "issuer": {
+            "type": "string"
+          },
+          "issuedAt": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "audience": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "uniqueItems": true
+          },
+          "subject": {
+            "type": "string"
+          },
+          "id": {
+            "type": "string"
+          },
+          "expiration": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "empty": {
+            "type": "boolean"
+          }
+        }
+      },
+      "JwsClaims": {
+        "type": "object",
+        "properties": {
+          "signature": {
+            "type": "string",
+            "deprecated": true
+          },
+          "body": {
+            "type": "object",
+            "additionalProperties": {
+              "type": "object",
+              "deprecated": true
+            },
+            "deprecated": true,
+            "properties": {
+              "notBefore": {
+                "type": "string",
+                "format": "date-time"
+              },
+              "issuer": {
+                "type": "string"
+              },
+              "issuedAt": {
+                "type": "string",
+                "format": "date-time"
+              },
+              "audience": {
+                "type": "array",
+                "items": {
+                  "type": "string"
+                },
+                "uniqueItems": true
+              },
+              "subject": {
+                "type": "string"
+              },
+              "id": {
+                "type": "string"
+              },
+              "expiration": {
+                "type": "string",
+                "format": "date-time"
+              },
+              "empty": {
+                "type": "boolean"
+              }
+            }
+          },
+          "payload": {
+            "$ref": "#/components/schemas/Claims"
+          },
+          "header": {
+            "type": "object",
+            "additionalProperties": {
+              "type": "object"
+            },
+            "properties": {
+              "payloadEncoded": {
+                "type": "boolean"
+              },
+              "keyId": {
+                "type": "string"
+              },
+              "jwkSetUrl": {
+                "type": "string",
+                "format": "uri"
+              },
+              "jwk": {
+                "type": "object",
+                "additionalProperties": {
+                  "type": "object"
+                },
+                "properties": {
+                  "publicKeyUse": {
+                    "type": "string"
+                  },
+                  "type": {
+                    "type": "string"
+                  },
+                  "algorithm": {
+                    "type": "string"
+                  },
+                  "operations": {
+                    "type": "array",
+                    "items": {
+                      "$ref": "#/components/schemas/KeyOperation"
+                    },
+                    "uniqueItems": true
+                  },
+                  "id": {
+                    "type": "string"
+                  },
+                  "empty": {
+                    "type": "boolean"
+                  },
+                  "x509Url": {
+                    "type": "string",
+                    "format": "uri"
+                  },
+                  "x509Chain": {
+                    "type": "array",
+                    "items": {
+                      "type": "object",
+                      "properties": {
+                        "sigAlgName": {
+                          "type": "string"
+                        },
+                        "notBefore": {
+                          "type": "string",
+                          "format": "date-time"
+                        },
+                        "serialNumber": {
+                          "type": "integer"
+                        },
+                        "extendedKeyUsage": {
+                          "type": "array",
+                          "items": {
+                            "type": "string"
+                          }
+                        },
+                        "subjectAlternativeNames": {
+                          "type": "array",
+                          "items": {
+                            "type": "array",
+                            "items": {
+                              "type": "object"
+                            }
+                          }
+                        },
+                        "issuerAlternativeNames": {
+                          "type": "array",
+                          "items": {
+                            "type": "array",
+                            "items": {
+                              "type": "object"
+                            }
+                          }
+                        },
+                        "sigAlgParams": {
+                          "type": "string",
+                          "format": "byte"
+                        },
+                        "tbscertificate": {
+                          "type": "string",
+                          "format": "byte"
+                        },
+                        "issuerDN": {
+                          "type": "object",
+                          "deprecated": true,
+                          "properties": {
+                            "name": {
+                              "type": "string"
+                            }
+                          }
+                        },
+                        "subjectDN": {
+                          "type": "object",
+                          "deprecated": true,
+                          "properties": {
+                            "name": {
+                              "type": "string"
+                            }
+                          }
+                        },
+                        "sigAlgOID": {
+                          "type": "string"
+                        },
+                        "issuerUniqueID": {
+                          "type": "array",
+                          "items": {
+                            "type": "boolean"
+                          }
+                        },
+                        "subjectUniqueID": {
+                          "type": "array",
+                          "items": {
+                            "type": "boolean"
+                          }
+                        },
+                        "keyUsage": {
+                          "type": "array",
+                          "items": {
+                            "type": "boolean"
+                          }
+                        },
+                        "signature": {
+                          "type": "string",
+                          "format": "byte"
+                        },
+                        "basicConstraints": {
+                          "type": "integer",
+                          "format": "int32"
+                        },
+                        "issuerX500Principal": {
+                          "type": "object",
+                          "properties": {
+                            "name": {
+                              "type": "string"
+                            },
+                            "encoded": {
+                              "type": "string",
+                              "format": "byte"
+                            }
+                          }
+                        },
+                        "subjectX500Principal": {
+                          "type": "object",
+                          "properties": {
+                            "name": {
+                              "type": "string"
+                            },
+                            "encoded": {
+                              "type": "string",
+                              "format": "byte"
+                            }
+                          }
+                        },
+                        "version": {
+                          "type": "integer",
+                          "format": "int32"
+                        },
+                        "notAfter": {
+                          "type": "string",
+                          "format": "date-time"
+                        },
+                        "criticalExtensionOIDs": {
+                          "type": "array",
+                          "items": {
+                            "type": "string"
+                          },
+                          "uniqueItems": true
+                        },
+                        "nonCriticalExtensionOIDs": {
+                          "type": "array",
+                          "items": {
+                            "type": "string"
+                          },
+                          "uniqueItems": true
+                        },
+                        "type": {
+                          "type": "string"
+                        },
+                        "encoded": {
+                          "type": "string",
+                          "format": "byte"
+                        },
+                        "publicKey": {
+                          "type": "object",
+                          "properties": {
+                            "encoded": {
+                              "type": "string",
+                              "format": "byte"
+                            },
+                            "format": {
+                              "type": "string"
+                            },
+                            "algorithm": {
+                              "type": "string"
+                            }
+                          }
+                        }
+                      }
+                    }
+                  },
+                  "x509Sha1Thumbprint": {
+                    "type": "string",
+                    "format": "byte"
+                  },
+                  "x509Sha256Thumbprint": {
+                    "type": "string",
+                    "format": "byte"
+                  }
+                }
+              },
+              "critical": {
+                "type": "array",
+                "items": {
+                  "type": "string"
+                },
+                "uniqueItems": true
+              },
+              "compressionAlgorithm": {
+                "type": "string"
+              },
+              "type": {
+                "type": "string"
+              },
+              "algorithm": {
+                "type": "string"
+              },
+              "contentType": {
+                "type": "string"
+              },
+              "empty": {
+                "type": "boolean"
+              },
+              "x509Url": {
+                "type": "string",
+                "format": "uri"
+              },
+              "x509Chain": {
+                "type": "array",
+                "items": {
+                  "type": "object",
+                  "properties": {
+                    "sigAlgName": {
+                      "type": "string"
+                    },
+                    "notBefore": {
+                      "type": "string",
+                      "format": "date-time"
+                    },
+                    "serialNumber": {
+                      "type": "integer"
+                    },
+                    "extendedKeyUsage": {
+                      "type": "array",
+                      "items": {
+                        "type": "string"
+                      }
+                    },
+                    "subjectAlternativeNames": {
+                      "type": "array",
+                      "items": {
+                        "type": "array",
+                        "items": {
+                          "type": "object"
+                        }
+                      }
+                    },
+                    "issuerAlternativeNames": {
+                      "type": "array",
+                      "items": {
+                        "type": "array",
+                        "items": {
+                          "type": "object"
+                        }
+                      }
+                    },
+                    "sigAlgParams": {
+                      "type": "string",
+                      "format": "byte"
+                    },
+                    "tbscertificate": {
+                      "type": "string",
+                      "format": "byte"
+                    },
+                    "issuerDN": {
+                      "type": "object",
+                      "deprecated": true,
+                      "properties": {
+                        "name": {
+                          "type": "string"
+                        }
+                      }
+                    },
+                    "subjectDN": {
+                      "type": "object",
+                      "deprecated": true,
+                      "properties": {
+                        "name": {
+                          "type": "string"
+                        }
+                      }
+                    },
+                    "sigAlgOID": {
+                      "type": "string"
+                    },
+                    "issuerUniqueID": {
+                      "type": "array",
+                      "items": {
+                        "type": "boolean"
+                      }
+                    },
+                    "subjectUniqueID": {
+                      "type": "array",
+                      "items": {
+                        "type": "boolean"
+                      }
+                    },
+                    "keyUsage": {
+                      "type": "array",
+                      "items": {
+                        "type": "boolean"
+                      }
+                    },
+                    "signature": {
+                      "type": "string",
+                      "format": "byte"
+                    },
+                    "basicConstraints": {
+                      "type": "integer",
+                      "format": "int32"
+                    },
+                    "issuerX500Principal": {
+                      "type": "object",
+                      "properties": {
+                        "name": {
+                          "type": "string"
+                        },
+                        "encoded": {
+                          "type": "string",
+                          "format": "byte"
+                        }
+                      }
+                    },
+                    "subjectX500Principal": {
+                      "type": "object",
+                      "properties": {
+                        "name": {
+                          "type": "string"
+                        },
+                        "encoded": {
+                          "type": "string",
+                          "format": "byte"
+                        }
+                      }
+                    },
+                    "version": {
+                      "type": "integer",
+                      "format": "int32"
+                    },
+                    "notAfter": {
+                      "type": "string",
+                      "format": "date-time"
+                    },
+                    "criticalExtensionOIDs": {
+                      "type": "array",
+                      "items": {
+                        "type": "string"
+                      },
+                      "uniqueItems": true
+                    },
+                    "nonCriticalExtensionOIDs": {
+                      "type": "array",
+                      "items": {
+                        "type": "string"
+                      },
+                      "uniqueItems": true
+                    },
+                    "type": {
+                      "type": "string"
+                    },
+                    "encoded": {
+                      "type": "string",
+                      "format": "byte"
+                    },
+                    "publicKey": {
+                      "type": "object",
+                      "properties": {
+                        "encoded": {
+                          "type": "string",
+                          "format": "byte"
+                        },
+                        "format": {
+                          "type": "string"
+                        },
+                        "algorithm": {
+                          "type": "string"
+                        }
+                      }
+                    }
+                  }
+                }
+              },
+              "x509Sha1Thumbprint": {
+                "type": "string",
+                "format": "byte"
+              },
+              "x509Sha256Thumbprint": {
+                "type": "string",
+                "format": "byte"
+              }
+            }
+          },
+          "digest": {
+            "type": "string",
+            "format": "byte"
+          }
+        }
+      },
+      "JwtResponse": {
+        "type": "object",
+        "properties": {
+          "message": {
+            "type": "string"
+          },
+          "status": {
+            "type": "string",
+            "enum": [
+              "SUCCESS",
+              "ERROR"
+            ]
+          },
+          "exceptionType": {
+            "type": "string"
+          },
+          "jwt": {
+            "type": "string"
+          },
+          "jwsClaims": {
+            "$ref": "#/components/schemas/JwsClaims"
+          }
+        }
+      },
+      "KeyOperation": {
+        "type": "object",
+        "properties": {
+          "description": {
+            "type": "string"
+          },
+          "id": {
+            "type": "string"
+          }
+        }
+      },
+      "FieldConfigDto": {
+        "type": "object",
+        "properties": {
+          "fieldName": {
+            "type": "string"
+          },
+          "fieldKey": {
+            "type": "string"
+          },
+          "fieldCategory": {
+            "type": "string"
+          },
+          "dataType": {
+            "type": "string"
+          },
+          "isArray": {
+            "type": "boolean"
+          },
+          "hidden": {
+            "type": "boolean"
+          },
+          "flatten": {
+            "type": "boolean"
+          }
+        },
+        "required": [
+          "dataType",
+          "fieldCategory",
+          "fieldKey",
+          "fieldName",
+          "hidden",
+          "isArray"
+        ]
+      },
+      "SchemaConfigDto": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "schemaName": {
+            "type": "string"
+          },
+          "tables": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/TableConfigDto"
+            }
+          }
+        },
+        "required": [
+          "schemaName",
+          "tables"
+        ]
+      },
+      "TableConfigDto": {
+        "type": "object",
+        "properties": {
+          "tableName": {
+            "type": "string"
+          },
+          "metadataClassId": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "uniformedPath": {
+            "type": "string"
+          },
+          "fields": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/FieldConfigDto"
+            }
+          },
+          "hidden": {
+            "type": "boolean"
+          },
+          "modelUpdateDate": {
+            "type": "integer",
+            "format": "int64"
+          }
+        },
+        "required": [
+          "fields",
+          "hidden",
+          "metadataClassId",
+          "tableName",
+          "uniformedPath"
+        ]
+      },
+      "CancelSnapshotDto": {
+        "type": "object",
+        "properties": {
+          "isCancelled": {
+            "type": "boolean"
+          },
+          "currentSnapshotStatus": {
+            "type": "string",
+            "enum": [
+              "RUNNING",
+              "FAILED",
+              "CANCELLED",
+              "SUCCESSFUL",
+              "NOT_FOUND"
+            ]
+          }
+        },
+        "required": [
+          "currentSnapshotStatus",
+          "isCancelled"
+        ]
+      },
+      "UpdatePayload": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "payload": {
+            "type": "string"
+          },
+          "transition": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "id",
+          "payload",
+          "transition"
+        ]
+      },
+      "EntityTransactionResponseUUID": {
+        "type": "object",
+        "properties": {
+          "transactionId": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "entityIds": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        },
+        "required": [
+          "entityIds"
+        ]
+      },
+      "AbstractConditionDto": {
+        "type": "object",
+        "discriminator": {
+          "propertyName": "type"
+        },
+        "properties": {
+          "type": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "type"
+        ]
+      },
+      "GroupConditionDto": {
+        "type": "object",
+        "properties": {
+          "operator": {
+            "type": "string",
+            "enum": [
+              "AND",
+              "OR",
+              "NOT"
+            ]
+          },
+          "conditions": {
+            "type": "array",
+            "items": {
+              "oneOf": [
+                {
+                  "$ref": "#/components/schemas/GroupConditionDto"
+                },
+                {
+                  "$ref": "#/components/schemas/LifecycleConditionDto"
+                },
+                {
+                  "$ref": "#/components/schemas/SimpleConditionDto"
+                }
+              ]
+            }
+          },
+          "type": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "conditions",
+          "operator",
+          "type"
+        ]
+      },
+      "JsonNode": {
+        "type": "object"
+      },
+      "LifecycleConditionDto": {
+        "allOf": [
+          {
+            "$ref": "#/components/schemas/AbstractConditionDto"
+          },
+          {
+            "type": "object",
+            "properties": {
+              "field": {
+                "type": "string"
+              },
+              "operatorType": {
+                "type": "string",
+                "enum": [
+                  "EQUALS",
+                  "OBJECT_EQUALS",
+                  "NOT_EQUAL",
+                  "IEQUALS",
+                  "INOT_EQUAL",
+                  "GREATER_THAN",
+                  "LESS_THAN",
+                  "GREATER_OR_EQUAL",
+                  "LESS_OR_EQUAL",
+                  "CONTAINS",
+                  "STARTS_WITH",
+                  "ENDS_WITH",
+                  "ICONTAINS",
+                  "ISTARTS_WITH",
+                  "IENDS_WITH",
+                  "NOT_CONTAINS",
+                  "NOT_STARTS_WITH",
+                  "NOT_ENDS_WITH",
+                  "INOT_CONTAINS",
+                  "INOT_STARTS_WITH",
+                  "INOT_ENDS_WITH",
+                  "IBETWEEN_INCLUSIVE",
+                  "MATCHES_PATTERN",
+                  "IMATCHES_PATTERN",
+                  "CONTAINS_PATTERN",
+                  "STARTS_WITH_PATTERN",
+                  "ENDS_WITH_PATTERN",
+                  "ICONTAINS_PATTERN",
+                  "ISTARTS_WITH_PATTERN",
+                  "IENDS_WITH_PATTERN",
+                  "REGEXP",
+                  "IREGEXP",
+                  "IS_NULL",
+                  "NOT_NULL",
+                  "IN_SET",
+                  "NOT_IN_SET",
+                  "EQUALS_FIELD",
+                  "NOT_EQUAL_FIELD",
+                  "IEQUALS_FIELD",
+                  "INOT_EQUAL_FIELD",
+                  "GREATER_THAN_FIELD",
+                  "LESS_THAN_FIELD",
+                  "GREATER_OR_EQUAL_FIELD",
+                  "LESS_OR_EQUAL_FIELD",
+                  "CONTAINS_FIELD",
+                  "STARTS_WITH_FIELD",
+                  "ENDS_WITH_FIELD",
+                  "ICONTAINS_FIELD",
+                  "ISTARTS_WITH_FIELD",
+                  "IENDS_WITH_FIELD",
+                  "NOT_CONTAINS_FIELD",
+                  "NOT_STARTS_WITH_FIELD",
+                  "NOT_ENDS_WITH_FIELD",
+                  "INOT_CONTAINS_FIELD",
+                  "INOT_STARTS_WITH_FIELD",
+                  "INOT_ENDS_WITH_FIELD",
+                  "AND",
+                  "NOT",
+                  "OR",
+                  "BETWEEN",
+                  "BETWEEN_INCLUSIVE",
+                  "EQUAL_BY_ATTRIBUTES",
+                  "INSTANCE_OF",
+                  "LIKE",
+                  "IS_UNCHANGED",
+                  "IS_CHANGED"
+                ]
+              },
+              "value": {
+                "$ref": "#/components/schemas/JsonNode"
+              }
+            }
+          }
+        ],
+        "required": [
+          "field",
+          "operatorType",
+          "type",
+          "value"
+        ]
+      },
+      "SimpleConditionDto": {
+        "allOf": [
+          {
+            "$ref": "#/components/schemas/AbstractConditionDto"
+          },
+          {
+            "type": "object",
+            "properties": {
+              "jsonPath": {
+                "type": "string"
+              },
+              "operatorType": {
+                "type": "string",
+                "enum": [
+                  "EQUALS",
+                  "OBJECT_EQUALS",
+                  "NOT_EQUAL",
+                  "IEQUALS",
+                  "INOT_EQUAL",
+                  "GREATER_THAN",
+                  "LESS_THAN",
+                  "GREATER_OR_EQUAL",
+                  "LESS_OR_EQUAL",
+                  "CONTAINS",
+                  "STARTS_WITH",
+                  "ENDS_WITH",
+                  "ICONTAINS",
+                  "ISTARTS_WITH",
+                  "IENDS_WITH",
+                  "NOT_CONTAINS",
+                  "NOT_STARTS_WITH",
+                  "NOT_ENDS_WITH",
+                  "INOT_CONTAINS",
+                  "INOT_STARTS_WITH",
+                  "INOT_ENDS_WITH",
+                  "IBETWEEN_INCLUSIVE",
+                  "MATCHES_PATTERN",
+                  "IMATCHES_PATTERN",
+                  "CONTAINS_PATTERN",
+                  "STARTS_WITH_PATTERN",
+                  "ENDS_WITH_PATTERN",
+                  "ICONTAINS_PATTERN",
+                  "ISTARTS_WITH_PATTERN",
+                  "IENDS_WITH_PATTERN",
+                  "REGEXP",
+                  "IREGEXP",
+                  "IS_NULL",
+                  "NOT_NULL",
+                  "IN_SET",
+                  "NOT_IN_SET",
+                  "EQUALS_FIELD",
+                  "NOT_EQUAL_FIELD",
+                  "IEQUALS_FIELD",
+                  "INOT_EQUAL_FIELD",
+                  "GREATER_THAN_FIELD",
+                  "LESS_THAN_FIELD",
+                  "GREATER_OR_EQUAL_FIELD",
+                  "LESS_OR_EQUAL_FIELD",
+                  "CONTAINS_FIELD",
+                  "STARTS_WITH_FIELD",
+                  "ENDS_WITH_FIELD",
+                  "ICONTAINS_FIELD",
+                  "ISTARTS_WITH_FIELD",
+                  "IENDS_WITH_FIELD",
+                  "NOT_CONTAINS_FIELD",
+                  "NOT_STARTS_WITH_FIELD",
+                  "NOT_ENDS_WITH_FIELD",
+                  "INOT_CONTAINS_FIELD",
+                  "INOT_STARTS_WITH_FIELD",
+                  "INOT_ENDS_WITH_FIELD",
+                  "AND",
+                  "NOT",
+                  "OR",
+                  "BETWEEN",
+                  "BETWEEN_INCLUSIVE",
+                  "EQUAL_BY_ATTRIBUTES",
+                  "INSTANCE_OF",
+                  "LIKE",
+                  "IS_UNCHANGED",
+                  "IS_CHANGED"
+                ]
+              },
+              "value": {
+                "$ref": "#/components/schemas/JsonNode"
+              }
+            }
+          }
+        ],
+        "required": [
+          "jsonPath",
+          "operatorType",
+          "type",
+          "value"
+        ]
+      },
+      "CreatePayload": {
+        "type": "object",
+        "properties": {
+          "model": {
+            "$ref": "#/components/schemas/ModelSpec"
+          },
+          "payload": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "model",
+          "payload"
+        ]
+      },
+      "ModelSpec": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string"
+          },
+          "version": {
+            "type": "integer",
+            "format": "int32"
+          }
+        },
+        "required": [
+          "name",
+          "version"
+        ]
+      },
+      "SubscriptionDto": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "description": "Unique identifier for the subscription",
+            "example": null
+          },
+          "legalEntityId": {
+            "type": "string",
+            "description": "Identifier for the associated legal entity",
+            "example": null
+          },
+          "status": {
+            "type": "string",
+            "description": "Current status of the subscription",
+            "example": null
+          },
+          "tierName": {
+            "type": "string",
+            "description": "Name of the subscription tier",
+            "example": null
+          },
+          "periodFrom": {
+            "type": "string",
+            "format": "date-time",
+            "description": "Start period of the subscription",
+            "example": null
+          },
+          "limits": {
+            "type": "array",
+            "example": null,
+            "items": {
+              "$ref": "#/components/schemas/SubscriptionLimitDto"
+            }
+          },
+          "periodTo": {
+            "type": "string",
+            "format": "date-time",
+            "description": "End period of the subscription",
+            "example": null
+          }
+        },
+        "required": [
+          "id",
+          "legalEntityId",
+          "limits",
+          "periodFrom",
+          "status",
+          "tierName"
+        ]
+      },
+      "SubscriptionLimitDto": {
+        "type": "object",
+        "properties": {
+          "entitlementId": {
+            "type": "string",
+            "description": "Unique identifier for the entitlement",
+            "example": null
+          },
+          "cumulative": {
+            "type": "boolean",
+            "description": "Whether the limit is cumulative",
+            "example": null
+          },
+          "limit": {
+            "type": "integer",
+            "format": "int64",
+            "description": "The limit for this entitlement",
+            "example": null
+          },
+          "timeIntervalBound": {
+            "type": "string",
+            "description": "The time interval bound for the entitlement",
+            "enum": [
+              "SECONDS",
+              "MINUTES",
+              "HOURS",
+              "DAYS"
+            ],
+            "example": null
+          }
+        },
+        "required": [
+          "cumulative",
+          "entitlementId",
+          "limit"
+        ]
+      },
+      "SubscriptionsResponseDto": {
+        "type": "object",
+        "properties": {
+          "subscriptions": {
+            "type": "array",
+            "example": null,
+            "items": {
+              "$ref": "#/components/schemas/SubscriptionDto"
+            }
+          }
+        },
+        "required": [
+          "subscriptions"
+        ]
+      },
+      "LegalEntityInfoDto": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "description": "Unique identifier for the legal entity",
+            "example": null
+          },
+          "name": {
+            "type": "string",
+            "description": "Name of the legal entity",
+            "example": null
+          }
+        },
+        "required": [
+          "id",
+          "name"
+        ]
+      },
+      "UserAccountInfoDto": {
+        "type": "object",
+        "properties": {
+          "userId": {
+            "type": "string",
+            "description": "Unique identifier for the user",
+            "example": null
+          },
+          "userName": {
+            "type": "string",
+            "description": "The name of the user",
+            "example": null
+          },
+          "legalEntity": {
+            "$ref": "#/components/schemas/LegalEntityInfoDto",
+            "example": null
+          },
+          "roles": {
+            "type": "array",
+            "example": null,
+            "items": {
+              "$ref": "#/components/schemas/UserRoleDto"
+            }
+          },
+          "currentSubscription": {
+            "$ref": "#/components/schemas/SubscriptionDto",
+            "example": null
+          }
+        },
+        "required": [
+          "legalEntity",
+          "roles",
+          "userId",
+          "userName"
+        ]
+      },
+      "UserAccountInfoResponseDto": {
+        "type": "object",
+        "properties": {
+          "userAccountInfo": {
+            "$ref": "#/components/schemas/UserAccountInfoDto",
+            "example": null
+          },
+          "featureToggles": {
+            "type": "object",
+            "additionalProperties": {
+              "type": "boolean"
+            },
+            "description": "A map of feature toggles with their values",
+            "example": null
+          }
+        },
+        "required": [
+          "userAccountInfo"
+        ]
+      },
+      "UserRoleDto": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "description": "Identifier for the role",
+            "example": null
+          },
+          "desc": {
+            "type": "string",
+            "description": "Role description",
+            "example": null
+          }
+        },
+        "required": [
+          "desc",
+          "id"
+        ]
+      },
+      "PageMetadata": {
+        "type": "object",
+        "properties": {
+          "size": {
+            "type": "integer",
+            "format": "int64"
+          },
+          "totalElements": {
+            "type": "integer",
+            "format": "int64"
+          },
+          "totalPages": {
+            "type": "integer",
+            "format": "int64"
+          },
+          "number": {
+            "type": "integer",
+            "format": "int64"
+          }
+        }
+      },
+      "PagedModelJsonNode": {
+        "type": "object",
+        "properties": {
+          "_embedded": {
+            "type": "object",
+            "properties": {
+              "jsonNodes": {
+                "type": "array",
+                "items": {
+                  "$ref": "#/components/schemas/JsonNode"
+                }
+              }
+            }
+          },
+          "_links": {
+            "$ref": "#/components/schemas/Links"
+          },
+          "page": {
+            "$ref": "#/components/schemas/PageMetadata"
+          }
+        }
+      },
+      "SnapshotStatusDto": {
+        "type": "object",
+        "properties": {
+          "snapshotStatus": {
+            "type": "string",
+            "enum": [
+              "RUNNING",
+              "FAILED",
+              "CANCELLED",
+              "SUCCESSFUL",
+              "NOT_FOUND"
+            ]
+          },
+          "expirationDate": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "entitiesCount": {
+            "type": "integer",
+            "format": "int64"
+          },
+          "calculationTime": {
+            "type": "integer",
+            "format": "int64"
+          },
+          "createTime": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "finishTime": {
+            "type": "string",
+            "format": "date-time"
+          }
+        },
+        "required": [
+          "calculationTime",
+          "createTime",
+          "entitiesCount",
+          "expirationDate",
+          "snapshotStatus"
+        ]
+      },
+      "JsonElement": {
+        "type": "object"
+      },
+      "JsonObject": {
+        "additionalProperties": {
+          "$ref": "#/components/schemas/JsonElement"
+        },
+        "allOf": [
+          {
+            "$ref": "#/components/schemas/JsonElement"
+          },
+          {
+            "type": "object",
+            "properties": {
+              "content": {
+                "type": "object",
+                "additionalProperties": {
+                  "$ref": "#/components/schemas/JsonElement"
+                },
+                "writeOnly": true
+              },
+              "isEmpty": {
+                "type": "boolean"
+              },
+              "size": {
+                "type": "integer",
+                "format": "int32"
+              },
+              "entries": {
+                "type": "array",
+                "items": {
+                  "type": "object",
+                  "properties": {
+                    "value": {
+                      "$ref": "#/components/schemas/JsonElement"
+                    },
+                    "key": {
+                      "type": "string"
+                    }
+                  }
+                },
+                "uniqueItems": true
+              },
+              "keys": {
+                "type": "array",
+                "items": {
+                  "type": "string"
+                },
+                "uniqueItems": true
+              },
+              "values": {
+                "type": "array",
+                "items": {
+                  "$ref": "#/components/schemas/JsonElement"
+                }
+              }
+            }
+          }
+        ],
+        "required": [
+          "entries",
+          "isEmpty",
+          "keys",
+          "size",
+          "values"
+        ]
+      },
+      "EntityModelDto": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "modelName": {
+            "type": "string"
+          },
+          "modelVersion": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "currentState": {
+            "type": "string"
+          },
+          "modelUpdateDate": {
+            "type": "integer",
+            "format": "int64"
+          }
+        },
+        "required": [
+          "currentState",
+          "id",
+          "modelName",
+          "modelVersion"
+        ]
+      },
+      "EdgeMessageDto": {
+        "type": "object",
+        "properties": {
+          "header": {
+            "$ref": "#/components/schemas/EdgeMessageHeader"
+          },
+          "metaData": {
+            "$ref": "#/components/schemas/EdgeMessageMetaData"
+          },
+          "content": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "header",
+          "metaData"
+        ]
+      },
+      "EdgeMessageHeader": {
+        "type": "object",
+        "properties": {
+          "subject": {
+            "type": "string"
+          },
+          "contentType": {
+            "type": "string"
+          },
+          "contentLength": {
+            "type": "integer",
+            "format": "int64"
+          },
+          "contentEncoding": {
+            "type": "string"
+          },
+          "messageId": {
+            "type": "string"
+          },
+          "userId": {
+            "type": "string"
+          },
+          "recipient": {
+            "type": "string"
+          },
+          "replyTo": {
+            "type": "string"
+          },
+          "correlationId": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "contentEncoding",
+          "contentLength",
+          "contentType",
+          "subject"
+        ]
+      },
+      "EdgeMessageMetaData": {
+        "type": "object",
+        "properties": {
+          "values": {
+            "$ref": "#/components/schemas/ValueMaps"
+          },
+          "indexedValues": {
+            "$ref": "#/components/schemas/ValueMaps"
+          }
+        },
+        "required": [
+          "indexedValues",
+          "values"
+        ]
+      },
+      "LocalTime": {
+        "type": "object",
+        "properties": {
+          "hour": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "minute": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "second": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "nano": {
+            "type": "integer",
+            "format": "int32"
+          }
+        }
+      },
+      "ValueMaps": {
+        "type": "object",
+        "properties": {
+          "strings": {
+            "type": "object",
+            "additionalProperties": {
+              "type": "string"
+            }
+          },
+          "chars": {
+            "type": "object",
+            "additionalProperties": {
+              "type": "string"
+            }
+          },
+          "doubles": {
+            "type": "object",
+            "additionalProperties": {
+              "type": "number",
+              "format": "double"
+            }
+          },
+          "floats": {
+            "type": "object",
+            "additionalProperties": {
+              "type": "number",
+              "format": "float"
+            }
+          },
+          "bytes": {
+            "type": "object",
+            "additionalProperties": {
+              "type": "string",
+              "format": "byte"
+            }
+          },
+          "shorts": {
+            "type": "object",
+            "additionalProperties": {
+              "type": "integer",
+              "format": "int32"
+            }
+          },
+          "longs": {
+            "type": "object",
+            "additionalProperties": {
+              "type": "integer",
+              "format": "int64"
+            }
+          },
+          "ints": {
+            "type": "object",
+            "additionalProperties": {
+              "type": "integer",
+              "format": "int32"
+            }
+          },
+          "localDates": {
+            "type": "object",
+            "additionalProperties": {
+              "type": "string",
+              "format": "date"
+            }
+          },
+          "localDateTimes": {
+            "type": "object",
+            "additionalProperties": {
+              "type": "string",
+              "format": "date-time"
+            }
+          },
+          "localTimes": {
+            "type": "object",
+            "additionalProperties": {
+              "$ref": "#/components/schemas/LocalTime"
+            }
+          },
+          "zonedDateTimes": {
+            "type": "object",
+            "additionalProperties": {
+              "type": "string",
+              "format": "date-time"
+            }
+          },
+          "years": {
+            "type": "object",
+            "additionalProperties": {
+              "type": "object",
+              "properties": {
+                "value": {
+                  "type": "integer",
+                  "format": "int32"
+                },
+                "leap": {
+                  "type": "boolean"
+                }
+              }
+            }
+          },
+          "yearMonths": {
+            "type": "object",
+            "additionalProperties": {
+              "type": "object",
+              "properties": {
+                "year": {
+                  "type": "integer",
+                  "format": "int32"
+                },
+                "month": {
+                  "type": "string",
+                  "enum": [
+                    "JANUARY",
+                    "FEBRUARY",
+                    "MARCH",
+                    "APRIL",
+                    "MAY",
+                    "JUNE",
+                    "JULY",
+                    "AUGUST",
+                    "SEPTEMBER",
+                    "OCTOBER",
+                    "NOVEMBER",
+                    "DECEMBER"
+                  ]
+                },
+                "monthValue": {
+                  "type": "integer",
+                  "format": "int32"
+                },
+                "leapYear": {
+                  "type": "boolean"
+                }
+              }
+            }
+          },
+          "bigDecimals": {
+            "type": "object",
+            "additionalProperties": {
+              "type": "number"
+            }
+          },
+          "unboundDecimals": {
+            "type": "object",
+            "additionalProperties": {
+              "type": "number"
+            }
+          },
+          "bigIntegers": {
+            "type": "object",
+            "additionalProperties": {
+              "type": "integer"
+            }
+          },
+          "unboundIntegers": {
+            "type": "object",
+            "additionalProperties": {
+              "type": "integer"
+            }
+          },
+          "booleans": {
+            "type": "object",
+            "additionalProperties": {
+              "type": "boolean"
+            }
+          },
+          "uuids": {
+            "type": "object",
+            "additionalProperties": {
+              "type": "string",
+              "format": "uuid"
+            }
+          },
+          "timeuuids": {
+            "type": "object",
+            "additionalProperties": {
+              "type": "string",
+              "format": "uuid"
+            }
+          },
+          "byteArrays": {
+            "type": "object",
+            "additionalProperties": {
+              "type": "string",
+              "format": "byte"
+            }
+          },
+          "others": {
+            "type": "object",
+            "additionalProperties": {
+              "type": "object"
+            }
+          },
+          "nulls": {
+            "type": "object",
+            "additionalProperties": {
+              "type": "string"
+            }
+          },
+          "typeReferences": {
+            "type": "object",
+            "additionalProperties": {
+              "type": "string",
+              "enum": [
+                "STRING",
+                "BYTE",
+                "DOUBLE",
+                "INTEGER",
+                "BIG_DECIMAL",
+                "UNBOUND_DECIMAL",
+                "BIG_INTEGER",
+                "UNBOUND_INTEGER",
+                "BOOLEAN",
+                "LOCAL_DATE",
+                "LOCAL_DATE_TIME",
+                "SHORT",
+                "CHARACTER",
+                "LONG",
+                "FLOAT",
+                "ZONED_DATE_TIME",
+                "YEAR",
+                "YEAR_MONTH",
+                "LOCAL_TIME",
+                "TIME_UUID_TYPE",
+                "UUID_TYPE",
+                "BYTE_ARRAY",
+                "NULL",
+                "OBJECT",
+                "ARRAY",
+                "ARRAY_ELEMENT",
+                "TYPE_REFERENCE",
+                "POLYMORPHIC"
+              ]
+            }
+          }
+        },
+        "required": [
+          "typeReferences"
+        ]
+      },
+      "ModelStatsDto": {
+        "type": "object",
+        "properties": {
+          "modelName": {
+            "type": "string",
+            "description": "Entity Model Name",
+            "example": "Payment"
+          },
+          "modelVersion": {
+            "type": "integer",
+            "format": "int32",
+            "description": "Entity Model Version",
+            "example": 1
+          },
+          "count": {
+            "type": "integer",
+            "format": "int64",
+            "description": "Entity Count",
+            "example": 10200300
+          }
+        },
+        "required": [
+          "count",
+          "modelName",
+          "modelVersion"
+        ]
+      },
+      "ModelStateStatsDto": {
+        "type": "object",
+        "properties": {
+          "modelName": {
+            "type": "string",
+            "description": "Entity Model Name",
+            "example": "SolarPanel"
+          },
+          "modelVersion": {
+            "type": "integer",
+            "format": "int32",
+            "description": "Entity Model Version",
+            "example": 4
+          },
+          "state": {
+            "type": "string",
+            "description": "Entity State",
+            "example": "SOLD"
+          },
+          "count": {
+            "type": "integer",
+            "format": "int64",
+            "description": "Entity Count",
+            "example": 30200100
+          }
+        },
+        "required": [
+          "count",
+          "modelName",
+          "modelVersion",
+          "state"
+        ]
+      },
+      "AccessJwtToken": {
+        "type": "object",
+        "properties": {
+          "token": {
+            "type": "string"
+          },
+          "tokenExpiry": {
+            "type": "string",
+            "format": "date-time"
+          }
+        }
+      },
+      "ColumnAccessorsFactory": {
+        "type": "object"
+      },
+      "CyodaColumnPath": {
+        "type": "object",
+        "properties": {
+          "edp": {
+            "$ref": "#/components/schemas/CyodaModelEncryptDecryptProvider"
+          },
+          "caf": {
+            "$ref": "#/components/schemas/ColumnAccessorsFactory"
+          },
+          "rootEntityClassIndex": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "data": {
+            "type": "string",
+            "format": "byte"
+          },
+          "noCollectionKeys": {
+            "type": "boolean"
+          },
+          "topLevelField": {
+            "type": "boolean"
+          }
+        }
+      },
+      "CyodaModelEncryptDecryptProvider": {
+        "type": "object"
+      },
+      "EntityChange": {
+        "type": "object",
+        "properties": {
+          "transactionId": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "timeUuid": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "userId": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "type": {
+            "type": "integer",
+            "format": "int64"
+          },
+          "changedFieldsValues": {
+            "type": "object",
+            "additionalProperties": {
+              "$ref": "#/components/schemas/FieldChange"
+            }
+          },
+          "surrogateChangedFieldsValues": {
+            "type": "object",
+            "additionalProperties": {
+              "$ref": "#/components/schemas/FieldChange"
+            }
+          },
+          "transactionNum": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "prevTransactionNum": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "persistedFieldsChangesCount": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "persisted": {
+            "type": "boolean"
+          },
+          "transactional": {
+            "type": "boolean"
+          },
+          "addedToTransaction": {
+            "type": "boolean"
+          },
+          "transactionChangeTime": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "delete": {
+            "type": "boolean"
+          },
+          "create": {
+            "type": "boolean"
+          },
+          "update": {
+            "type": "boolean"
+          },
+          "allFieldChangesRead": {
+            "type": "boolean"
+          },
+          "totalChangesCount": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "operation": {
+            "type": "string"
+          }
+        }
+      },
+      "FieldChange": {
+        "type": "object",
+        "properties": {
+          "prevValue": {
+            "type": "object"
+          },
+          "currValue": {
+            "type": "object"
+          },
+          "encodedCurrValue": {
+            "type": "object",
+            "properties": {
+              "short": {
+                "type": "integer",
+                "format": "int32"
+              },
+              "char": {
+                "type": "string"
+              },
+              "int": {
+                "type": "integer",
+                "format": "int32"
+              },
+              "long": {
+                "type": "integer",
+                "format": "int64"
+              },
+              "float": {
+                "type": "number",
+                "format": "float"
+              },
+              "double": {
+                "type": "number",
+                "format": "double"
+              },
+              "direct": {
+                "type": "boolean"
+              },
+              "readOnly": {
+                "type": "boolean"
+              }
+            }
+          },
+          "surrogate": {
+            "type": "boolean"
+          },
+          "indexed": {
+            "type": "boolean"
+          },
+          "control": {
+            "type": "boolean"
+          },
+          "type": {
+            "type": "string",
+            "enum": [
+              "ADD_UPDATE",
+              "REMOVE"
+            ]
+          },
+          "columnPath": {
+            "$ref": "#/components/schemas/CyodaColumnPath"
+          },
+          "flags": {
+            "type": "integer",
+            "format": "int32"
+          }
+        }
+      },
+      "TrinoFieldConfig": {
+        "type": "object",
+        "properties": {
+          "fieldName": {
+            "type": "string"
+          },
+          "fieldKey": {
+            "type": "string"
+          },
+          "fieldCategory": {
+            "type": "string"
+          },
+          "dataType": {
+            "type": "string"
+          },
+          "isArray": {
+            "type": "boolean"
+          },
+          "hidden": {
+            "type": "boolean"
+          },
+          "flatten": {
+            "type": "boolean"
+          },
+          "array": {
+            "type": "boolean",
+            "writeOnly": true
+          }
+        },
+        "required": [
+          "dataType",
+          "fieldCategory",
+          "fieldKey",
+          "fieldName",
+          "hidden",
+          "isArray"
+        ]
+      },
+      "TrinoSchemaDefinitionEntity": {
+        "type": "object",
+        "properties": {
+          "owner": {
+            "type": "string"
+          },
+          "previousTransition": {
+            "type": "string"
+          },
+          "transition": {
+            "type": "string"
+          },
+          "state": {
+            "type": "string"
+          },
+          "lastUpdateTime": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "creationDate": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "schemaName": {
+            "type": "string"
+          },
+          "tables": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/TrinoTableConfig"
+            }
+          },
+          "id_": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "lastEntityChange": {
+            "$ref": "#/components/schemas/EntityChange"
+          },
+          "lastTransactionSubmitTime": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "entityChanges": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/EntityChange"
+            }
+          },
+          "lastPersistedEntityChange": {
+            "$ref": "#/components/schemas/EntityChange"
+          },
+          "lastTransactionNum": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "deleted": {
+            "type": "boolean"
+          },
+          "versionCheckOnUpdate": {
+            "type": "boolean"
+          },
+          "decision": {
+            "type": "string",
+            "enum": [
+              "NO_ACCESS",
+              "FULL_ACCESS",
+              "PARTIAL_ACCESS",
+              "NOT_FOUND"
+            ]
+          }
+        },
+        "required": [
+          "id",
+          "id_",
+          "schemaName",
+          "tables"
+        ]
+      },
+      "TrinoTableConfig": {
+        "type": "object",
+        "properties": {
+          "tableName": {
+            "type": "string"
+          },
+          "metadataClassId": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "uniformedPath": {
+            "type": "string"
+          },
+          "hidden": {
+            "type": "boolean"
+          },
+          "fields": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/TrinoFieldConfig"
+            }
+          },
+          "modelUpdateDate": {
+            "type": "integer",
+            "format": "int64"
+          }
+        },
+        "required": [
+          "fields",
+          "hidden",
+          "metadataClassId",
+          "tableName",
+          "uniformedPath"
+        ]
+      },
+      "StreamDataDeleteResult": {
+        "type": "object",
+        "properties": {
+          "numberOfEntitites": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "numberOfEntititesRemoved": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "idToError": {
+            "type": "object",
+            "additionalProperties": {
+              "type": "string"
+            }
+          }
+        }
+      },
+      "StreamDeleteResult": {
+        "type": "object",
+        "properties": {
+          "entityModelClassId": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "ids": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "format": "uuid"
+            }
+          },
+          "deleteResult": {
+            "$ref": "#/components/schemas/StreamDataDeleteResult"
+          }
+        },
+        "required": [
+          "deleteResult",
+          "entityModelClassId",
+          "ids"
+        ]
+      },
+      "EntityModelKey": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string"
+          },
+          "version": {
+            "type": "integer",
+            "format": "int32"
+          }
+        },
+        "required": [
+          "name",
+          "version"
+        ]
+      },
+      "SingleDeleteResult": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "modelKey": {
+            "$ref": "#/components/schemas/EntityModelKey"
+          },
+          "transactionId": {
+            "type": "string",
+            "format": "uuid"
+          }
+        },
+        "required": [
+          "id",
+          "modelKey",
+          "transactionId"
+        ]
+      },
+      "Link": {
+        "type": "object",
+        "properties": {
+          "href": {
+            "type": "string"
+          },
+          "hreflang": {
+            "type": "string"
+          },
+          "title": {
+            "type": "string"
+          },
+          "type": {
+            "type": "string"
+          },
+          "deprecation": {
+            "type": "string"
+          },
+          "profile": {
+            "type": "string"
+          },
+          "name": {
+            "type": "string"
+          },
+          "templated": {
+            "type": "boolean"
+          }
+        }
+      },
+      "Links": {
+        "type": "object",
+        "additionalProperties": {
+          "$ref": "#/components/schemas/Link"
+        }
+      }
+    }
+  }
+}

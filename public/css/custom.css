@@ -1,0 +1,37 @@
+
+body {
+    margin: 0;
+    font-family: sans-serif;
+}
+
+header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0.75rem 1.5rem;
+    background: linear-gradient(to right, #4FB8B0, #FD9E29);
+    color: white;
+}
+
+.logo {
+    display: flex;
+    align-items: center;
+    font-size: 1.5rem;
+    font-weight: bold;
+    gap: 0.5rem; /* Adds space between logo and text */
+}
+
+
+.github-link {
+    color: white;
+    text-decoration: none;
+    font-size: 1.5rem;
+}
+
+.github-link:hover {
+    color: #5A18AC; /* Purple on hover */
+}
+
+elements-api {
+    margin: 1rem;
+}
