@@ -6,5 +6,5 @@
 npm install --global http-server
 
 ### run http-server
-http-server
+http-server docs
 
