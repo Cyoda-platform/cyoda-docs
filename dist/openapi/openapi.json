@@ -1,8 +1,14 @@
 {
   "openapi": "3.1.0",
   "info": {
-    "title": "OpenAPI definition",
-    "version": "v0"
+    "title": "Cyoda API",
+    "description": "\nAPI for Cyoda, providing access to entity management, search capabilities, SQL schema operations, and more.\n\n## Core Capabilities\n\n### Entity Management\nAPIs for managing entities including creation, updates, and statistics retrieval.\nAll changes are executed transactionally with collections processed in transactional batches.\n\n### Entity Model\nOperations for managing entity models, including import/export, versioning, and lifecycle management.\nSupports model locking/unlocking, change level control, and metadata conversion through various formats.\n\nModel Lifecycle Rules:\n- Entity models must be locked before any entities can be saved using that model\n- A locked model cannot be unlocked if there are existing entities in the database using that model\n- Models can only be deleted when unlocked and when no entities reference them\n\nChange Level Control:\nModels support hierarchical change levels (from least to most impactful):\n- ARRAY_LENGTH: Only allows UniTypeArray width increases\n- ARRAY_ELEMENTS: Permits MultiTypeArray changes without new types\n- TYPE: Allows type modifications\n- STRUCTURAL: Permits fundamental model changes\n\nWhen a change level is set, all less impactful changes are automatically allowed.\n\n### Search\nProvides endpoints for searching and retrieving entities using both synchronous and asynchronous approaches.\n\nKey Features:\n- Snapshot-based searches for large datasets\n- Real-time synchronous searches for immediate results\n- Point-in-time querying capabilities\n- Pagination support for large result sets\n\nSearch Methods:\n1. Snapshot Search (/snapshot/*):\n   - Creates a persistent snapshot of search results\n   - The query is distributed across the cluster of Cyoda processing nodes\n   - Horizontally scalable - query time decreases linearly with cluster size\n   - Supports asynchronous processing of large datasets\n   - Allows status monitoring and cancellation\n   - Results can be retrieved in pages\n   \n2. Direct Search (/{entityName}/{modelVersion}):\n   - Synchronous, in-memory search\n   - Designed for small to medium datasets\n   - Limited by maximum result set size (default: 1000, max: 10000)\n   - Non-distributed (executes on single node)\n   - Configurable timeout and result limits\n   - Returns immediate streaming results\n\nAll endpoints support:\n- Point-in-time queries using ISO 8601 datetime format\n- Complex search conditions using GroupConditionDto\n- Model-specific searches by entity name and version\n\n### SQL Schema\nOperations for managing SQL schemas and tables, including generation from entity models\nand configuration of database views.\n\n### Edge Messaging\nAPIs for handling edge message communication and processing.\n        ",
+    "contact": {
+      "name": "Cyoda Support",
+      "url": "https://www.cyoda.com",
+      "email": "support@cyoda.com"
+    },
+    "version": "1.0"
   },
   "servers": [
     {
