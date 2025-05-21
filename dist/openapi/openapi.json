@@ -1,14 +1,8 @@
 {
   "openapi": "3.1.0",
   "info": {
-    "title": "Cyoda API",
-    "description": "\nAPI for Cyoda, providing access to entity management, search capabilities, SQL schema operations, and more.\n\n## Core Capabilities\n\n### Entity Management\nAPIs for managing entities including creation, updates, and statistics retrieval.\nAll changes are executed transactionally with collections processed in transactional batches.\n\n### Entity Model\nOperations for managing entity models, including import/export, versioning, and lifecycle management.\nSupports model locking/unlocking, change level control, and metadata conversion through various formats.\n\nModel Lifecycle Rules:\n- Entity models must be locked before any entities can be saved using that model\n- A locked model cannot be unlocked if there are existing entities in the database using that model\n- Models can only be deleted when unlocked and when no entities reference them\n\nChange Level Control:\nModels support hierarchical change levels (from least to most impactful):\n- ARRAY_LENGTH: Only allows UniTypeArray width increases\n- ARRAY_ELEMENTS: Permits MultiTypeArray changes without new types\n- TYPE: Allows type modifications\n- STRUCTURAL: Permits fundamental model changes\n\nWhen a change level is set, all less impactful changes are automatically allowed.\n\n### Search\nProvides endpoints for searching and retrieving entities using both synchronous and asynchronous approaches.\n\nKey Features:\n- Snapshot-based searches for large datasets\n- Real-time synchronous searches for immediate results\n- Point-in-time querying capabilities\n- Pagination support for large result sets\n\nSearch Methods:\n1. Snapshot Search (/snapshot/*):\n   - Creates a persistent snapshot of search results\n   - The query is distributed across the cluster of Cyoda processing nodes\n   - Horizontally scalable - query time decreases linearly with cluster size\n   - Supports asynchronous processing of large datasets\n   - Allows status monitoring and cancellation\n   - Results can be retrieved in pages\n   \n2. Direct Search (/{entityName}/{modelVersion}):\n   - Synchronous, in-memory search\n   - Designed for small to medium datasets\n   - Limited by maximum result set size (default: 1000, max: 10000)\n   - Non-distributed (executes on single node)\n   - Configurable timeout and result limits\n   - Returns immediate streaming results\n\nAll endpoints support:\n- Point-in-time queries using ISO 8601 datetime format\n- Complex search conditions using GroupConditionDto\n- Model-specific searches by entity name and version\n\n### SQL Schema\nOperations for managing SQL schemas and tables, including generation from entity models\nand configuration of database views.\n\n### Edge Messaging\nAPIs for handling edge message communication and processing.\n        ",
-    "contact": {
-      "name": "Cyoda Support",
-      "url": "https://www.cyoda.com",
-      "email": "support@cyoda.com"
-    },
-    "version": "1.0"
+    "title": "OpenAPI definition",
+    "version": "v0"
   },
   "servers": [
     {
@@ -40,6 +34,116 @@
     }
   ],
   "paths": {
+    "/auth/token": {
+      "get": {
+        "tags": [
+          "token-controller"
+        ],
+        "operationId": "accessToken",
+        "responses": {
+          "400": {
+            "description": "Bad Request",
+            "content": {
+              "application/hal+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/JwtResponse"
+                }
+              }
+            }
+          },
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AccessJwtToken"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/auth/token/isexpired": {
+      "get": {
+        "tags": [
+          "token-controller"
+        ],
+        "operationId": "isTokenExpired",
+        "parameters": [
+          {
+            "name": "jwt",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "400": {
+            "description": "Bad Request",
+            "content": {
+              "application/hal+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/JwtResponse"
+                }
+              }
+            }
+          },
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/hal+json": {
+                "schema": {
+                  "type": "boolean"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/auth/token/parse": {
+      "get": {
+        "tags": [
+          "token-controller"
+        ],
+        "operationId": "testParse",
+        "parameters": [
+          {
+            "name": "jwt",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "400": {
+            "description": "Bad Request",
+            "content": {
+              "application/hal+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/JwtResponse"
+                }
+              }
+            }
+          },
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/hal+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/JwtResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/entity/stats": {
       "get": {
         "tags": [
@@ -1225,38 +1329,6 @@
         }
       }
     },
-    "/login": {
-      "post": {
-        "tags": [
-          "login-endpoint"
-        ],
-        "requestBody": {
-          "content": {
-            "application/x-www-form-urlencoded": {
-              "schema": {
-                "type": "object",
-                "properties": {
-                  "username": {
-                    "type": "string"
-                  },
-                  "password": {
-                    "type": "string"
-                  }
-                }
-              }
-            }
-          }
-        },
-        "responses": {
-          "200": {
-            "description": "OK"
-          },
-          "401": {
-            "description": "Unauthorized"
-          }
-        }
-      }
-    },
     "/message/get/{messageId}": {
       "get": {
         "tags": [
@@ -2174,6 +2246,52 @@
                     "properties": {
                       "entityName": "nobel-prize",
                       "entityVersion": 2
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/persistentEntities": {
+      "get": {
+        "description": "persistentEntities supplier",
+        "operationId": "persistentEntities_GET",
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/hal+json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "parallel": {
+                      "type": "boolean"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/resourceMappings": {
+      "get": {
+        "description": "resourceMappings supplier",
+        "operationId": "resourceMappings_GET",
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/hal+json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "parallel": {
+                      "type": "boolean"
                     }
                   }
                 }
@@ -3929,6 +4047,560 @@
   },
   "components": {
     "schemas": {
+      "Claims": {
+        "type": "object",
+        "additionalProperties": {
+          "type": "object"
+        },
+        "properties": {
+          "subject": {
+            "type": "string"
+          },
+          "expiration": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "id": {
+            "type": "string"
+          },
+          "issuer": {
+            "type": "string"
+          },
+          "notBefore": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "audience": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "uniqueItems": true
+          },
+          "issuedAt": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "empty": {
+            "type": "boolean"
+          }
+        }
+      },
+      "JwsClaims": {
+        "type": "object",
+        "properties": {
+          "signature": {
+            "type": "string",
+            "deprecated": true
+          },
+          "payload": {
+            "type": "object",
+            "additionalProperties": {
+              "type": "object"
+            },
+            "properties": {
+              "subject": {
+                "type": "string"
+              },
+              "expiration": {
+                "type": "string",
+                "format": "date-time"
+              },
+              "id": {
+                "type": "string"
+              },
+              "issuer": {
+                "type": "string"
+              },
+              "notBefore": {
+                "type": "string",
+                "format": "date-time"
+              },
+              "audience": {
+                "type": "array",
+                "items": {
+                  "type": "string"
+                },
+                "uniqueItems": true
+              },
+              "issuedAt": {
+                "type": "string",
+                "format": "date-time"
+              },
+              "empty": {
+                "type": "boolean"
+              }
+            }
+          },
+          "header": {
+            "type": "object",
+            "additionalProperties": {
+              "type": "object"
+            },
+            "properties": {
+              "payloadEncoded": {
+                "type": "boolean"
+              },
+              "jwk": {
+                "type": "object",
+                "additionalProperties": {
+                  "type": "object"
+                },
+                "properties": {
+                  "publicKeyUse": {
+                    "type": "string"
+                  },
+                  "operations": {
+                    "type": "array",
+                    "items": {
+                      "$ref": "#/components/schemas/KeyOperation"
+                    },
+                    "uniqueItems": true
+                  },
+                  "type": {
+                    "type": "string"
+                  },
+                  "algorithm": {
+                    "type": "string"
+                  },
+                  "id": {
+                    "type": "string"
+                  },
+                  "empty": {
+                    "type": "boolean"
+                  },
+                  "x509Sha256Thumbprint": {
+                    "type": "string",
+                    "format": "byte"
+                  },
+                  "x509Url": {
+                    "type": "string",
+                    "format": "uri"
+                  },
+                  "x509Chain": {
+                    "type": "array",
+                    "items": {
+                      "type": "object",
+                      "properties": {
+                        "extendedKeyUsage": {
+                          "type": "array",
+                          "items": {
+                            "type": "string"
+                          }
+                        },
+                        "subjectAlternativeNames": {
+                          "type": "array",
+                          "items": {
+                            "type": "array",
+                            "items": {
+                              "type": "object"
+                            }
+                          }
+                        },
+                        "issuerAlternativeNames": {
+                          "type": "array",
+                          "items": {
+                            "type": "array",
+                            "items": {
+                              "type": "object"
+                            }
+                          }
+                        },
+                        "sigAlgParams": {
+                          "type": "string",
+                          "format": "byte"
+                        },
+                        "tbscertificate": {
+                          "type": "string",
+                          "format": "byte"
+                        },
+                        "issuerDN": {
+                          "type": "object",
+                          "deprecated": true,
+                          "properties": {
+                            "name": {
+                              "type": "string"
+                            }
+                          }
+                        },
+                        "subjectDN": {
+                          "type": "object",
+                          "deprecated": true,
+                          "properties": {
+                            "name": {
+                              "type": "string"
+                            }
+                          }
+                        },
+                        "sigAlgOID": {
+                          "type": "string"
+                        },
+                        "issuerUniqueID": {
+                          "type": "array",
+                          "items": {
+                            "type": "boolean"
+                          }
+                        },
+                        "subjectUniqueID": {
+                          "type": "array",
+                          "items": {
+                            "type": "boolean"
+                          }
+                        },
+                        "keyUsage": {
+                          "type": "array",
+                          "items": {
+                            "type": "boolean"
+                          }
+                        },
+                        "signature": {
+                          "type": "string",
+                          "format": "byte"
+                        },
+                        "basicConstraints": {
+                          "type": "integer",
+                          "format": "int32"
+                        },
+                        "issuerX500Principal": {
+                          "type": "object",
+                          "properties": {
+                            "name": {
+                              "type": "string"
+                            },
+                            "encoded": {
+                              "type": "string",
+                              "format": "byte"
+                            }
+                          }
+                        },
+                        "subjectX500Principal": {
+                          "type": "object",
+                          "properties": {
+                            "name": {
+                              "type": "string"
+                            },
+                            "encoded": {
+                              "type": "string",
+                              "format": "byte"
+                            }
+                          }
+                        },
+                        "version": {
+                          "type": "integer",
+                          "format": "int32"
+                        },
+                        "notAfter": {
+                          "type": "string",
+                          "format": "date-time"
+                        },
+                        "sigAlgName": {
+                          "type": "string"
+                        },
+                        "notBefore": {
+                          "type": "string",
+                          "format": "date-time"
+                        },
+                        "serialNumber": {
+                          "type": "integer"
+                        },
+                        "criticalExtensionOIDs": {
+                          "type": "array",
+                          "items": {
+                            "type": "string"
+                          },
+                          "uniqueItems": true
+                        },
+                        "nonCriticalExtensionOIDs": {
+                          "type": "array",
+                          "items": {
+                            "type": "string"
+                          },
+                          "uniqueItems": true
+                        },
+                        "type": {
+                          "type": "string"
+                        },
+                        "encoded": {
+                          "type": "string",
+                          "format": "byte"
+                        },
+                        "publicKey": {
+                          "type": "object",
+                          "properties": {
+                            "encoded": {
+                              "type": "string",
+                              "format": "byte"
+                            },
+                            "format": {
+                              "type": "string"
+                            },
+                            "algorithm": {
+                              "type": "string"
+                            }
+                          }
+                        }
+                      }
+                    }
+                  },
+                  "x509Sha1Thumbprint": {
+                    "type": "string",
+                    "format": "byte"
+                  }
+                }
+              },
+              "keyId": {
+                "type": "string"
+              },
+              "jwkSetUrl": {
+                "type": "string",
+                "format": "uri"
+              },
+              "critical": {
+                "type": "array",
+                "items": {
+                  "type": "string"
+                },
+                "uniqueItems": true
+              },
+              "contentType": {
+                "type": "string"
+              },
+              "type": {
+                "type": "string"
+              },
+              "algorithm": {
+                "type": "string"
+              },
+              "compressionAlgorithm": {
+                "type": "string"
+              },
+              "empty": {
+                "type": "boolean"
+              },
+              "x509Sha256Thumbprint": {
+                "type": "string",
+                "format": "byte"
+              },
+              "x509Url": {
+                "type": "string",
+                "format": "uri"
+              },
+              "x509Chain": {
+                "type": "array",
+                "items": {
+                  "type": "object",
+                  "properties": {
+                    "extendedKeyUsage": {
+                      "type": "array",
+                      "items": {
+                        "type": "string"
+                      }
+                    },
+                    "subjectAlternativeNames": {
+                      "type": "array",
+                      "items": {
+                        "type": "array",
+                        "items": {
+                          "type": "object"
+                        }
+                      }
+                    },
+                    "issuerAlternativeNames": {
+                      "type": "array",
+                      "items": {
+                        "type": "array",
+                        "items": {
+                          "type": "object"
+                        }
+                      }
+                    },
+                    "sigAlgParams": {
+                      "type": "string",
+                      "format": "byte"
+                    },
+                    "tbscertificate": {
+                      "type": "string",
+                      "format": "byte"
+                    },
+                    "issuerDN": {
+                      "type": "object",
+                      "deprecated": true,
+                      "properties": {
+                        "name": {
+                          "type": "string"
+                        }
+                      }
+                    },
+                    "subjectDN": {
+                      "type": "object",
+                      "deprecated": true,
+                      "properties": {
+                        "name": {
+                          "type": "string"
+                        }
+                      }
+                    },
+                    "sigAlgOID": {
+                      "type": "string"
+                    },
+                    "issuerUniqueID": {
+                      "type": "array",
+                      "items": {
+                        "type": "boolean"
+                      }
+                    },
+                    "subjectUniqueID": {
+                      "type": "array",
+                      "items": {
+                        "type": "boolean"
+                      }
+                    },
+                    "keyUsage": {
+                      "type": "array",
+                      "items": {
+                        "type": "boolean"
+                      }
+                    },
+                    "signature": {
+                      "type": "string",
+                      "format": "byte"
+                    },
+                    "basicConstraints": {
+                      "type": "integer",
+                      "format": "int32"
+                    },
+                    "issuerX500Principal": {
+                      "type": "object",
+                      "properties": {
+                        "name": {
+                          "type": "string"
+                        },
+                        "encoded": {
+                          "type": "string",
+                          "format": "byte"
+                        }
+                      }
+                    },
+                    "subjectX500Principal": {
+                      "type": "object",
+                      "properties": {
+                        "name": {
+                          "type": "string"
+                        },
+                        "encoded": {
+                          "type": "string",
+                          "format": "byte"
+                        }
+                      }
+                    },
+                    "version": {
+                      "type": "integer",
+                      "format": "int32"
+                    },
+                    "notAfter": {
+                      "type": "string",
+                      "format": "date-time"
+                    },
+                    "sigAlgName": {
+                      "type": "string"
+                    },
+                    "notBefore": {
+                      "type": "string",
+                      "format": "date-time"
+                    },
+                    "serialNumber": {
+                      "type": "integer"
+                    },
+                    "criticalExtensionOIDs": {
+                      "type": "array",
+                      "items": {
+                        "type": "string"
+                      },
+                      "uniqueItems": true
+                    },
+                    "nonCriticalExtensionOIDs": {
+                      "type": "array",
+                      "items": {
+                        "type": "string"
+                      },
+                      "uniqueItems": true
+                    },
+                    "type": {
+                      "type": "string"
+                    },
+                    "encoded": {
+                      "type": "string",
+                      "format": "byte"
+                    },
+                    "publicKey": {
+                      "type": "object",
+                      "properties": {
+                        "encoded": {
+                          "type": "string",
+                          "format": "byte"
+                        },
+                        "format": {
+                          "type": "string"
+                        },
+                        "algorithm": {
+                          "type": "string"
+                        }
+                      }
+                    }
+                  }
+                }
+              },
+              "x509Sha1Thumbprint": {
+                "type": "string",
+                "format": "byte"
+              }
+            }
+          },
+          "body": {
+            "$ref": "#/components/schemas/Claims",
+            "deprecated": true
+          },
+          "digest": {
+            "type": "string",
+            "format": "byte"
+          }
+        }
+      },
+      "JwtResponse": {
+        "type": "object",
+        "properties": {
+          "message": {
+            "type": "string"
+          },
+          "status": {
+            "type": "string",
+            "enum": [
+              "SUCCESS",
+              "ERROR"
+            ]
+          },
+          "exceptionType": {
+            "type": "string"
+          },
+          "jwt": {
+            "type": "string"
+          },
+          "jwsClaims": {
+            "$ref": "#/components/schemas/JwsClaims"
+          }
+        }
+      },
+      "KeyOperation": {
+        "type": "object",
+        "properties": {
+          "description": {
+            "type": "string"
+          },
+          "id": {
+            "type": "string"
+          }
+        }
+      },
       "ProblemDetail": {
         "type": "object",
         "properties": {
@@ -4167,27 +4839,33 @@
         "properties": {
           "id": {
             "type": "string",
-            "description": "Unique identifier for the subscription"
+            "description": "Unique identifier for the subscription",
+            "example": null
           },
           "legalEntityId": {
             "type": "string",
-            "description": "Identifier for the associated legal entity"
+            "description": "Identifier for the associated legal entity",
+            "example": null
           },
           "status": {
             "type": "string",
-            "description": "Current status of the subscription"
+            "description": "Current status of the subscription",
+            "example": null
           },
           "tierName": {
             "type": "string",
-            "description": "Name of the subscription tier"
+            "description": "Name of the subscription tier",
+            "example": null
           },
           "periodFrom": {
             "type": "string",
             "format": "date-time",
-            "description": "Start period of the subscription"
+            "description": "Start period of the subscription",
+            "example": null
           },
           "limits": {
             "type": "array",
+            "example": null,
             "items": {
               "$ref": "#/components/schemas/SubscriptionLimitDto"
             }
@@ -4195,7 +4873,8 @@
           "periodTo": {
             "type": "string",
             "format": "date-time",
-            "description": "End period of the subscription"
+            "description": "End period of the subscription",
+            "example": null
           }
         },
         "required": [
@@ -4212,16 +4891,19 @@
         "properties": {
           "entitlementId": {
             "type": "string",
-            "description": "Unique identifier for the entitlement"
+            "description": "Unique identifier for the entitlement",
+            "example": null
           },
           "cumulative": {
             "type": "boolean",
-            "description": "Whether the limit is cumulative"
+            "description": "Whether the limit is cumulative",
+            "example": null
           },
           "limit": {
             "type": "integer",
             "format": "int64",
-            "description": "The limit for this entitlement"
+            "description": "The limit for this entitlement",
+            "example": null
           },
           "timeIntervalBound": {
             "type": "string",
@@ -4231,7 +4913,8 @@
               "MINUTES",
               "HOURS",
               "DAYS"
-            ]
+            ],
+            "example": null
           }
         },
         "required": [
@@ -4245,6 +4928,7 @@
         "properties": {
           "subscriptions": {
             "type": "array",
+            "example": null,
             "items": {
               "$ref": "#/components/schemas/SubscriptionDto"
             }
@@ -4259,11 +4943,13 @@
         "properties": {
           "id": {
             "type": "string",
-            "description": "Unique identifier for the legal entity"
+            "description": "Unique identifier for the legal entity",
+            "example": null
           },
           "name": {
             "type": "string",
-            "description": "Name of the legal entity"
+            "description": "Name of the legal entity",
+            "example": null
           }
         },
         "required": [
@@ -4276,23 +4962,28 @@
         "properties": {
           "userId": {
             "type": "string",
-            "description": "Unique identifier for the user"
+            "description": "Unique identifier for the user",
+            "example": null
           },
           "userName": {
             "type": "string",
-            "description": "The name of the user"
+            "description": "The name of the user",
+            "example": null
           },
           "legalEntity": {
-            "$ref": "#/components/schemas/LegalEntityInfoDto"
+            "$ref": "#/components/schemas/LegalEntityInfoDto",
+            "example": null
           },
           "roles": {
             "type": "array",
+            "example": null,
             "items": {
               "$ref": "#/components/schemas/UserRoleDto"
             }
           },
           "currentSubscription": {
-            "$ref": "#/components/schemas/SubscriptionDto"
+            "$ref": "#/components/schemas/SubscriptionDto",
+            "example": null
           }
         },
         "required": [
@@ -4306,14 +4997,16 @@
         "type": "object",
         "properties": {
           "userAccountInfo": {
-            "$ref": "#/components/schemas/UserAccountInfoDto"
+            "$ref": "#/components/schemas/UserAccountInfoDto",
+            "example": null
           },
           "featureToggles": {
             "type": "object",
             "additionalProperties": {
               "type": "boolean"
             },
-            "description": "A map of feature toggles with their values"
+            "description": "A map of feature toggles with their values",
+            "example": null
           }
         },
         "required": [
@@ -4325,11 +5018,13 @@
         "properties": {
           "id": {
             "type": "string",
-            "description": "Identifier for the role"
+            "description": "Identifier for the role",
+            "example": null
           },
           "desc": {
             "type": "string",
-            "description": "Role description"
+            "description": "Role description",
+            "example": null
           }
         },
         "required": [
@@ -4730,6 +5425,18 @@
             ]
           },
           "timestamp": {
+            "type": "string",
+            "format": "date-time"
+          }
+        }
+      },
+      "AccessJwtToken": {
+        "type": "object",
+        "properties": {
+          "token": {
+            "type": "string"
+          },
+          "tokenExpiry": {
             "type": "string",
             "format": "date-time"
           }
