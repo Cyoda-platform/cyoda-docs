@@ -7,7 +7,7 @@
       "name": "Cyoda Support",
       "url": "https://cyoda.com",
       "email": "support@cyoda.com",
-      "x-discord": "https://discord.gg/your-discord-invite"
+      "x-discord": "https://discord.gg/95rdAyBZr2"
     },
     "version": "1.0"
   },
@@ -4026,34 +4026,16 @@
           "User, Machine"
         ],
         "summary": "Obtain access token for technical user",
-        "description": "Authenticates a technical user using client credentials and returns an access token.\n\nThis endpoint implements the standard OAuth 2.0 Client Credentials Grant, designed for\nmachine-to-machine authentication. The returned access token can be used to authenticate\nsubsequent API requests using the Bearer token scheme.\n\n**Note:** This endpoint does not require prior authentication, as it serves as the authentication entry point.\n",
+        "description": "Authenticates a technical user using client credentials and returns an access token.\n\nThis endpoint implements the standard OAuth 2.0 Client Credentials Grant, designed for\nmachine-to-machine authentication. The client must authenticate using HTTP Basic Authentication,\nwhere the client_id and client_secret are provided in the Authorization header.\n\nThe returned access token can be used to authenticate subsequent API requests using the Bearer token scheme.\n\n**Note:** This endpoint does not require an existing access token, as it serves as the authentication entry point.\n",
         "operationId": "getTechnicalUserToken",
         "requestBody": {
           "content": {
             "application/x-www-form-urlencoded": {
               "schema": {
-                "type": "object",
-                "properties": {
-                  "client_id": {
-                    "type": "string",
-                    "description": "The client identifier for the technical user"
-                  },
-                  "client_secret": {
-                    "type": "string",
-                    "description": "The client secret for authentication"
-                  },
-                  "grant_type": {
-                    "type": "string",
-                    "description": "The OAuth2 grant type (must be 'client_credentials')",
-                    "enum": [
-                      "client_credentials"
-                    ]
-                  }
-                },
-                "required": [
-                  "client_id",
-                  "client_secret",
-                  "grant_type"
+                "type": "string",
+                "description": "Must be 'client_credentials'",
+                "enum": [
+                  "client_credentials"
                 ]
               }
             }
@@ -4065,7 +4047,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/TechnicalUserTokenResponseDto"
+                  "$ref": "#/components/schemas/TokenResponseDto"
                 }
               }
             }
@@ -4100,7 +4082,12 @@
               }
             }
           }
-        }
+        },
+        "security": [
+          {
+            "basicAuth": []
+          }
+        ]
       }
     },
     "/user/machine/{clientId}": {
@@ -4467,7 +4454,7 @@
           "entityIds"
         ]
       },
-      "TechnicalUserTokenResponseDto": {
+      "TokenResponseDto": {
         "type": "object",
         "properties": {
           "access_token": {
@@ -4475,11 +4462,6 @@
             "description": "The JWT access token for API authentication",
             "example": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...",
             "pattern": "^[A-Za-z0-9\\-_]+\\.[A-Za-z0-9\\-_]+\\.[A-Za-z0-9\\-_]+$"
-          },
-          "refresh_token": {
-            "type": "string",
-            "description": "The refresh token for obtaining new access tokens",
-            "example": "dGhpc2lzYXJlZnJlc2h0b2tlbg=="
           },
           "token_type": {
             "type": "string",
@@ -4497,6 +4479,11 @@
             "maximum": 86400,
             "minimum": 1
           },
+          "refresh_token": {
+            "type": "string",
+            "description": "The refresh token for obtaining new access tokens",
+            "example": "dGhpc2lzYXJlZnJlc2h0b2tlbg=="
+          },
           "scope": {
             "type": "string",
             "description": "The scope of the access token, as per RFC 6749 Section 3.3. See https://datatracker.ietf.org/doc/html/rfc6749#section-3.3",
@@ -4506,8 +4493,6 @@
         "required": [
           "access_token",
           "expires_in",
-          "refresh_token",
-          "scope",
           "token_type"
         ]
       },
