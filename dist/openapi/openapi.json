@@ -1238,14 +1238,18 @@
                   "description": "Mixed Entity Collection",
                   "value": [
                     {
-                      "id": "b6ce3450-4be0-11f0-bb82-ae468cd3ed16",
-                      "payload": "{\n  \"firstName\" : \"John\",\n  \"middleName\" : \"Henry\",\n  \"lastName\" : \"Doe\",\n  \"birthdate\" : \"1964-04-18\",\n  \"married\" : true,\n  \"children\" : [ {\n    \"firstName\" : \"Jane\",\n    \"middleName\" : \"Marie\",\n    \"lastName\" : \"Doe\",\n    \"birthdate\" : \"1990-08-25\",\n    \"married\" : false\n  }, {\n    \"firstName\" : \"James\",\n    \"middleName\" : \"Robert\",\n    \"lastName\" : \"Doe\",\n    \"birthdate\" : \"1992-03-15\",\n    \"married\" : true\n  } ]\n}",
-                      "transition": "UPDATE"
+                      "model": {
+                        "name": "family",
+                        "version": 1
+                      },
+                      "payload": "{\n  \"firstName\" : \"John\",\n  \"middleName\" : \"Henry\",\n  \"lastName\" : \"Doe\",\n  \"birthdate\" : \"1964-04-18\",\n  \"married\" : true,\n  \"children\" : [ {\n    \"firstName\" : \"Jane\",\n    \"middleName\" : \"Marie\",\n    \"lastName\" : \"Doe\",\n    \"birthdate\" : \"1990-08-25\",\n    \"married\" : false\n  }, {\n    \"firstName\" : \"James\",\n    \"middleName\" : \"Robert\",\n    \"lastName\" : \"Doe\",\n    \"birthdate\" : \"1992-03-15\",\n    \"married\" : true\n  } ]\n}"
                     },
                     {
-                      "id": "b6d03020-4be0-11f0-bb82-ae468cd3ed16",
-                      "payload": "{\n  \"category\" : \"economics\",\n  \"laureates\" : [ {\n    \"firstname\" : \"Daron\",\n    \"surname\" : \"Acemoglu\",\n    \"id\" : \"1044\",\n    \"motivation\" : \"\\\"for studies of how institutions are formed and affect prosperity\\\"\",\n    \"share\" : \"3\"\n  }, {\n    \"firstname\" : \"Simon\",\n    \"surname\" : \"Johnson\",\n    \"id\" : \"1045\",\n    \"motivation\" : \"\\\"for studies of how institutions are formed and affect prosperity\\\"\",\n    \"share\" : \"3\"\n  }, {\n    \"firstname\" : \"James\",\n    \"surname\" : \"Robinson\",\n    \"id\" : \"1046\",\n    \"motivation\" : \"\\\"for studies of how institutions are formed and affect prosperity\\\"\",\n    \"share\" : \"3\"\n  } ],\n  \"year\" : \"2024\"\n}",
-                      "transition": "UPDATE"
+                      "model": {
+                        "name": "nobel-prize",
+                        "version": 1
+                      },
+                      "payload": "{\n  \"category\" : \"economics\",\n  \"laureates\" : [ {\n    \"firstname\" : \"Daron\",\n    \"surname\" : \"Acemoglu\",\n    \"id\" : \"1044\",\n    \"motivation\" : \"\\\"for studies of how institutions are formed and affect prosperity\\\"\",\n    \"share\" : \"3\"\n  }, {\n    \"firstname\" : \"Simon\",\n    \"surname\" : \"Johnson\",\n    \"id\" : \"1045\",\n    \"motivation\" : \"\\\"for studies of how institutions are formed and affect prosperity\\\"\",\n    \"share\" : \"3\"\n  }, {\n    \"firstname\" : \"James\",\n    \"surname\" : \"Robinson\",\n    \"id\" : \"1046\",\n    \"motivation\" : \"\\\"for studies of how institutions are formed and affect prosperity\\\"\",\n    \"share\" : \"3\"\n  } ],\n  \"year\" : \"2024\"\n}"
                     }
                   ]
                 }
