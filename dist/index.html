@@ -41,6 +41,9 @@
         <button class="nav-tab" data-content="guides">
             <i class="fas fa-book"></i> Dev Guides
         </button>
+        <button class="nav-tab" data-content="concepts">
+            <i class="fas fa-lightbulb"></i> Concepts and Ideas
+        </button>
         <button class="nav-tab" data-content="architecture">
             <i class="fas fa-sitemap"></i> Architecture
         </button>
@@ -92,12 +95,24 @@
                 <button class="resource-link" data-resource="guides/authentication-authorization">
                     <i class="fas fa-shield-alt"></i> Authentication & Authorization
                 </button>
-                <button class="resource-link" data-resource="guides/cyoda-entity-database">
-                    <i class="fas fa-database"></i> Entity Database
+                <button class="resource-link" data-resource="guides/api-saving-and-getting-data">
+                    <i class="fas fa-database"></i> API: Saving and Getting Data
                 </button>
             </div>
         </div>
         <div id="guides-markdown" class="markdown-content"></div>
+    </div>
+
+    <!-- Concepts and Ideas Content -->
+    <div id="concepts-content" class="content-section">
+        <div class="resource-nav">
+            <div class="resource-links">
+                <button class="resource-link" data-resource="concepts/edbms">
+                    <i class="fas fa-cogs"></i> EDBMS
+                </button>
+            </div>
+        </div>
+        <div id="concepts-markdown" class="markdown-content"></div>
     </div>
 
     <!-- Architecture Content -->
@@ -237,6 +252,7 @@ class CyodaDocumentation {
     loadDefaultResource(section) {
         const defaultResources = {
             'guides': 'guides/cpl-overview',
+            'concepts': 'concepts/edbms',
             'architecture': 'architecture/cyoda-cloud-architecture',
             'platform': 'platform/cyoda-cloud-status'
         };
@@ -344,7 +360,8 @@ class CyodaDocumentation {
             'roadmap': 'platform',
             'authentication-authorization': 'guides',
             'cpl-overview': 'guides',
-            'cyoda-entity-database': 'guides',
+            'api-saving-and-getting-data': 'guides',
+            'edbms': 'concepts',
             'cyoda-cloud-architecture': 'architecture'
         };
         return resourceMap[resourceName];
@@ -400,6 +417,8 @@ class CyodaDocumentation {
     loadInitialContent() {
         // Load default content for the guides section since it might be accessed first
         this.loadDefaultResource('guides');
+        // Pre-load concepts section as well
+        this.loadDefaultResource('concepts');
     }
 }
 
