@@ -4,7 +4,7 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
     <link rel="icon" type="image/x-icon" href="./images/favicon 32_32.png">
-    <title>Cyoda API</title>
+    <title>Cyoda API Documentation</title>
 
     <!-- Stoplight Elements -->
     <script src="./js/elements.min.js"></script>
@@ -14,28 +14,396 @@
     <!-- Font Awesome for GitHub icon -->
     <link rel="stylesheet" href="./css/font-awesome.all.min.css"/>
 
+    <!-- Marked.js for markdown parsing -->
+    <script src="./js/marked.min.js"></script>
+
+    <!-- Mermaid.js for diagram rendering -->
+    <script src="./js/mermaid.min.js"></script>
+
 </head>
 <body>
 
 <header>
     <div class="logo">
-        <img width="30" src="./images/cyoda-icon.png" alt="logo">Cyoda API
+        <!--suppress CheckImageSize -->
+        <img width="30" src="./images/cyoda-icon.png" alt="logo">Cyoda Documentation
     </div>
     <a class="github-link" href="https://github.com/Cyoda-platform" target="_blank" title="View on GitHub">
         <i class="fab fa-github"></i>
     </a>
 </header>
 
-<elements-api
-        apiDescriptionUrl="./openapi/openapi.json"
-        hideTryIt="false"
-        layout="responsive"
-        router="hash">
-</elements-api>
+<nav class="main-nav">
+    <div class="nav-container">
+        <button class="nav-tab active" data-content="api">
+            <i class="fas fa-code"></i> API Reference
+        </button>
+        <button class="nav-tab" data-content="guides">
+            <i class="fas fa-book"></i> Developer Guides
+        </button>
+        <button class="nav-tab" data-content="architecture">
+            <i class="fas fa-sitemap"></i> Architecture
+        </button>
+        <button class="nav-tab" data-content="platform">
+            <i class="fas fa-info-circle"></i> Cyoda Cloud Info
+        </button>
+    </div>
+</nav>
+
+<main class="main-content">
+    <!-- Cyoda Cloud Info Content -->
+    <div id="platform-content" class="content-section">
+        <div class="resource-nav">
+            <div class="resource-links">
+                <button class="resource-link" data-resource="platform/cyoda-cloud-status">
+                    <i class="fas fa-heartbeat"></i> Current Status
+                </button>
+                <button class="resource-link" data-resource="platform/cloud-service-details">
+                    <i class="fas fa-info-circle"></i> Service Details
+                </button>
+                <button class="resource-link" data-resource="platform/entitlements">
+                    <i class="fas fa-layer-group"></i> Subscription Tiers
+                </button>
+            </div>
+        </div>
+        <div id="platform-markdown" class="markdown-content"></div>
+    </div>
+
+    <!-- API Documentation Content -->
+    <div id="api-content" class="content-section active">
+        <elements-api
+                apiDescriptionUrl="./openapi/openapi.json"
+                hideTryIt="false"
+                layout="responsive"
+                router="hash">
+        </elements-api>
+    </div>
+
+    <!-- Developer Guides Content -->
+    <div id="guides-content" class="content-section">
+        <div class="resource-nav">
+            <div class="resource-links">
+                <button class="resource-link" data-resource="guides/cpl-overview">
+                    <i class="fas fa-layer-group"></i> Cyoda Platform Library
+                </button>
+                <button class="resource-link" data-resource="guides/authentication-authorization">
+                    <i class="fas fa-shield-alt"></i> Authentication & Authorization
+                </button>
+                <button class="resource-link" data-resource="guides/cyoda-entity-database">
+                    <i class="fas fa-database"></i> Entity Database
+                </button>
+            </div>
+        </div>
+        <div id="guides-markdown" class="markdown-content"></div>
+    </div>
+
+    <!-- Architecture Content -->
+    <div id="architecture-content" class="content-section">
+        <div class="resource-nav">
+            <div class="resource-links">
+                <button class="resource-link" data-resource="architecture/cyoda-cloud-architecture">
+                    <i class="fas fa-server"></i> Cloud Architecture
+                </button>
+            </div>
+        </div>
+        <div id="architecture-markdown" class="markdown-content"></div>
+    </div>
+
+
+</main>
 
 <footer>
-    Copyright © 2025 CYODA Ltd. All rights reserved
+    <div class="footer-content">
+        <div class="footer-github">
+            Documentation hosted on GitHub Pages | <a href="https://github.com/Cyoda-platform/cyoda-docs" target="_blank">Contribute</a>
+        </div>
+
+        <div class="footer-links">
+            <a href="https://www.cyoda.com" target="_blank">Visit Cyoda</a>
+            <a href="https://www.cyoda.com/privacy-policy" target="_blank">Privacy Notice</a>
+            <a href="https://www.cyoda.com/terms-of-service" target="_blank">Site Terms</a>
+            <span>© 2025 CYODA Ltd.</span>
+            <span>Licensed under <a rel="license" href="https://creativecommons.org/licenses/by/4.0/" target="_blank" title="Creative Commons Attribution 4.0 International License">CC BY 4.0</a></span>
+        </div>
+    </div>
 </footer>
+
+
+
+<!--suppress ExceptionCaughtLocallyJS -->
+<script>
+// Navigation and content loading functionality
+class CyodaDocumentation {
+    constructor() {
+        this.currentSection = 'api';
+        this.loadedResources = new Map();
+        this.init();
+    }
+
+    init() {
+        this.initializeMermaid();
+        this.bindEvents();
+        this.loadInitialContent();
+    }
+
+    initializeMermaid() {
+        // Initialize Mermaid with custom configuration
+        mermaid.initialize({
+            startOnLoad: false,
+            theme: 'default',
+            themeVariables: {
+                primaryColor: '#4FB8B0',
+                primaryTextColor: '#2c3e50',
+                primaryBorderColor: '#4FB8B0',
+                lineColor: '#6c757d',
+                secondaryColor: '#f8f9fa',
+                tertiaryColor: '#e9ecef'
+            },
+            flowchart: {
+                useMaxWidth: true,
+                htmlLabels: true,
+                curve: 'basis'
+            },
+            securityLevel: 'loose'
+        });
+
+        // Configure marked.js to handle code blocks and generate heading IDs
+        marked.setOptions({
+            highlight: function(code, lang) {
+                if (lang === 'mermaid') {
+                    return code;
+                }
+                return code;
+            },
+            langPrefix: 'language-'
+        });
+
+        // Add custom renderer for headings to generate IDs
+        const renderer = new marked.Renderer();
+        renderer.heading = function(text, level) {
+            const escapedText = text.toLowerCase().replace(/[^\w]+/g, '-');
+            return `<h${level} id="${escapedText}">${text}</h${level}>`;
+        };
+        marked.setOptions({ renderer: renderer });
+    }
+
+    bindEvents() {
+        // Main navigation tabs
+        document.querySelectorAll('.nav-tab').forEach(tab => {
+            tab.addEventListener('click', (e) => {
+                const contentType = e.currentTarget.dataset.content;
+                this.switchSection(contentType);
+            });
+        });
+
+        // Resource links
+        document.querySelectorAll('.resource-link').forEach(link => {
+            link.addEventListener('click', (e) => {
+                const resourceName = e.currentTarget.dataset.resource;
+                const section = e.currentTarget.closest('.content-section').id.replace('-content', '');
+                this.loadResource(resourceName, section);
+
+                // Update active state
+                e.currentTarget.closest('.resource-links').querySelectorAll('.resource-link').forEach(l => l.classList.remove('active'));
+                e.currentTarget.classList.add('active');
+            });
+        });
+    }
+
+    switchSection(sectionName) {
+        // Update nav tabs
+        document.querySelectorAll('.nav-tab').forEach(tab => {
+            tab.classList.remove('active');
+        });
+        document.querySelector(`[data-content="${sectionName}"]`).classList.add('active');
+
+        // Update content sections
+        document.querySelectorAll('.content-section').forEach(section => {
+            section.classList.remove('active');
+        });
+        document.getElementById(`${sectionName}-content`).classList.add('active');
+
+        this.currentSection = sectionName;
+
+        // Load default resource for non-API sections
+        if (sectionName !== 'api') {
+            this.loadDefaultResource(sectionName);
+        }
+    }
+
+    loadDefaultResource(section) {
+        const defaultResources = {
+            'guides': 'guides/cpl-overview',
+            'architecture': 'architecture/cyoda-cloud-architecture',
+            'platform': 'platform/cyoda-cloud-status'
+        };
+
+        const defaultResource = defaultResources[section];
+        if (defaultResource) {
+            this.loadResource(defaultResource, section);
+
+            // Set active state on default resource link
+            const resourceLink = document.querySelector(`[data-resource="${defaultResource}"]`);
+            if (resourceLink) {
+                resourceLink.closest('.resource-links').querySelectorAll('.resource-link').forEach(l => l.classList.remove('active'));
+                resourceLink.classList.add('active');
+            }
+        }
+    }
+
+    async loadResource(resourceName, section) {
+        try {
+            // Check if already loaded
+            if (this.loadedResources.has(resourceName)) {
+                this.displayResource(this.loadedResources.get(resourceName), section);
+                return;
+            }
+
+            // Show loading state
+            const markdownContainer = document.getElementById(`${section}-markdown`);
+            markdownContainer.innerHTML = '<div class="loading">Loading...</div>';
+
+            // Fetch markdown content
+            const response = await fetch(`./resources/${resourceName}.md`);
+            if (!response.ok) {
+                throw new Error(`Failed to load ${resourceName}`);
+            }
+
+            const markdownText = await response.text();
+            const htmlContent = marked.parse(markdownText);
+
+            // Cache the content
+            this.loadedResources.set(resourceName, htmlContent);
+
+            // Display the content
+            this.displayResource(htmlContent, section);
+
+        } catch (error) {
+            console.error('Error loading resource:', error);
+            const markdownContainer = document.getElementById(`${section}-markdown`);
+            markdownContainer.innerHTML = `<div class="error">Failed to load ${resourceName}. Please try again.</div>`;
+        }
+    }
+
+    displayResource(htmlContent, section) {
+        const markdownContainer = document.getElementById(`${section}-markdown`);
+        markdownContainer.innerHTML = htmlContent;
+
+        // Process Mermaid diagrams after content is rendered
+        this.processMermaidDiagrams(markdownContainer);
+
+        // Add anchor link handling
+        this.setupAnchorLinks(markdownContainer);
+    }
+
+    setupAnchorLinks(container) {
+        // Handle clicks on anchor links within the same document
+        container.querySelectorAll('a[href^="#"]').forEach(link => {
+            link.addEventListener('click', (e) => {
+                e.preventDefault();
+                const targetId = link.getAttribute('href').substring(1);
+                const targetElement = container.querySelector(`#${targetId}`);
+                if (targetElement) {
+                    targetElement.scrollIntoView({ behavior: 'smooth' });
+                }
+            });
+        });
+
+        // Handle clicks on relative markdown links to other documents
+        container.querySelectorAll('a[href$=".md"]').forEach(link => {
+            link.addEventListener('click', (e) => {
+                e.preventDefault();
+                const href = link.getAttribute('href');
+                const resourceName = href.replace('.md', '');
+
+                // Determine which section this resource belongs to
+                const section = this.getResourceSection(resourceName);
+                if (section) {
+                    this.switchSection(section);
+                    this.loadResource(`${section}/${resourceName}`, section);
+
+                    // Update active state
+                    const resourceLink = document.querySelector(`[data-resource="${section}/${resourceName}"]`);
+                    if (resourceLink) {
+                        resourceLink.closest('.resource-links').querySelectorAll('.resource-link').forEach(l => l.classList.remove('active'));
+                        resourceLink.classList.add('active');
+                    }
+                }
+            });
+        });
+    }
+
+    getResourceSection(resourceName) {
+        const resourceMap = {
+            'cyoda-cloud-status': 'platform',
+            'cyoda-cloud-caveats': 'platform',
+            'entitlements': 'platform',
+            'authentication-authorization': 'guides',
+            'cpl-overview': 'guides',
+            'cyoda-entity-database': 'guides',
+            'cyoda-cloud-architecture': 'architecture'
+        };
+        return resourceMap[resourceName];
+    }
+
+    async processMermaidDiagrams(container) {
+        // Find all code blocks with language 'mermaid'
+        const mermaidBlocks = container.querySelectorAll('pre code.language-mermaid, pre code[class*="language-mermaid"]');
+
+        for (let i = 0; i < mermaidBlocks.length; i++) {
+            const codeBlock = mermaidBlocks[i];
+            const mermaidCode = codeBlock.textContent;
+
+            try {
+                // Create a unique ID for this diagram
+                const diagramId = `mermaid-diagram-${Date.now()}-${i}`;
+
+                // Create a div to hold the rendered diagram
+                const diagramDiv = document.createElement('div');
+                diagramDiv.id = diagramId;
+                diagramDiv.className = 'mermaid-diagram';
+
+                // Replace the code block with the diagram div
+                const preElement = codeBlock.closest('pre');
+                preElement.parentNode.replaceChild(diagramDiv, preElement);
+
+                // Render the Mermaid diagram
+                const { svg } = await mermaid.render(diagramId + '-svg', mermaidCode);
+                diagramDiv.innerHTML = svg;
+
+            } catch (error) {
+                console.error('Error rendering Mermaid diagram:', error);
+
+                // Show error message in place of diagram
+                const errorDiv = document.createElement('div');
+                errorDiv.className = 'mermaid-error';
+                errorDiv.innerHTML = `
+                    <div class="error">
+                        <strong>Error rendering diagram:</strong> ${error.message}
+                        <details>
+                            <summary>Show diagram code</summary>
+                            <pre><code>${mermaidCode}</code></pre>
+                        </details>
+                    </div>
+                `;
+
+                const preElement = codeBlock.closest('pre');
+                preElement.parentNode.replaceChild(errorDiv, preElement);
+            }
+        }
+    }
+
+    loadInitialContent() {
+        // Load default content for the guides section since it might be accessed first
+        this.loadDefaultResource('guides');
+    }
+}
+
+// Initialize the documentation app when DOM is loaded
+document.addEventListener('DOMContentLoaded', () => {
+    new CyodaDocumentation();
+});
+</script>
 
 </body>
 </html>

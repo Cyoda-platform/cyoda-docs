@@ -1,7 +1,9 @@
 
 body {
     margin: 0;
-    font-family: sans-serif;
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+    line-height: 1.6;
+    color: #333;
 }
 
 header {
@@ -11,6 +13,7 @@ header {
     padding: 0.75rem 1.5rem;
     background: #4FB8B0;
     color: white;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
 }
 
 .logo {
@@ -18,24 +21,399 @@ header {
     align-items: center;
     font-size: 1.5rem;
     font-weight: bold;
-    gap: 0.5rem; /* Adds space between logo and text */
+    gap: 0.5rem;
 }
-
 
 .github-link {
     color: white;
     text-decoration: none;
     font-size: 1.5rem;
+    transition: color 0.2s ease;
 }
 
 .github-link:hover {
     color: #0c1017;
 }
 
-footer {
-    background-color: #6B6A6D;
-    color: #ffffff;
-    text-align: center;
-    padding: 1rem 0;
+/* Main Navigation */
+.main-nav {
+    background: #f8f9fa;
+    border-bottom: 1px solid #e9ecef;
+    padding: 0;
+    overflow-x: auto;
+}
+
+.nav-container {
+    display: flex;
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 1rem;
+}
+
+.nav-tab {
+    background: none;
+    border: none;
+    padding: 1rem 1.5rem;
+    cursor: pointer;
     font-size: 0.9rem;
+    font-weight: 500;
+    color: #6c757d;
+    border-bottom: 3px solid transparent;
+    transition: all 0.2s ease;
+    white-space: nowrap;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.nav-tab:hover {
+    color: #4FB8B0;
+    background: rgba(79, 184, 176, 0.1);
+}
+
+.nav-tab.active {
+    color: #4FB8B0;
+    border-bottom-color: #4FB8B0;
+    background: rgba(79, 184, 176, 0.1);
+}
+
+/* Main Content */
+.main-content {
+    min-height: calc(100vh - 200px);
+}
+
+.content-section {
+    display: none;
+}
+
+.content-section.active {
+    display: block;
+}
+
+/* Resource Navigation */
+.resource-nav {
+    background: #f8f9fa;
+    padding: 1rem;
+    border-bottom: 1px solid #e9ecef;
+}
+
+/*.resource-nav h2 {*/
+/*    !* Hide section heading since it's already shown in the active main nav tab *!*/
+/*    display: none;*/
+/*}*/
+
+.resource-links {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.375rem;
+}
+
+.resource-link {
+    background: white;
+    border: 1px solid #dee2e6;
+    padding: 0.5rem 0.75rem;
+    cursor: pointer;
+    font-size: 0.85rem;
+    color: #495057;
+    border-radius: 4px;
+    transition: all 0.2s ease;
+    display: flex;
+    align-items: center;
+    gap: 0.375rem;
+}
+
+.resource-link:hover {
+    background: #4FB8B0;
+    color: white;
+    border-color: #4FB8B0;
+}
+
+.resource-link.active {
+    background: #4FB8B0;
+    color: white;
+    border-color: #4FB8B0;
+}
+
+/* Markdown Content */
+.markdown-content {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 2rem;
+}
+
+.markdown-content h1 {
+    color: #2c3e50;
+    border-bottom: 3px solid #4FB8B0;
+    padding-bottom: 0.75rem;
+    margin-bottom: 2rem;
+    font-size: 2.2rem;
+    font-weight: 600;
+}
+
+.markdown-content h2 {
+    color: #2c3e50;
+    margin-top: 3rem;
+    margin-bottom: 1.5rem;
+    font-size: 2rem;
+    font-weight: 600;
+    border-left: 4px solid #4FB8B0;
+    padding-left: 1rem;
+}
+
+.markdown-content h3 {
+    color: #4FB8B0;
+    margin-top: 2rem;
+    margin-bottom: 1rem;
+    font-size: 1.5rem;
+    font-weight: 600;
+}
+
+.markdown-content code {
+    background: #f8f9fa;
+    padding: 0.2rem 0.4rem;
+    border-radius: 3px;
+    font-family: 'Monaco', 'Menlo', 'Ubuntu Mono', monospace;
+    font-size: 0.9em;
+}
+
+.markdown-content pre {
+    background: #f8f9fa;
+    padding: 1rem;
+    border-radius: 6px;
+    overflow-x: auto;
+    border-left: 4px solid #4FB8B0;
+}
+
+.markdown-content pre code {
+    background: none;
+    padding: 0;
+}
+
+.markdown-content blockquote {
+    border-left: 4px solid #4FB8B0;
+    margin: 1rem 0;
+    padding: 0.5rem 1rem;
+    background: rgba(79, 184, 176, 0.1);
+    color: #2c3e50;
+}
+
+.markdown-content table {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 1rem 0;
+}
+
+.markdown-content th,
+.markdown-content td {
+    border: 1px solid #dee2e6;
+    padding: 0.75rem;
+    text-align: left;
+}
+
+.markdown-content th {
+    background: #f8f9fa;
+    font-weight: 600;
+}
+
+.markdown-content ul {
+    padding-left: 1.5rem;
+    list-style-type: disc;
+}
+
+.markdown-content ol {
+    padding-left: 1.5rem;
+    list-style-type: decimal;
+}
+
+.markdown-content ul ul {
+    list-style-type: circle;
+}
+
+.markdown-content ul ul ul {
+    list-style-type: square;
+}
+
+.markdown-content li {
+    margin-bottom: 0.5rem;
+}
+
+.markdown-content a {
+    color: #4FB8B0;
+    text-decoration: none;
+}
+
+.markdown-content a:hover {
+    text-decoration: underline;
+}
+
+/* Mermaid Diagrams */
+.mermaid-diagram {
+    text-align: center;
+    margin: 2rem 0;
+    padding: 1rem;
+    background: white;
+    border: 1px solid #e9ecef;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    overflow-x: auto;
+}
+
+.mermaid-diagram svg {
+    max-width: 100%;
+    height: auto;
+}
+
+.mermaid-error {
+    margin: 2rem 0;
+}
+
+.mermaid-error .error {
+    text-align: left;
+    padding: 1rem;
+    background: #f8d7da;
+    border: 1px solid #f5c6cb;
+    border-radius: 6px;
+    color: #721c24;
+}
+
+.mermaid-error details {
+    margin-top: 1rem;
+}
+
+.mermaid-error summary {
+    cursor: pointer;
+    font-weight: 500;
+    color: #495057;
+}
+
+.mermaid-error pre {
+    margin-top: 0.5rem;
+    background: #f8f9fa;
+    border: 1px solid #dee2e6;
+    border-radius: 4px;
+    padding: 0.75rem;
+    font-size: 0.85rem;
+    overflow-x: auto;
+}
+
+/* Loading and Error States */
+.loading {
+    text-align: center;
+    padding: 3rem;
+    color: #6c757d;
+    font-style: italic;
+}
+
+.error {
+    text-align: center;
+    padding: 3rem;
+    color: #dc3545;
+    background: #f8d7da;
+    border: 1px solid #f5c6cb;
+    border-radius: 6px;
+    margin: 2rem;
+}
+
+footer {
+    background-color: #4FB8B0;
+    color: #ffffff;
+    padding: 1rem 0;
+    font-size: 0.85rem;
+    margin-top: auto;
+}
+
+.footer-content {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 1rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+    text-align: center;
+}
+
+.footer-github {
+    color: #e9ecef;
+    font-size: 0.8rem;
+}
+
+.footer-github a {
+    color: #ffffff;
+    text-decoration: none;
+}
+
+.footer-github a:hover {
+    text-decoration: underline;
+}
+
+.footer-links {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 1rem;
+}
+
+.footer-links a,
+.footer-links span {
+    color: #ffffff;
+    text-decoration: none;
+    white-space: nowrap;
+}
+
+.footer-links a:hover {
+    text-decoration: underline;
+}
+
+.footer-links::before {
+    content: "";
+}
+
+.footer-links > *:not(:last-child)::after {
+    content: "|";
+    color: #2a7a73;
+    margin-left: 1rem;
+    pointer-events: none;
+    text-decoration: none !important;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+    .nav-container {
+        padding: 0 0.5rem;
+    }
+
+    .nav-tab {
+        padding: 0.75rem 1rem;
+        font-size: 0.8rem;
+    }
+
+    .resource-nav {
+        padding: 1rem;
+    }
+
+    .resource-links {
+        flex-direction: column;
+    }
+
+    .markdown-content {
+        padding: 1rem;
+    }
+
+    .markdown-content table {
+        font-size: 0.9rem;
+    }
+
+    .footer-links {
+        flex-direction: column;
+        gap: 0.5rem;
+    }
+
+    .footer-links > *:not(:last-child)::after {
+        display: none;
+    }
+
+    .footer-github {
+        font-size: 0.75rem;
+    }
 }
