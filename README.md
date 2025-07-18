@@ -30,7 +30,7 @@ The project is built as a static site using [Stoplight Elements](https://stoplig
 ## Live Documentation
 
 The documentation is automatically deployed to GitHub Pages and available at:
-**[https://cyoda-platform.github.io/api-specification/](https://cyoda-platform.github.io/api-specification/)**
+**[https://docs.cyoda.net/](https://docs.cyoda.net/)**
 
 ## Project Structure
 
@@ -50,7 +50,8 @@ The documentation is automatically deployed to GitHub Pages and available at:
 │   ├── images/                    # Assets and icons
 │   └── index.html                 # Main documentation page
 ├── .github/workflows/             # GitHub Actions for deployment
-└── README.md                      # This file
+├── README.md                      # This file
+└── ...                            # other stuff
 ```
 
 ## Available Resources
