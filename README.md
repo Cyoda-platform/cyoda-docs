@@ -61,9 +61,17 @@ The documentation is automatically deployed to GitHub Pages and available at:
 - **Interactive API Explorer**: Available in the live documentation site
 
 ### Developer Guides
-- **[Authentication & Authorization](dist/resources/authentication-authorization.md)**: OAuth 2.0 implementation and security
-- **[CPL Overview](dist/resources/cpl-overview.md)**: Cyoda Platform Library architecture and capabilities
-- **[Cloud Architecture](dist/resources/cyoda-cloud-architecture.md)**: Physical infrastructure and deployment topology
+- **[Authentication & Authorization](dist/resources/guides/authentication-authorization.md)**: OAuth 2.0 implementation and security
+- **[CPL Overview](dist/resources/guides/cpl-overview.md)**: Cyoda Platform Library architecture and capabilities
+- **[Entity Database](dist/resources/guides/cyoda-entity-database.md)**: Entity modeling and database concepts
+
+### Architecture Documentation
+- **[Cloud Architecture](dist/resources/architecture/cyoda-cloud-architecture.md)**: Physical infrastructure and deployment topology
+
+### Platform Information
+- **[Cloud Status](dist/resources/platform/cyoda-cloud-status.md)**: Current service status and known issues
+- **[Service Details](dist/resources/platform/cloud-service-details.md)**: Comprehensive service information and limitations
+- **[Subscription Tiers](dist/resources/platform/entitlements.md)**: Available subscription tiers and entitlements
 
 
 ## Development

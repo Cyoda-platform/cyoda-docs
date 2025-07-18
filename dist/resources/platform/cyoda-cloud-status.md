@@ -1,5 +1,5 @@
 <!--
-ABOUTME: Quick reference guide providing a concise overview of the most critical caveats, limitations, and gotchas for Cyoda Cloud Free Tier users. For detailed information, see cyoda-cloud-caveats.md.
+ABOUTME: Quick reference guide providing a concise overview of the most critical caveats, limitations, and gotchas for Cyoda Cloud Free Tier users. For detailed information, see cloud-service-details.md.
 
 THIS PAGE NEEDS TO BE AS COMPACT AND CONCISE AS POSSIBLE, BECAUSE IT IS SHOWN AS A PANEL ON VARIOUS UIs
 
