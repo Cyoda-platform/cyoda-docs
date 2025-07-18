@@ -5,20 +5,17 @@
 
 > **Central hub for Cyoda developer resources, API documentation, and onboarding materials**
 
-This repository serves as the comprehensive documentation center for developers and AI assistants working with the Cyoda platform. It provides OpenAPI specifications, developer guides, architecture documentation, and onboarding resources in a centralized, accessible format.
+This repository serves as the central documentation hub for developers and AI assistants working with the Cyoda platform. It provides OpenAPI specifications, developer guides, architecture documentation, and onboarding resources in a centralized, accessible format.
 
-## 📋 Table of Contents
+## Table of Contents
 
 - [About](#about)
 - [Live Documentation](#live-documentation)
 - [Project Structure](#project-structure)
 - [Available Resources](#available-resources)
 - [Development](#development)
-- [Contributing](#contributing)
-- [Support](#support)
-- [License](#license)
 
-## 🎯 About
+## About
 
 Cyoda is a hybrid transactional/analytical data processing platform designed for high-volume data ingestion with concurrent processing capabilities. This repository contains:
 
@@ -30,20 +27,24 @@ Cyoda is a hybrid transactional/analytical data processing platform designed for
 
 The project is built as a static site using [Stoplight Elements](https://stoplight.io/open-source/elements) for interactive API documentation and serves as a living resource that evolves with the platform.
 
-## 🌐 Live Documentation
+## Live Documentation
 
 The documentation is automatically deployed to GitHub Pages and available at:
 **[https://cyoda-platform.github.io/api-specification/](https://cyoda-platform.github.io/api-specification/)**
 
-## 📁 Project Structure
+## Project Structure
 
 ```
 ├── dist/                          # Built documentation site
 │   ├── openapi/                   # OpenAPI specifications
-│   │   └── openapi.json          # Main Cyoda API specification
-│   ├── resources/                 # Markdown documentation
-│   │   ├── something.md
-│   │   ├── something-else.md
+│   │   └── openapi.json           # Main Cyoda API specification
+│   ├── resources/                 # Markdown documentation organized in sub-folders
+│   │   ├── sub-folder/           
+│   │   │   ├── some-doc.md
+│   │   │   └── some-other-doc.md
+│   │   ├── another-folder/          
+│   │   │   └── something-else.md
+│   │   └── ...
 │   ├── css/                       # Styling and themes
 │   ├── js/                        # Stoplight Elements JavaScript
 │   ├── images/                    # Assets and icons
@@ -52,7 +53,7 @@ The documentation is automatically deployed to GitHub Pages and available at:
 └── README.md                      # This file
 ```
 
-## 📚 Available Resources
+## Available Resources
 
 ### API Documentation
 - **[OpenAPI Specification](dist/openapi/openapi.json)**: Complete REST API documentation
