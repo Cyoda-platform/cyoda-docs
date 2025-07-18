@@ -1,4 +1,4 @@
-# Cyoda API Specification
+# Cyoda Cloud Documentation
 
 [![Deploy to GitHub Pages](https://github.com/Cyoda-platform/api-specification/actions/workflows/static.yml/badge.svg)](https://github.com/Cyoda-platform/api-specification/actions/workflows/static.yml)
 [![License: CC BY 4.0](https://img.shields.io/badge/License-CC%20BY%204.0-lightgrey.svg)](https://creativecommons.org/licenses/by/4.0/)
@@ -62,7 +62,7 @@ The documentation is automatically deployed to GitHub Pages and available at:
 
 ### Developer Guides
 - **[Authentication & Authorization](dist/resources/guides/authentication-authorization.md)**: OAuth 2.0 implementation and security
-- **[CPL Overview](dist/resources/guides/cpl-overview.md)**: Cyoda Platform Library architecture and capabilities
+- **[Cyoda Platform Library](dist/resources/guides/cpl-overview.md)**: Cyoda Platform Library architecture and capabilities
 - **[Entity Database](dist/resources/guides/cyoda-entity-database.md)**: Entity modeling and database concepts
 
 ### Architecture Documentation
