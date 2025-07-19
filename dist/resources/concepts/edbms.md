@@ -1,5 +1,7 @@
 # The Entity Database Management System (EDBMS)
 
+A condensed version of the original article by Paul Schleger [The Entity Database Management System](https://medium.com/@paul_42036/the-entity-database-management-system-300160660001).
+
 ## Introduction
 
 Most traditional database systems focus solely on storing and retrieving data. While this suffices for many use-cases,
@@ -99,4 +101,6 @@ offers a modern foundation for building intelligent, adaptive, and resilient sys
 
 Cyoda demonstrates the feasibility and practical advantages of this model. It offers a perspective on how future systems
 can evolve when data and process coalesce into a unified, programmable substrate.
+
+For an in-depth explanation and additional context, refer to the original article by Paul Schleger: [The Entity Database Management System](https://medium.com/@paul_42036/the-entity-database-management-system-300160660001)
 
