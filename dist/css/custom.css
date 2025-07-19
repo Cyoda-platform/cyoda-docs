@@ -141,6 +141,11 @@ header {
     padding: 2rem;
 }
 
+.markdown-content p {
+    margin-bottom: 1.5rem;
+    line-height: 1.7;
+}
+
 .markdown-content h1 {
     color: #2c3e50;
     border-bottom: 3px solid #4FB8B0;
