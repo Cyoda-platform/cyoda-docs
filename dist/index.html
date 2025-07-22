@@ -89,9 +89,6 @@
     <div id="guides-content" class="content-section">
         <div class="resource-nav">
             <div class="resource-links">
-                <button class="resource-link" data-resource="guides/cpl-overview">
-                    <i class="fas fa-layer-group"></i> Cyoda Platform Library
-                </button>
                 <button class="resource-link" data-resource="guides/authentication-authorization">
                     <i class="fas fa-shield-alt"></i> Authentication & Authorization
                 </button>
@@ -112,6 +109,9 @@
                 </button>
                 <button class="resource-link" data-resource="concepts/event-driven-architecture">
                     <i class="fas fa-project-diagram"></i> Event-Driven Architecture
+                </button>
+                <button class="resource-link" data-resource="concepts/cpl-overview">
+                    <i class="fas fa-layer-group"></i> Cyoda Platform Library
                 </button>
             </div>
         </div>
@@ -254,7 +254,7 @@ class CyodaDocumentation {
 
     loadDefaultResource(section) {
         const defaultResources = {
-            'guides': 'guides/cpl-overview',
+            'guides': 'guides/authentication-authorization',
             'concepts': 'concepts/edbms',
             'architecture': 'architecture/cyoda-cloud-architecture',
             'platform': 'platform/cyoda-cloud-status'
@@ -362,8 +362,8 @@ class CyodaDocumentation {
             'entitlements': 'platform',
             'roadmap': 'platform',
             'authentication-authorization': 'guides',
-            'cpl-overview': 'guides',
             'api-saving-and-getting-data': 'guides',
+            'cpl-overview': 'concepts',
             'edbms': 'concepts',
             'event-driven-architecture': 'concepts',
             'cyoda-cloud-architecture': 'architecture'
