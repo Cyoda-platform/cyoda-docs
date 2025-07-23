@@ -48,6 +48,10 @@ If you follow the normal onboarding flow via the AI Assistant, you'll get all th
 
 If you struggle, reach out to us on [Discord](https://discord.gg/95rdAyBZr2)
 
+## Connection
+
+Your environment has several service endpoints, which are determined by your CAAS user ID.
+
 | Service | URL Pattern                                      | Description |
 |---------|--------------------------------------------------|-------------|
 | Cyoda UI | `https://client-<caas_user_id>.eu.cyoda.net`     | Web interface for your Cyoda environment |
@@ -83,7 +87,7 @@ You need a technical user to access your Cyoda Cloud API outside of the UI (Cyod
 
 ### OAuth 2.0 Client Credentials Grant
 
-Cyoda Cloud implements the standard OAuth 2.0 Client Credentials Grant (RFC 6749) for machine-to-machine authentication.
+Cyoda Cloud implements the standard OAuth 2.0 Client Credentials Grant (RFC 6749) for machine-to-machine authentication. All service endpoints support this flow.
 
 ## Security Features
 
