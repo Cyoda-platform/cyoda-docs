@@ -2,20 +2,21 @@
 
 At the heart of Cyoda is the Entity Database Management System (EDBMS). This system is built around the concept of entities as finit state machines governed by workflows, and are the core building blocks of any Cyoda application.
 
-## TL;DR - Core Principles of the Cyoda EDBMS
+## TL;DR
 
-- All persisted data is an **_Entity_**.
-- The _Entity_ data model is tree-like.
-- Each _Entity_'s is always associated with a data model which is known.
-- _Entities_ hold structured information and a **_State_**.
-- _Entity_ **Lifecycle** is governed by **_Workflow_**.
-- _Entity_ mutations require a specific state **_Transition_**.
-- _Transitions_ are guarded by **_Criteria_** and may be **automated** or **manual**.
-- Upon entering a _State_, the first valid automated transition is applied immediately and within the same **_Transaction_**.
-- The process **recurses** until no further automated _Transitions_ are eligible, reaching a **stable state**.
-- **_Processes_** can be attached to _Transitions_ which are executed upon traversal to the next _State_.
-- _Processes_ can be **synchronous** or **asynchronous**.
-- _Processes_ can be executed in the **same** _Transaction_ as the _Transition_ or in a **separate** _Transaction_.
+> [!INFO] Core Principles of the Cyoda EDBMS
+> - All persisted data is an **_Entity_**.
+> - The _Entity_ data model is tree-like.
+> - Each _Entity_'s is always associated with a data model which is known.
+> - _Entities_ hold structured information and a **_State_**.
+> - _Entity_ **Lifecycle** is governed by **_Workflow_**.
+> - _Entity_ mutations require a specific state **_Transition_**.
+> - _Transitions_ are guarded by **_Criteria_** and may be **automated** or **manual**.
+> - Upon entering a _State_, the first valid automated transition is applied immediately and within the same **_Transaction_**.
+> - The process **recurses** until no further automated _Transitions_ are eligible, reaching a **stable state**.
+> - **_Processes_** can be attached to _Transitions_ which are executed upon traversal to the next _State_.
+> - _Processes_ can be **synchronous** or **asynchronous**.
+> - _Processes_ can be executed in the **same** _Transaction_ as the _Transition_ or in a **separate** _Transaction_.
 
 ## What Is an Entity?
 
