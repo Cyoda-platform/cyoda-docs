@@ -230,160 +230,319 @@ The following section walks through the configuration step by step.
 {
   "version": "1.0",
   "name": "Payment Request Workflow",
-  "desc": "Handles validation, approval, and notifications",
+  "desc": "Payment request processing workflow with validation, approval, and notification states",
   "initialState": "INVALID",
   "active": true
 }
 ```
 
-### Step 2: Validation Entry Point
+### Step 2: Define States and Transitions
+
+Start by defining the overall structure of states and transitions.
 
 ```json
-"states": {
-  "INVALID": {
-    "transitions": [
-      {
-        "name": "VALIDATE",
-        "next": "PENDING",
-        "manual": true,
-        "disabled": false,
-        "criterion": {
-          "type": "function",
-          "function": {
-            "name": "IsValid",
-            "config": { "attachEntity": true }
-          }
+{
+  "version": "1.0",
+  "name": "Payment Request Workflow",
+  "desc": "Payment request processing workflow with validation, approval, and notification states",
+  "initialState": "INVALID",
+  "active": true,
+  "states": {
+    "INVALID": {
+      "transitions": [
+        {
+          "name": "VALIDATE",
+          "next": "PENDING",
+          "manual": false,
+          "disabled": false
+        },
+        {
+          "name": "AMEND",
+          "next": "INVALID",
+          "manual": true,
+          "disabled": false
+        },
+        {
+          "name": "CANCEL",
+          "next": "CANCELED",
+          "manual": true,
+          "disabled": false
         }
-      },
-      { "name": "AMEND", "next": "INVALID", "manual": true, "disabled": false },
-      { "name": "CANCEL", "next": "CANCELED", "manual": true, "disabled": false }
-    ]
+      ]
+    },
+    "PENDING": {
+      "transitions": [
+        {
+          "name": "MATCH",
+          "next": "SUBMITTED",
+          "manual": false,
+          "disabled": false
+        },
+        {
+          "name": "RETRY",
+          "next": "PENDING",
+          "manual": true,
+          "disabled": false
+        },
+        {
+          "name": "CANCEL",
+          "next": "CANCELED",
+          "manual": true,
+          "disabled": false
+        }
+      ]
+    },
+    "SUBMITTED": {
+      "transitions": [
+        {
+          "name": "APPROVE",
+          "next": "APPROVED",
+          "manual": true,
+          "disabled": false
+        },
+        {
+          "name": "DENY",
+          "next": "DECLINED",
+          "manual": true,
+          "disabled": false
+        }
+      ]
+    },
+    "APPROVED": {
+      "transitions": []
+    },
+    "DECLINED": {
+      "transitions": []
+    },
+    "CANCELED": {
+      "transitions": []
+    }
   }
 }
 ```
 
-### Step 3: Processing Options
+### Step 3: Add Criteria
+
+We add criteria to the `VALIDATE` and `MATCH` transitions:
 
 ```json
 {
-  "name": "STP",
-  "next": "INVALID",
-  "manual": false,
-  "disabled": false,
-  "processors": [
-    {
-      "name": "Filter",
-      "executionMode": "SYNC",
-      "config": { "attachEntity": true }
+  "version": "1.0",
+  "name": "Payment Request Workflow",
+  "desc": "Payment request processing workflow with validation, approval, and notification states",
+  "initialState": "INVALID",
+  "active": true,
+  "states": {
+    "INVALID": {
+      "transitions": [
+        {
+          "name": "VALIDATE",
+          "next": "PENDING",
+          "manual": false,
+          "disabled": false,
+          "criterion": {
+            "type": "function",
+            "function": {
+              "name": "IsValid",
+              "config": {
+                "attachEntity": true
+              }
+            }
+          }
+        },
+        {
+          "name": "AMEND",
+          "next": "INVALID",
+          "manual": true,
+          "disabled": false
+        },
+        {
+          "name": "CANCEL",
+          "next": "CANCELED",
+          "manual": true,
+          "disabled": false
+        }
+      ]
+    },
+    "PENDING": {
+      "transitions": [
+        {
+          "name": "MATCH",
+          "next": "SUBMITTED",
+          "manual": false,
+          "disabled": false,
+          "criterion": {
+            "type": "function",
+            "function": {
+              "name": "HasOrder",
+              "config": {
+                "attachEntity": true
+              }
+            }
+          }
+        },
+        {
+          "name": "RETRY",
+          "next": "PENDING",
+          "manual": true,
+          "disabled": false
+        },
+        {
+          "name": "CANCEL",
+          "next": "CANCELED",
+          "manual": true,
+          "disabled": false
+        }
+      ]
+    },
+    "SUBMITTED": {
+      "transitions": [
+        {
+          "name": "APPROVE",
+          "next": "APPROVED",
+          "manual": true,
+          "disabled": false
+        },
+        {
+          "name": "DENY",
+          "next": "DECLINED",
+          "manual": true,
+          "disabled": false
+        }
+      ]
+    },
+    "APPROVED": {
+      "transitions": []
+    },
+    "DECLINED": {
+      "transitions": []
+    },
+    "CANCELED": {
+      "transitions": []
     }
-  ]
-},
+  }
+}
+```
+
+### Step 4: Add Processors
+
+We add two processors to the `APPROVE` transition in the `SUBMITTED` state, respectively, to finish the job.
+
+```json
 {
-  "name": "Process",
-  "next": "INVALID",
-  "manual": true,
-  "disabled": false,
-  "processors": [
-    {
-      "name": "Process",
-      "executionMode": "SYNC",
-      "config": { "attachEntity": true }
-    }
-  ]
-}
-```
-
-### Step 4: Approval Flow
-
-```json
-"PENDING": {
-  "transitions": [
-    {
-      "name": "MATCH",
-      "next": "SUBMITTED",
-      "manual": true,
-      "disabled": false,
-      "criterion": {
-        "type": "function",
-        "function": {
-          "name": "HasOrder",
-          "config": { "attachEntity": true }
-        }
-      }
-    },
-    { "name": "RETRY", "next": "PENDING", "manual": true, "disabled": false },
-    { "name": "CANCEL", "next": "CANCELED", "manual": true, "disabled": false }
-  ]
-}
-```
-
-### Step 5: Decision Point
-
-```json
-"SUBMITTED": {
-  "transitions": [
-    { "name": "APPROVE", "next": "APPROVED", "manual": true, "disabled": false },
-    { "name": "DENY", "next": "DECLINED", "manual": true, "disabled": false }
-  ]
-}
-```
-
-### Step 6: Notifications
-
-```json
-"APPROVED": {
-  "transitions": [
-    {
-      "name": "Create Payment Message",
-      "next": "APPROVED",
-      "manual": false,
-      "disabled": false,
-      "processors": [
+  "version": "1.0",
+  "name": "Payment Request Workflow",
+  "desc": "Payment request processing workflow with validation, approval, and notification states",
+  "initialState": "INVALID",
+  "active": true,
+  "states": {
+    "INVALID": {
+      "transitions": [
         {
-          "name": "Create Payment Message",
-          "executionMode": "ASYNC_NEW_TX",
-          "config": { "attachEntity": true }
+          "name": "VALIDATE",
+          "next": "PENDING",
+          "manual": false,
+          "disabled": false,
+          "criterion": {
+            "type": "function",
+            "function": {
+              "name": "IsValid",
+              "config": {
+                "attachEntity": true
+              }
+            }
+          }
+        },
+        {
+          "name": "AMEND",
+          "next": "INVALID",
+          "manual": true,
+          "disabled": false
+        },
+        {
+          "name": "CANCEL",
+          "next": "CANCELED",
+          "manual": true,
+          "disabled": false
         }
       ]
     },
-    {
-      "name": "Send ACK Notification",
-      "next": "APPROVED",
-      "manual": false,
-      "disabled": false,
-      "processors": [
+    "PENDING": {
+      "transitions": [
         {
-          "name": "Send ACK Notification",
-          "executionMode": "ASYNC_NEW_TX",
-          "config": { "attachEntity": false }
+          "name": "MATCH",
+          "next": "SUBMITTED",
+          "manual": false,
+          "disabled": false,
+          "criterion": {
+            "type": "function",
+            "function": {
+              "name": "HasOrder",
+              "config": {
+                "attachEntity": true
+              }
+            }
+          }
+        },
+        {
+          "name": "RETRY",
+          "next": "PENDING",
+          "manual": true,
+          "disabled": false
+        },
+        {
+          "name": "CANCEL",
+          "next": "CANCELED",
+          "manual": true,
+          "disabled": false
         }
       ]
-    }
-  ]
-}
-```
-
-### Step 7: Final States
-
-```json
-"CANCELED": { "transitions": [] },
-
-"DECLINED": {
-  "transitions": [
-    {
-      "name": "Send NACK Notification",
-      "next": "DECLINED",
-      "manual": false,
-      "disabled": false,
-      "processors": [
+    },
+    "SUBMITTED": {
+      "transitions": [
         {
-          "name": "Send NACK Notification",
-          "executionMode": "ASYNC_NEW_TX",
-          "config": { "attachEntity": false }
+          "name": "APPROVE",
+          "next": "APPROVED",
+          "manual": true,
+          "disabled": false,
+          "processors": [
+            {
+              "name": "Create Payment Message",
+              "executionMode": "ASYNC_NEW_TX",
+              "config": { "attachEntity": true }
+            },
+            {
+              "name": "Send ACK Notification",
+              "executionMode": "ASYNC_NEW_TX",
+              "config": { "attachEntity": false }
+            }
+          ]
+        },
+        {
+          "name": "DENY",
+          "next": "DECLINED",
+          "manual": true,
+          "disabled": false,
+          "processors": [
+            {
+              "name": "Send NACK Notification",
+              "executionMode": "ASYNC_NEW_TX",
+              "config": { "attachEntity": false }
+            }
+          ]
         }
       ]
+    },
+    "APPROVED": {
+      "transitions": []
+    },
+    "DECLINED": {
+      "transitions": []
+    },
+    "CANCELED": {
+      "transitions": []
     }
-  ]
+  }
 }
 ```
 
