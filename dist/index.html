@@ -332,7 +332,7 @@ class CyodaDocumentation {
             const firstChild = blockquote.firstElementChild;
             if (firstChild && firstChild.tagName === 'P') {
                 const text = firstChild.textContent.trim();
-                const calloutMatch = text.match(/^\[!(INFO|NOTE|WARNING|TIP|CAUTION)\]\s*(.*)$/i);
+                const calloutMatch = text.match(/^\[!(INFO|NOTE|WARNING|TIP|CAUTION)]\s*(.*)$/i);
 
                 if (calloutMatch) {
                     const calloutType = calloutMatch[1].toLowerCase();
