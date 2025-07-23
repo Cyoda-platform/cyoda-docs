@@ -89,6 +89,9 @@
     <div id="guides-content" class="content-section">
         <div class="resource-nav">
             <div class="resource-links">
+                <button class="resource-link" data-resource="guides/cyoda-design-principles">
+                    <i class="fas fa-compass"></i> Design Principles
+                </button>
                 <button class="resource-link" data-resource="guides/authentication-authorization">
                     <i class="fas fa-shield-alt"></i> Authentication & Authorization
                 </button>
@@ -311,11 +314,44 @@ class CyodaDocumentation {
         const markdownContainer = document.getElementById(`${section}-markdown`);
         markdownContainer.innerHTML = htmlContent;
 
+        // Process GitHub-style callouts
+        this.processCallouts(markdownContainer);
+
         // Process Mermaid diagrams after content is rendered
         this.processMermaidDiagrams(markdownContainer);
 
         // Add anchor link handling
         this.setupAnchorLinks(markdownContainer);
+    }
+
+    processCallouts(container) {
+        // Find all blockquotes that start with [!TYPE]
+        const blockquotes = container.querySelectorAll('blockquote');
+
+        blockquotes.forEach(blockquote => {
+            const firstChild = blockquote.firstElementChild;
+            if (firstChild && firstChild.tagName === 'P') {
+                const text = firstChild.textContent.trim();
+                const calloutMatch = text.match(/^\[!(INFO|NOTE|WARNING|TIP|CAUTION)]\s*(.*)$/i);
+
+                if (calloutMatch) {
+                    const calloutType = calloutMatch[1].toLowerCase();
+                    const title = calloutMatch[2] || calloutType.toUpperCase();
+
+                    // Set data attributes
+                    blockquote.setAttribute('data-callout', calloutType);
+                    blockquote.setAttribute('data-callout-title', title);
+
+                    // Remove the [!TYPE] text from the first paragraph
+                    if (calloutMatch[2].trim()) {
+                        // Title is already set in data-callout-title, remove the content
+                        firstChild.remove();
+                    } else {
+                        firstChild.remove();
+                    }
+                }
+            }
+        });
     }
 
     setupAnchorLinks(container) {

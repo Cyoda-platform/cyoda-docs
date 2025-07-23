@@ -319,6 +319,75 @@ header {
     margin: 2rem;
 }
 
+/* GitHub-style Callouts */
+.markdown-content blockquote[data-callout] {
+    border-left: 4px solid;
+    margin: 1.5rem 0;
+    padding: 1rem;
+    border-radius: 6px;
+    position: relative;
+}
+
+.markdown-content blockquote[data-callout="info"] {
+    border-left-color: #0969da;
+    background: rgba(9, 105, 218, 0.1);
+    color: #0969da;
+}
+
+.markdown-content blockquote[data-callout="note"] {
+    border-left-color: #0969da;
+    background: rgba(9, 105, 218, 0.1);
+    color: #0969da;
+}
+
+.markdown-content blockquote[data-callout="warning"] {
+    border-left-color: #d1242f;
+    background: rgba(209, 36, 47, 0.1);
+    color: #d1242f;
+}
+
+.markdown-content blockquote[data-callout="tip"] {
+    border-left-color: #1a7f37;
+    background: rgba(26, 127, 55, 0.1);
+    color: #1a7f37;
+}
+
+.markdown-content blockquote[data-callout="caution"] {
+    border-left-color: #bf8700;
+    background: rgba(191, 135, 0, 0.1);
+    color: #bf8700;
+}
+
+.markdown-content blockquote[data-callout]::before {
+    content: attr(data-callout-title);
+    font-weight: 700;
+    text-transform: uppercase;
+    font-size: 1.2rem;
+    display: block;
+    margin-bottom: 0.5rem;
+    text-align: center;
+}
+
+.markdown-content blockquote[data-callout="info"]::before {
+    color: #0969da;
+}
+
+.markdown-content blockquote[data-callout="note"]::before {
+    color: #0969da;
+}
+
+.markdown-content blockquote[data-callout="warning"]::before {
+    color: #d1242f;
+}
+
+.markdown-content blockquote[data-callout="tip"]::before {
+    color: #1a7f37;
+}
+
+.markdown-content blockquote[data-callout="caution"]::before {
+    color: #bf8700;
+}
+
 footer {
     background-color: #4FB8B0;
     color: #ffffff;
