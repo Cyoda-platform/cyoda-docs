@@ -1,87 +1,86 @@
 # Cyoda Application Architecture
 
-At the heart of Cyoda is the Entity Database Management System (EDBMS). This system is built around the concept of entities as finit state machines governed by workflows, and are the core building blocks of any Cyoda application.
+At the heart of Cyoda lies the Entity Database Management System (EDBMS), a system built around the idea that every piece of persisted data is an **Entity**. These entities function as finite state machines governed by workflows, forming the foundation of every Cyoda application.
 
 ## TL;DR
 
 > [!INFO] Core Principles of the Cyoda EDBMS
 > - All persisted data is an **_Entity_**.
-> - The _Entity_ data model is tree-like.
-> - Each _Entity_'s is always associated with a data model which is known.
-> - _Entities_ hold structured information and a **_State_**.
-> - _Entity_ **Lifecycle** is governed by **_Workflow_**.
-> - _Entity_ mutations require a specific state **_Transition_**.
-> - _Transitions_ are guarded by **_Criteria_** and may be **automated** or **manual**.
-> - Upon entering a _State_, the first valid automated transition is applied immediately and within the same **_Transaction_**.
-> - The process **recurses** until no further automated _Transitions_ are eligible, reaching a **stable state**.
-> - **_Processes_** can be attached to _Transitions_ which are executed upon traversal to the next _State_.
-> - _Processes_ can be **synchronous** or **asynchronous**.
-> - _Processes_ can be executed in the **same** _Transaction_ as the _Transition_ or in a **separate** _Transaction_.
+> - Each _Entity_ follows a known, tree-structured data model.
+> - _Entities_ encapsulate structured information and a **_State_**.
+> - The _Entity_ **Lifecycle** is defined by a **_Workflow_**.
+> - Mutations occur via explicit state **_Transitions_**.
+> - _Transitions_ are guarded by **_Criteria_**, and may be **automated** or **manual**.
+> - Upon entering a _State_, the first valid automated _Transition_ is executed immediately within the same **_Transaction_**.
+> - This **recurses** until no further automated transitions apply, reaching a **stable state**.
+> - Each _Transition_ can invoke attached **_Processes_**, executed when moving to the next state.
+> - _Processes_ may be **synchronous** or **asynchronous**.
+> - _Processes_ may run within the **same** or a **separate** _Transaction_.
 
 ## What Is an Entity?
 
-At the heart of Cyoda's architecture is the _Entity_: a domain object that represents a real-world "thing" with evolving state over time — such as a customer, an order, or even a message.
+An **Entity** in Cyoda represents a real-world object with state that evolves over time—a customer, an order, a message. It is the central unit of modeling, interaction, and persistence.
 
-**Key principles of entities:**
-- **Persistent**: An entity has a life span. It exists independently of transient system behavior.
-- **Structured State**: It evolves through a defined set of states.
-- **Contextualized**: Its current state reflects its full operational context.
+**Core properties of entities:**
+- **Persistent**: Entities have lifecycles beyond transient operations.
+- **Stateful**: They progress through well-defined states.
+- **Contextual**: Their current state encodes meaningful operational context.
 
-In Cyoda, **every problem is approached as an entity problem**, meaning the system's purpose is to create, observe, evolve, and act upon entities in meaningful ways.
+Cyoda frames every challenge as an entity-centric problem. The system's responsibility is to create, observe, evolve, and act upon entities.
 
-## The Key Role of the Entity in Cyoda
+## Entities: The Backbone of Cyoda
 
-Cyoda is not just a data platform — it's a **processing platform**. Entities serve as the unifying structure for:
+Cyoda is more than a data platform. It is a **processing platform** that unifies:
 
-- **Data**: facts about the world
-- **State**: where things stand now
-- **Behavior**: how things change
+- **Data**: structured facts
+- **State**: current position in a lifecycle
+- **Behavior**: rules and transformations that govern change
 
-This approach allows Cyoda systems to be:
-- **Decoupled**: Business logic is localized within entities
-- **Composable**: Entities can reference or trigger one another
-- **Auditable**: Every state change is captured and traceable
+This unification offers:
+- **Decoupling**: Business logic remains local to the entity
+- **Composability**: Entities reference and react to one another
+- **Auditability**: Every state change is logged and inspectable
 
 ## What Is a Workflow?
 
-A **workflow** is the behavioral model of an entity, often represented as a **finite-state machine (FSM)**. It defines:
+A **Workflow** models the behavior of an entity as a **finite-state machine (FSM)**. It specifies:
 
-- **States**: Possible statuses of the entity
-- **Transitions**: Changes from one state to another
-- **Triggers and Processes**: Events causing transitions, and logic that runs during them
+- **States**: possible conditions of the entity
+- **Transitions**: permitted changes between states
+- **Triggers and Processes**: events and logic tied to transitions
 
-Workflows define **how business logic unfolds over time** in a structured, visual, and deterministic way.
+Workflows encode business logic in a visual, structured, and deterministic way.
 
-## Role of Event-Driven Architecture
+## Event-Driven Architecture in Cyoda
 
-In Cyoda’s event-driven model:
-- **Events** (e.g. "document uploaded") trigger entity transitions
-- Transitions invoke **processes** (e.g. business rules, messaging)
-- Everything is tied together via the entity’s *Workflow*
+Cyoda applications respond to events:
+- **Events** (e.g., "file uploaded") initiate transitions
+- **Transitions** invoke **Processes** (e.g., validation, notifications)
+- Everything is orchestrated via the entity's **Workflow**
 
-**Advantages:**
-- **Loose coupling**
-- **Responsiveness**
-- **Scalability**
+**Key benefits:**
+- **Loose coupling** between components
+- **Responsiveness** to business stimuli
+- **Horizontal scalability**
 
-## Putting It All Together in Cyoda
+## The Cyoda Approach
 
-The Cyoda method:
-- Model your domain as an **entity**
-- Define its behavior in a **workflow**
-- Let **events** drive change
-- Store everything in the **entity database** — data, state, and process
+To build with Cyoda:
+- Model the domain using **Entities**
+- Capture behavior in **Workflows**
+- Use **Events** to trigger change
+- Persist everything—data, state, transitions—in the **Entity Database**
 
 ## Guiding Practices
-- Always think in terms of **stateful entities**
-- Prefer **FSM workflows** over procedural code
-- Use **event triggers** for process logic
-- Keep **rules** close to the entity
-- **Visualize workflows** for stakeholder alignment
 
+- Think in terms of **stateful entities**, not just data records
+- Favor **FSM workflows** over imperative logic
+- Use **events** to trigger logic and state transitions
+- Keep business **rules close to the entity**
+- **Visualize workflows** to align teams and stakeholders
 
-## Recommended Reading
+## Further Reading
 
-- this documentation site
-- https://medium.com/@paul_42036/entity-workflows-for-event-driven-architectures-4d491cf898a5
-- https://medium.com/@paul_42036/whats-an-entity-database-11f8538b631a
+- This documentation site
+- [Entity Workflows for Event-Driven Architectures](https://medium.com/@paul_42036/entity-workflows-for-event-driven-architectures-4d491cf898a5)
+- [What’s an Entity Database?](https://medium.com/@paul_42036/whats-an-entity-database-11f8538b631a)
