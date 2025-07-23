@@ -173,7 +173,57 @@ class CyodaDocumentation {
     init() {
         this.initializeMermaid();
         this.bindEvents();
+        this.setupBrowserHistory();
         this.loadInitialContent();
+    }
+
+    setupBrowserHistory() {
+        // Handle browser back/forward buttons
+        window.addEventListener('popstate', (event) => {
+            if (event.state) {
+                this.restoreFromHistoryState(event.state);
+            } else {
+                // Default state - go to API section
+                this.switchSection('api', false);
+            }
+        });
+
+        // Set initial state
+        this.pushHistoryState('api', null);
+    }
+
+    pushHistoryState(section, resource = null) {
+        const state = { section, resource };
+        const url = this.buildUrl(section, resource);
+        history.pushState(state, '', url);
+    }
+
+    replaceHistoryState(section, resource = null) {
+        const state = { section, resource };
+        const url = this.buildUrl(section, resource);
+        history.replaceState(state, '', url);
+    }
+
+    buildUrl(section, resource = null) {
+        let url = `#${section}`;
+        if (resource) {
+            url += `/${resource.replace(/^[^/]+\//, '')}`;
+        }
+        return url;
+    }
+
+    restoreFromHistoryState(state) {
+        this.switchSection(state.section, false);
+        if (state.resource) {
+            this.loadResource(state.resource, state.section, false);
+
+            // Update active resource link
+            const resourceLink = document.querySelector(`[data-resource="${state.resource}"]`);
+            if (resourceLink) {
+                resourceLink.closest('.resource-links').querySelectorAll('.resource-link').forEach(l => l.classList.remove('active'));
+                resourceLink.classList.add('active');
+            }
+        }
     }
 
     initializeMermaid() {
@@ -240,7 +290,11 @@ class CyodaDocumentation {
         });
     }
 
-    switchSection(sectionName) {
+    switchSection(sectionName, updateHistory = true) {
+        if (updateHistory && sectionName !== this.currentSection) {
+            this.pushHistoryState(sectionName);
+        }
+
         // Update nav tabs
         document.querySelectorAll('.nav-tab').forEach(tab => {
             tab.classList.remove('active');
@@ -282,7 +336,11 @@ class CyodaDocumentation {
         }
     }
 
-    async loadResource(resourceName, section) {
+    async loadResource(resourceName, section, updateHistory = true) {
+        if (updateHistory) {
+            this.pushHistoryState(section, resourceName);
+        }
+
         try {
             // Check if already loaded
             if (this.loadedResources.has(resourceName)) {
