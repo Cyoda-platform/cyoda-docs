@@ -92,6 +92,9 @@
                 <button class="resource-link" data-resource="guides/cyoda-design-principles">
                     <i class="fas fa-compass"></i> Design Principles
                 </button>
+                <button class="resource-link" data-resource="guides/workflow-config-guide">
+                    <i class="fas fa-project-diagram"></i> Workflow Config
+                </button>
                 <button class="resource-link" data-resource="guides/authentication-authorization">
                     <i class="fas fa-shield-alt"></i> Connecting
                 </button>
@@ -392,6 +395,14 @@ class CyodaDocumentation {
                 }
             });
         });
+
+        // Handle clicks on API Documentation links
+        container.querySelectorAll('a[href*="#api"]').forEach(link => {
+            link.addEventListener('click', (e) => {
+                e.preventDefault();
+                this.switchSection('api');
+            });
+        });
     }
 
     getResourceSection(resourceName) {
@@ -400,8 +411,12 @@ class CyodaDocumentation {
             'cyoda-cloud-caveats': 'platform',
             'entitlements': 'platform',
             'roadmap': 'platform',
+            'cloud-service-details': 'platform',
             'authentication-authorization': 'guides',
             'api-saving-and-getting-data': 'guides',
+            'sql-and-trino': 'guides',
+            'cyoda-design-principles': 'guides',
+            'workflow-config-guide': 'guides',
             'cpl-overview': 'concepts',
             'edbms': 'concepts',
             'event-driven-architecture': 'concepts',

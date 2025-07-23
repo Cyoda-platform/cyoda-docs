@@ -19,7 +19,7 @@ You can also create and manage schemas programmatically using the SQL Schema API
 - **Get schema details**: Fetch specific schema configuration
 - **Generate tables**: Create tables from entity model definitions
 
-For complete API endpoint details and request formats, see the [API Documentation](../../index.html#api-content).
+For complete API endpoint details and request formats, see the [API Documentation](#api).
 
 For authentication details, see [Authentication & Authorization](authentication-authorization.md).
 
