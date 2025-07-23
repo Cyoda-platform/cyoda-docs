@@ -35,7 +35,7 @@ characteristics, service boundaries, and important considerations for users.
 - Shared backend services (Cassandra, Zookeeper)
 - External access via Cloudflare tunnel
 
-For detailed architecture information, see [Cyoda Cloud Architecture](../architecture/cyoda-cloud-architecture.md).
+For detailed architecture information, see [Cyoda Cloud Architecture](cyoda-cloud-architecture.md).
 
 ### Client Integration Points
 
@@ -79,7 +79,7 @@ Rate limits vary by subscription tier. See [Subscription Tiers](entitlements.md)
 - OAuth 2.0 client credentials flow for technical users
 - Technical user creation via [AI Assistant](https://ai.cyoda.net)
 
-For complete authentication details, see [Authentication & Authorization](../guides/authentication-authorization.md).
+For complete authentication details, see [Authentication & Authorization](authentication-authorization.md).
 
 ## Current Service Limitations
 
