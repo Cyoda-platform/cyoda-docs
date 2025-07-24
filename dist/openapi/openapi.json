@@ -930,9 +930,9 @@
         "tags": [
           "Entity Management"
         ],
-        "summary": "Delete all Entities of a model and version",
-        "description": "Deletes all entities for a given model name and version which existed at the consistency time of the system when the request is launched.",
-        "operationId": "deleteAllEntities",
+        "summary": "Delete entities of a model and version",
+        "description": "Deletes entities for a given model name and version which existed at the consistency time of the system when the request is launched by provided condition or all entities if condition is not provided.",
+        "operationId": "deleteEntities",
         "parameters": [
           {
             "name": "entityName",
@@ -992,6 +992,67 @@
             "example": true
           }
         ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/AbstractConditionDto"
+              },
+              "examples": {
+                "Physics Nobel Prize Search": {
+                  "summary": "Find VALIDATED physics Nobel prizes with neural networks research",
+                  "description": "Physics Nobel Prize Search",
+                  "value": {
+                    "operator": "AND",
+                    "conditions": [
+                      {
+                        "field": "state",
+                        "operatorType": "EQUALS",
+                        "value": "VALIDATED",
+                        "type": "lifecycle"
+                      },
+                      {
+                        "jsonPath": "$.category",
+                        "operatorType": "EQUALS",
+                        "value": "physics",
+                        "type": "simple"
+                      },
+                      {
+                        "jsonPath": "$.laureates[*].motivation",
+                        "operatorType": "CONTAINS",
+                        "value": "neural networks",
+                        "type": "simple"
+                      }
+                    ],
+                    "type": "group"
+                  }
+                },
+                "Family Member Search": {
+                  "summary": "Find married family members born after 1998",
+                  "description": "Family Member Search",
+                  "value": {
+                    "operator": "AND",
+                    "conditions": [
+                      {
+                        "jsonPath": "$.married",
+                        "operatorType": "EQUALS",
+                        "value": true,
+                        "type": "simple"
+                      },
+                      {
+                        "jsonPath": "$.birthdate",
+                        "operatorType": "GREATER_OR_EQUAL",
+                        "value": "1999-01-01",
+                        "type": "simple"
+                      }
+                    ],
+                    "type": "group"
+                  }
+                }
+              }
+            }
+          }
+        },
         "responses": {
           "200": {
             "description": "Deletion process was successful. In case there were entities that could not be deletedthe response will contain information about that",
@@ -2507,6 +2568,196 @@
         }
       }
     },
+    "/model/{entityName}/{modelVersion}/workflow/export": {
+      "get": {
+        "tags": [
+          "Entity Model, Workflow"
+        ],
+        "summary": "Export entity workflows",
+        "description": "Exports all workflow configurations for a specific entity type.\n\nSince one entity type can have multiple workflows (selected by workflow-level conditions),\nthis endpoint returns a collection of all workflows configured for the entity type.\n",
+        "operationId": "exportEntityModelWorkflow",
+        "parameters": [
+          {
+            "name": "entityName",
+            "in": "path",
+            "description": "Name of the entity model",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "modelVersion",
+            "in": "path",
+            "description": "Version of the entity model",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Workflows exported successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/WorkflowExportResponseDto"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized - Authentication is required",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponseDto"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Forbidden - Insufficient permissions",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponseDto"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Entity model not found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponseDto"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal Server Error - An unexpected error occurred",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponseDto"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ]
+      }
+    },
+    "/model/{entityName}/{modelVersion}/workflow/import": {
+      "post": {
+        "tags": [
+          "Entity Model, Workflow"
+        ],
+        "summary": "Import entity workflow",
+        "description": "Imports or updates workflow configurations for a specific entity type.\n\nSince workflow name must be unique per entity model, this endpoint will either create\nnew workflow or update existing workflow with the same name.\n\nThe workflow configuration structure is defined by versioned schemas and may vary\ndepending on the version specified in the configuration.\n",
+        "operationId": "importEntityModelWorkflow",
+        "parameters": [
+          {
+            "name": "entityName",
+            "in": "path",
+            "description": "Name of the entity model",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "modelVersion",
+            "in": "path",
+            "description": "Version of the entity model",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/WorkflowImportRequestDto"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Workflows imported successfully",
+            "content": {}
+          },
+          "400": {
+            "description": "Invalid workflow configuration data",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponseDto"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized - Authentication is required",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponseDto"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Forbidden - Insufficient permissions",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponseDto"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Entity model not found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponseDto"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal Server Error - An unexpected error occurred",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponseDto"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ]
+      }
+    },
     "/oauth/token": {
       "post": {
         "tags": [
@@ -2593,7 +2844,7 @@
           "Search"
         ],
         "summary": "Create Search Snapshot",
-        "description": "\nCreates a persistent snapshot of search results for large datasets.\n\nThis endpoint initiates an asynchronous search operation that:\n1. Validates the search criteria against the specified entity model\n2. Creates a persistent snapshot of matching entities\n3. Returns a UUID that can be used to:\n   - Monitor the snapshot creation progress (/snapshot/{snapshotId}/status)\n   - Retrieve paginated results (/snapshot/{snapshotId})\n   - Cancel the snapshot creation if needed (/snapshot/{snapshotId}/cancel)\n\nSnapshots are temporary and have a limited lifetime:\n- Each snapshot has an automatic expiration date\n- Expired snapshots are automatically deleted by the system\n- The expiration date can be retrieved using GET /snapshot/{snapshotId}/status\n- Plan to retrieve your data before the snapshot expires\n\nThe snapshot creation process runs in the background, allowing handling of large datasets\nwithout timeout concerns.\n\nQuery Structure:\nThe search condition is a tree of predicates that can include:\n1. Simple conditions - search within entity data using JSONPath\n2. Lifecycle conditions - search based on entity lifecyle (state, creationDate, previousTransition)\n3. Group conditions - combine multiple conditions with AND/OR operators\n\nOperator Types (Predicates)\nAvailable Operations:\n\n1. Basic Comparison\n- EQUALS: Exact match\n- NOT_EQUAL: Non-matching values\n- IS_NULL, NOT_NULL: Null checks\n- GREATER_THAN, LESS_THAN: Numeric/date comparisons\n- GREATER_OR_EQUAL, LESS_OR_EQUAL: Inclusive comparisons\n- BETWEEN, BETWEEN_INCLUSIVE: Range checks\n\n2. String Operations (Case-Sensitive)\n- CONTAINS: Substring match\n- NOT_CONTAINS: Negative substring match\n- STARTS_WITH, NOT_STARTS_WITH: Prefix matching\n- ENDS_WITH, NOT_ENDS_WITH: Suffix matching\n- MATCHES_PATTERN: Regular expression match\n- LIKE: SQL-style pattern matching\n\n3. Case-Insensitive String Operations\n- IEQUALS, INOT_EQUAL: Case-insensitive equality\n- ICONTAINS, INOT_CONTAINS: Case-insensitive substring\n- ISTARTS_WITH, INOT_STARTS_WITH: Case-insensitive prefix\n- IENDS_WITH, INOT_ENDS_WITH: Case-insensitive suffix\n\n4. State Tracking\n- IS_UNCHANGED: Field hasn't changed\n- IS_CHANGED: Field has changed\n        ",
+        "description": "\nCreates a persistent snapshot of search results for large datasets.\n\nThis endpoint initiates an asynchronous search operation that:\n1. Validates the search criteria against the specified entity model\n2. Creates a persistent snapshot of matching entities\n3. Returns a UUID that can be used to:\n   - Monitor the snapshot creation progress (/snapshot/{snapshotId}/status)\n   - Retrieve paginated results (/snapshot/{snapshotId})\n   - Cancel the snapshot creation if needed (/snapshot/{snapshotId}/cancel)\n\nSnapshots are temporary and have a limited lifetime:\n- Each snapshot has an automatic expiration date\n- Expired snapshots are automatically deleted by the system\n- The expiration date can be retrieved using GET /snapshot/{snapshotId}/status\n- Plan to retrieve your data before the snapshot expires\n\nThe snapshot creation process runs in the background, allowing handling of large datasets\nwithout timeout concerns.\n\nIf no request body is provided or an empty request body is sent, all entities of the specified model and version will be included in the snapshot.\n\nQuery Structure:\nThe search condition is a tree of predicates that can include:\n1. Simple conditions - search within entity data using JSONPath\n2. Lifecycle conditions - search based on entity lifecyle (state, creationDate, previousTransition)\n3. Group conditions - combine multiple conditions with AND/OR operators\n\nOperator Types (Predicates)\nAvailable Operations:\n\n1. Basic Comparison\n- EQUALS: Exact match\n- NOT_EQUAL: Non-matching values\n- IS_NULL, NOT_NULL: Null checks\n- GREATER_THAN, LESS_THAN: Numeric/date comparisons\n- GREATER_OR_EQUAL, LESS_OR_EQUAL: Inclusive comparisons\n- BETWEEN, BETWEEN_INCLUSIVE: Range checks\n\n2. String Operations (Case-Sensitive)\n- CONTAINS: Substring match\n- NOT_CONTAINS: Negative substring match\n- STARTS_WITH, NOT_STARTS_WITH: Prefix matching\n- ENDS_WITH, NOT_ENDS_WITH: Suffix matching\n- MATCHES_PATTERN: Regular expression match\n- LIKE: SQL-style pattern matching\n\n3. Case-Insensitive String Operations\n- IEQUALS, INOT_EQUAL: Case-insensitive equality\n- ICONTAINS, INOT_CONTAINS: Case-insensitive substring\n- ISTARTS_WITH, INOT_STARTS_WITH: Case-insensitive prefix\n- IENDS_WITH, INOT_ENDS_WITH: Case-insensitive suffix\n\n4. State Tracking\n- IS_UNCHANGED: Field hasn't changed\n- IS_CHANGED: Field has changed\n        ",
         "operationId": "saveSnapshotWithData",
         "parameters": [
           {
@@ -3071,7 +3322,7 @@
           "Search"
         ],
         "summary": "Perform synchronous entity search",
-        "description": "\nExecutes a direct, in-memory search for entities without creating a persistent snapshot. This endpoint:\n- Returns results immediately as a streaming response\n- Is optimized for smaller result sets\n- Has configurable timeout and result limits\n- Supports point-in-time querying\n\nThe results are sorted in descending order by entity id.\n\nBest suited for:\n- Interactive searches requiring immediate results\n- Queries expected to return limited number of entities\n- UI components with real-time search functionality\n\nLimitations:\n- Maximum result limit: 10000 entities\n- Default result limit: 1000 entities\n- Default timeout: 60000 milliseconds\n        ",
+        "description": "\nExecutes a direct, in-memory search for entities without creating a persistent snapshot. This endpoint:\n- Returns results immediately as a streaming response\n- Is optimized for smaller result sets\n- Has configurable timeout and result limits\n- Supports point-in-time querying\n\nThe results are sorted in descending order by entity id.\n\nIf no request body is provided or an empty request body is sent, all entities of the specified model and version \nwill be returned (subject to the limit parameter).\n\nBest suited for:\n- Interactive searches requiring immediate results\n- Queries expected to return limited number of entities\n- UI components with real-time search functionality\n\nLimitations:\n- Maximum result limit: 10000 entities (this will silently limit the result to 10000)\n- Default result limit: 1000 entities\n- Default timeout: 60000 milliseconds\n        ",
         "operationId": "search",
         "parameters": [
           {
@@ -4621,6 +4872,24 @@
           "token_type"
         ]
       },
+      "WorkflowImportRequestDto": {
+        "type": "object",
+        "description": "Workflow configurations to import",
+        "properties": {
+          "workflows": {
+            "type": "array",
+            "description": "Array of workflow configurations to import",
+            "items": {
+              "$ref": "#/components/schemas/JsonNode"
+            },
+            "maxItems": 2147483647,
+            "minItems": 1
+          }
+        },
+        "required": [
+          "workflows"
+        ]
+      },
       "SnapshotStatusDto": {
         "type": "object",
         "properties": {
@@ -4661,6 +4930,32 @@
           "entitiesCount",
           "expirationDate",
           "snapshotStatus"
+        ]
+      },
+      "WorkflowExportResponseDto": {
+        "type": "object",
+        "properties": {
+          "entityName": {
+            "type": "string",
+            "description": "The name of the entity model"
+          },
+          "modelVersion": {
+            "type": "integer",
+            "format": "int32",
+            "description": "The version number of the entity model"
+          },
+          "workflows": {
+            "type": "array",
+            "description": "Collection of workflow configurations for the entity model",
+            "items": {
+              "$ref": "#/components/schemas/JsonNode"
+            }
+          }
+        },
+        "required": [
+          "entityName",
+          "modelVersion",
+          "workflows"
         ]
       },
       "EdgeMessageDto": {
