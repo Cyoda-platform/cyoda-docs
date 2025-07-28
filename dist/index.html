@@ -183,13 +183,55 @@ class CyodaDocumentation {
             if (event.state) {
                 this.restoreFromHistoryState(event.state);
             } else {
-                // Default state - go to API section
-                this.switchSection('api', false);
+                // Parse URL and navigate accordingly
+                this.parseAndNavigateFromUrl();
             }
         });
 
-        // Set initial state
-        this.pushHistoryState('api', null);
+        // Parse initial URL on page load
+        this.parseAndNavigateFromUrl();
+    }
+
+    parseAndNavigateFromUrl() {
+        const hash = window.location.hash.substring(1); // Remove #
+        if (!hash) {
+            this.switchSection('api', false);
+            this.replaceHistoryState('api', null);
+            return;
+        }
+
+        const parts = hash.split('/');
+        const section = parts[0];
+        const resourcePath = parts.slice(1).join('/');
+
+        if (this.isValidSection(section)) {
+            this.switchSection(section, false);
+
+            if (resourcePath) {
+                const fullResourcePath = `${section}/${resourcePath}`;
+                this.loadResource(fullResourcePath, section, false);
+
+                // Update active resource link
+                const resourceLink = document.querySelector(`[data-resource="${fullResourcePath}"]`);
+                if (resourceLink) {
+                    resourceLink.closest('.resource-links').querySelectorAll('.resource-link').forEach(l => l.classList.remove('active'));
+                    resourceLink.classList.add('active');
+                }
+
+                this.replaceHistoryState(section, fullResourcePath);
+            } else {
+                this.replaceHistoryState(section, null);
+            }
+        } else {
+            // Invalid section, default to API
+            this.switchSection('api', false);
+            this.replaceHistoryState('api', null);
+        }
+    }
+
+    isValidSection(section) {
+        const validSections = ['api', 'guides', 'concepts', 'architecture', 'platform'];
+        return validSections.includes(section);
     }
 
     pushHistoryState(section, resource = null) {
@@ -531,10 +573,11 @@ class CyodaDocumentation {
     }
 
     loadInitialContent() {
-        // Load default content for the guides section since it might be accessed first
-        this.loadDefaultResource('guides');
-        // Pre-load concepts section as well
-        this.loadDefaultResource('concepts');
+        // Only pre-load if we're on the default API section
+        if (this.currentSection === 'api') {
+            this.loadDefaultResource('guides');
+            this.loadDefaultResource('concepts');
+        }
     }
 }
 
