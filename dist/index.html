@@ -6,6 +6,23 @@
     <link rel="icon" type="image/x-icon" href="./images/favicon 32_32.png">
     <title>Cyoda API Documentation</title>
 
+    <!-- Markdown URL redirect for ?md= parameter -->
+    <script>
+        const urlParams = new URLSearchParams(window.location.search);
+        const mdParam = urlParams.get('md');
+
+        if (mdParam) {
+            const parts = mdParam.split('/');
+            const section = parts[0];
+            const resourcePath = parts[1];
+
+            if (section && resourcePath) {
+                const githubRawUrl = `https://raw.githubusercontent.com/Cyoda-platform/cyoda-docs/refs/heads/main/dist/resources/${section}/${resourcePath}.md`;
+                window.location.href = githubRawUrl;
+            }
+        }
+    </script>
+
     <!-- Stoplight Elements -->
     <script src="./js/elements.min.js"></script>
     <link rel="stylesheet" href="./css/elements.min.css">
@@ -71,6 +88,22 @@
                     <i class="fas fa-road"></i> Roadmap
                 </button>
             </div>
+
+            <!-- Copy Page Dropdown -->
+            <div class="copy-page-dropdown" style="display: none;">
+                <button class="copy-page-btn">
+                    <i class="fas fa-copy"></i> Copy Page <i class="fas fa-chevron-down"></i>
+                </button>
+                <div class="dropdown-menu">
+                    <a href="#" class="dropdown-item view-markdown">
+                        <i class="fas fa-file-alt"></i>
+                        <div class="dropdown-content">
+                            <div class="dropdown-title">View Markdown</div>
+                            <div class="dropdown-subtitle">See the raw Markdown for this page</div>
+                        </div>
+                    </a>
+                </div>
+            </div>
         </div>
         <div id="platform-markdown" class="markdown-content"></div>
     </div>
@@ -105,6 +138,22 @@
                     <i class="fas fa-search"></i> SQL Querying
                 </button>
             </div>
+
+            <!-- Copy Page Dropdown -->
+            <div class="copy-page-dropdown" style="display: none;">
+                <button class="copy-page-btn">
+                    <i class="fas fa-copy"></i> Copy Page <i class="fas fa-chevron-down"></i>
+                </button>
+                <div class="dropdown-menu">
+                    <a href="#" class="dropdown-item view-markdown">
+                        <i class="fas fa-file-alt"></i>
+                        <div class="dropdown-content">
+                            <div class="dropdown-title">View Markdown</div>
+                            <div class="dropdown-subtitle">See the raw Markdown for this page</div>
+                        </div>
+                    </a>
+                </div>
+            </div>
         </div>
         <div id="guides-markdown" class="markdown-content"></div>
     </div>
@@ -123,6 +172,22 @@
                     <i class="fas fa-layer-group"></i> Cyoda Platform Library
                 </button>
             </div>
+
+            <!-- Copy Page Dropdown -->
+            <div class="copy-page-dropdown" style="display: none;">
+                <button class="copy-page-btn">
+                    <i class="fas fa-copy"></i> Copy Page <i class="fas fa-chevron-down"></i>
+                </button>
+                <div class="dropdown-menu">
+                    <a href="#" class="dropdown-item view-markdown">
+                        <i class="fas fa-file-alt"></i>
+                        <div class="dropdown-content">
+                            <div class="dropdown-title">View Markdown</div>
+                            <div class="dropdown-subtitle">See the raw Markdown for this page</div>
+                        </div>
+                    </a>
+                </div>
+            </div>
         </div>
         <div id="concepts-markdown" class="markdown-content"></div>
     </div>
@@ -134,6 +199,22 @@
                 <button class="resource-link" data-resource="architecture/cyoda-cloud-architecture">
                     <i class="fas fa-server"></i> Cloud Architecture
                 </button>
+            </div>
+
+            <!-- Copy Page Dropdown -->
+            <div class="copy-page-dropdown" style="display: none;">
+                <button class="copy-page-btn">
+                    <i class="fas fa-copy"></i> Copy Page <i class="fas fa-chevron-down"></i>
+                </button>
+                <div class="dropdown-menu">
+                    <a href="#" class="dropdown-item view-markdown">
+                        <i class="fas fa-file-alt"></i>
+                        <div class="dropdown-content">
+                            <div class="dropdown-title">View Markdown</div>
+                            <div class="dropdown-subtitle">See the raw Markdown for this page</div>
+                        </div>
+                    </a>
+                </div>
             </div>
         </div>
         <div id="architecture-markdown" class="markdown-content"></div>
@@ -166,6 +247,7 @@
 class CyodaDocumentation {
     constructor() {
         this.currentSection = 'api';
+        this.currentResource = null;
         this.loadedResources = new Map();
         this.init();
     }
@@ -335,6 +417,9 @@ class CyodaDocumentation {
                 e.currentTarget.classList.add('active');
             });
         });
+
+        // Copy Page dropdown events
+        this.bindCopyPageEvents();
     }
 
     switchSection(sectionName, updateHistory = true) {
@@ -355,6 +440,10 @@ class CyodaDocumentation {
         document.getElementById(`${sectionName}-content`).classList.add('active');
 
         this.currentSection = sectionName;
+
+        // Reset current resource when switching sections
+        this.currentResource = null;
+        this.updateCopyPageVisibility();
 
         // Load default resource for non-API sections
         if (sectionName !== 'api') {
@@ -387,6 +476,10 @@ class CyodaDocumentation {
         if (updateHistory) {
             this.pushHistoryState(section, resourceName);
         }
+
+        // Update current resource for copy page functionality
+        this.currentResource = resourceName;
+        this.updateCopyPageVisibility();
 
         try {
             // Check if already loaded
@@ -584,6 +677,77 @@ class CyodaDocumentation {
             this.loadDefaultResource('concepts');
         }
     }
+
+    bindCopyPageEvents() {
+        // Handle all copy page buttons
+        document.querySelectorAll('.copy-page-btn').forEach(btn => {
+            btn.addEventListener('click', (e) => {
+                e.stopPropagation();
+                const dropdown = btn.closest('.copy-page-dropdown');
+                const menu = dropdown.querySelector('.dropdown-menu');
+
+                // Close all other dropdowns
+                document.querySelectorAll('.copy-page-dropdown').forEach(otherDropdown => {
+                    if (otherDropdown !== dropdown) {
+                        otherDropdown.querySelector('.dropdown-menu').classList.remove('show');
+                        otherDropdown.querySelector('.copy-page-btn').classList.remove('active');
+                    }
+                });
+
+                // Toggle current dropdown
+                menu.classList.toggle('show');
+                btn.classList.toggle('active');
+            });
+        });
+
+        // Close dropdown when clicking outside
+        document.addEventListener('click', (e) => {
+            if (!e.target.closest('.copy-page-dropdown')) {
+                document.querySelectorAll('.dropdown-menu').forEach(menu => {
+                    menu.classList.remove('show');
+                });
+                document.querySelectorAll('.copy-page-btn').forEach(btn => {
+                    btn.classList.remove('active');
+                });
+            }
+        });
+
+        // Handle view markdown clicks
+        document.querySelectorAll('.view-markdown').forEach(btn => {
+            btn.addEventListener('click', (e) => {
+                e.preventDefault();
+                this.openMarkdownView();
+            });
+        });
+    }
+
+    updateCopyPageVisibility() {
+        // Show dropdown only in the current active section when viewing a documentation page
+        document.querySelectorAll('.copy-page-dropdown').forEach(dropdown => {
+            const section = dropdown.closest('.content-section');
+            const sectionId = section.id.replace('-content', '');
+
+            if (sectionId === this.currentSection && this.currentSection !== 'api' && this.currentResource) {
+                dropdown.style.display = 'block';
+            } else {
+                dropdown.style.display = 'none';
+            }
+        });
+    }
+
+    openMarkdownView() {
+        if (!this.currentResource) return;
+
+        const resourcePath = this.currentResource.replace(/^[^/]+\//, ''); // Remove section prefix
+
+        // Use query parameter approach that we know works: ?md=section/resource
+        const markdownUrl = `/?md=${this.currentSection}/${resourcePath}`;
+
+        // Open the markdown URL in new tab
+        window.open(markdownUrl, '_blank');
+    }
+
+
 }
 
 // Initialize the documentation app when DOM is loaded
