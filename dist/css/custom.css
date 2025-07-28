@@ -22,6 +22,12 @@ header {
     font-size: 1.5rem;
     font-weight: bold;
     gap: 0.5rem;
+    cursor: pointer;
+    transition: opacity 0.2s ease;
+}
+
+.logo:hover {
+    opacity: 0.8;
 }
 
 .github-link {

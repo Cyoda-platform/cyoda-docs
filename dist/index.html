@@ -310,6 +310,11 @@ class CyodaDocumentation {
     }
 
     bindEvents() {
+        // Logo click to go home
+        document.querySelector('.logo').addEventListener('click', () => {
+            this.switchSection('api');
+        });
+
         // Main navigation tabs
         document.querySelectorAll('.nav-tab').forEach(tab => {
             tab.addEventListener('click', (e) => {
