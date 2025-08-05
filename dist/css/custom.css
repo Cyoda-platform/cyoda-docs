@@ -423,9 +423,9 @@ header {
 }
 
 .markdown-content blockquote[data-callout="info"] {
-    border-left-color: #0969da;
-    background: rgba(9, 105, 218, 0.1);
-    color: #0969da;
+    border-left-color: #6c757d;
+    background: #e9ecef;
+    color: #333;
 }
 
 .markdown-content blockquote[data-callout="note"] {
@@ -463,7 +463,7 @@ header {
 }
 
 .markdown-content blockquote[data-callout="info"]::before {
-    color: #0969da;
+    color: #333;
 }
 
 .markdown-content blockquote[data-callout="note"]::before {

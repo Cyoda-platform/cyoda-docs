@@ -4,10 +4,11 @@ Getting your first Cyoda Cloud Free Tier environment is very straightforward. Si
 
 ## TL;DR
 
-1. Create an account on [https://ai.cyoda.net](https://ai.cyoda.net)
-2. Deploy an environment by prompting the AI Assistant with: `Please deploy my Cyoda environment`
-3. Create a technical user by prompting the AI Assistant with: `Please create a technical user for my environment`
-4. Access your environment via the Cyoda UI or APIs
+> [!INFO] Provisioning your first Cyoda Cloud Environment
+> 1. Create an account on [https://ai.cyoda.net](https://ai.cyoda.net)
+> 2. Deploy an environment by prompting the AI Assistant with: `Please deploy my Cyoda environment`
+> 3. Create a technical user by prompting the AI Assistant with: `Please create a technical user for my environment`
+> 4. Access your environment via the Cyoda UI or APIs
 
 ## Create an Account
 
