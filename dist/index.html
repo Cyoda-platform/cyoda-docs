@@ -114,7 +114,7 @@
                 apiDescriptionUrl="./openapi/openapi.json"
                 hideTryIt="false"
                 layout="responsive"
-                router="hash">
+                router="memory">
         </elements-api>
     </div>
 
@@ -290,7 +290,9 @@ class CyodaDocumentation {
         const resourcePath = parts.slice(1).join('/');
 
         if (this.isValidSection(section)) {
-            this.switchSection(section, false);
+            // Pass hasSpecificResource flag to prevent loading default resource
+            const hasSpecificResource = !!resourcePath;
+            this.switchSection(section, false, hasSpecificResource);
 
             if (resourcePath) {
                 const fullResourcePath = `${section}/${resourcePath}`;
@@ -340,7 +342,8 @@ class CyodaDocumentation {
     }
 
     restoreFromHistoryState(state) {
-        this.switchSection(state.section, false);
+        const hasSpecificResource = !!state.resource;
+        this.switchSection(state.section, false, hasSpecificResource);
         if (state.resource) {
             this.loadResource(state.resource, state.section, false);
 
@@ -425,7 +428,7 @@ class CyodaDocumentation {
         this.bindCopyPageEvents();
     }
 
-    switchSection(sectionName, updateHistory = true) {
+    switchSection(sectionName, updateHistory = true, hasSpecificResource = false) {
         if (updateHistory && sectionName !== this.currentSection) {
             this.pushHistoryState(sectionName);
         }
@@ -448,8 +451,8 @@ class CyodaDocumentation {
         this.currentResource = null;
         this.updateCopyPageVisibility();
 
-        // Load default resource for non-API sections
-        if (sectionName !== 'api') {
+        // Load default resource for non-API sections only if no specific resource is being loaded
+        if (sectionName !== 'api' && !hasSpecificResource) {
             this.loadDefaultResource(sectionName);
         }
     }
@@ -584,7 +587,7 @@ class CyodaDocumentation {
                 // Determine which section this resource belongs to
                 const section = this.getResourceSection(resourceName);
                 if (section) {
-                    this.switchSection(section);
+                    this.switchSection(section, true, true); // hasSpecificResource = true
                     this.loadResource(`${section}/${resourceName}`, section);
 
                     // Update active state
