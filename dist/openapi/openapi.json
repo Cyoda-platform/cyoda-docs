@@ -4700,7 +4700,15 @@
         "properties": {
           "error": {
             "type": "string",
-            "description": "Error code identifying the type of error",
+            "description": "Error codes from RFC 6749 Section 5.2 (OAuth 2.0 Error Response) identifying the type of error",
+            "enum": [
+              "invalid_request",
+              "invalid_client",
+              "invalid_grant",
+              "unauthorized_client",
+              "unsupported_grant_type",
+              "invalid_scope"
+            ],
             "example": "invalid_request"
           },
           "error_description": {
@@ -4881,9 +4889,16 @@
             "description": "Array of workflow configurations to import",
             "items": {
               "$ref": "#/components/schemas/JsonNode"
-            },
-            "maxItems": 2147483647,
-            "minItems": 1
+            }
+          },
+          "importMode": {
+            "type": "string",
+            "description": "Import mode for handling existing workflows",
+            "enum": [
+              "REPLACE",
+              "ACTIVATE",
+              "MERGE"
+            ]
           }
         },
         "required": [
