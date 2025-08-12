@@ -845,35 +845,73 @@
                 "examples": {
                   "Nobel Prize Winners": {
                     "description": "Nobel Prize Winners",
-                    "value": {
-                      "type": "ENTITY",
-                      "data": {
-                        "category": "physics",
-                        "laureates": [
-                          {
-                            "firstname": "John",
-                            "surname": "Hopfield",
-                            "id": "1037",
-                            "motivation": "\"for foundational discoveries and inventions that enable machine learning with artificial neural networks\"",
-                            "share": "2"
-                          },
-                          {
-                            "firstname": "Geoffrey",
-                            "surname": "Hinton",
-                            "id": "1038",
-                            "motivation": "\"for foundational discoveries and inventions that enable machine learning with artificial neural networks\"",
-                            "share": "2"
-                          }
-                        ],
-                        "year": "2024"
+                    "value": [
+                      {
+                        "type": "ENTITY",
+                        "data": {
+                          "category": "physics",
+                          "laureates": [
+                            {
+                              "firstname": "John",
+                              "surname": "Hopfield",
+                              "id": "1037",
+                              "motivation": "\"for foundational discoveries and inventions that enable machine learning with artificial neural networks\"",
+                              "share": "2"
+                            },
+                            {
+                              "firstname": "Geoffrey",
+                              "surname": "Hinton",
+                              "id": "1038",
+                              "motivation": "\"for foundational discoveries and inventions that enable machine learning with artificial neural networks\"",
+                              "share": "2"
+                            }
+                          ],
+                          "year": "2024"
+                        },
+                        "meta": {
+                          "id": "e4f14c38-34b2-11b2-92cb-fa754528b475",
+                          "state": "VALIDATED",
+                          "creationDate": "2025-03-30T15:30:24.243Z",
+                          "previousTransition": "VALIDATE"
+                        }
                       },
-                      "meta": {
-                        "id": "e4f14c38-34b2-11b2-92cb-fa754528b475",
-                        "state": "VALIDATED",
-                        "creationDate": "2025-03-30T15:30:24.243Z",
-                        "previousTransition": "VALIDATE"
+                      {
+                        "type": "ENTITY",
+                        "data": {
+                          "category": "economics",
+                          "laureates": [
+                            {
+                              "firstname": "Daron",
+                              "surname": "Acemoglu",
+                              "id": "1044",
+                              "motivation": "\"for studies of how institutions are formed and affect prosperity\"",
+                              "share": "3"
+                            },
+                            {
+                              "firstname": "Simon",
+                              "surname": "Johnson",
+                              "id": "1045",
+                              "motivation": "\"for studies of how institutions are formed and affect prosperity\"",
+                              "share": "3"
+                            },
+                            {
+                              "firstname": "James",
+                              "surname": "Robinson",
+                              "id": "1046",
+                              "motivation": "\"for studies of how institutions are formed and affect prosperity\"",
+                              "share": "3"
+                            }
+                          ],
+                          "year": "2024"
+                        },
+                        "meta": {
+                          "id": "e4f14c38-34b2-11b2-92cb-fa754528b475",
+                          "state": "VALIDATED",
+                          "creationDate": "2025-03-30T15:30:24.243Z",
+                          "previousTransition": "VALIDATE"
+                        }
                       }
-                    }
+                    ]
                   }
                 }
               }
