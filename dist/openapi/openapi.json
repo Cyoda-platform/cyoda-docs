@@ -647,10 +647,10 @@
                   "type": "about:blank",
                   "title": "Not Found",
                   "status": 404,
-                  "detail": "entity id=8f4b11e0-77ab-11f0-b6ab-ae468cd3ed16 not found",
-                  "instance": "/api/entity/8f4b11e0-77ab-11f0-b6ab-ae468cd3ed16",
+                  "detail": "entity id=52bc4e20-77af-11f0-b8da-ae468cd3ed16 not found",
+                  "instance": "/api/entity/52bc4e20-77af-11f0-b8da-ae468cd3ed16",
                   "properties": {
-                    "entityId": "8f4b11e0-77ab-11f0-b6ab-ae468cd3ed16"
+                    "entityId": "52bc4e20-77af-11f0-b8da-ae468cd3ed16"
                   }
                 }
               }
@@ -668,7 +668,7 @@
                   "title": "Bad Request",
                   "status": 400,
                   "detail": "Invalid value 'not-a-uuid' for parameter 'entityId'",
-                  "instance": "/api/entity/8f4b11e0-77ab-11f0-b6ab-ae468cd3ed16",
+                  "instance": "/api/entity/52bc4e20-77af-11f0-b8da-ae468cd3ed16",
                   "properties": {
                     "parameter": "entityId",
                     "invalidValue": "not-a-uuid"
@@ -711,12 +711,12 @@
                   "Deleted a single nobel prize": {
                     "description": "Deleted a single nobel prize",
                     "value": {
-                      "id": "bb4b8fe6-73bd-11f0-7f7f-7f7f7f7f7f7f",
+                      "id": "7ebccc26-73c1-11f0-7f7f-7f7f7f7f7f7f",
                       "modelKey": {
                         "name": "nobel-prize",
                         "version": 4
                       },
-                      "transactionId": "8f5c28e0-77ab-11f0-b6ab-ae468cd3ed16"
+                      "transactionId": "52cd6520-77af-11f0-b8da-ae468cd3ed16"
                     }
                   }
                 }
@@ -734,10 +734,10 @@
                   "type": "about:blank",
                   "title": "Not Found",
                   "status": 404,
-                  "detail": "entity id=8f4b11e0-77ab-11f0-b6ab-ae468cd3ed16 not found",
-                  "instance": "/api/entity/8f4b11e0-77ab-11f0-b6ab-ae468cd3ed16",
+                  "detail": "entity id=52bc4e20-77af-11f0-b8da-ae468cd3ed16 not found",
+                  "instance": "/api/entity/52bc4e20-77af-11f0-b8da-ae468cd3ed16",
                   "properties": {
-                    "entityId": "8f4b11e0-77ab-11f0-b6ab-ae468cd3ed16"
+                    "entityId": "52bc4e20-77af-11f0-b8da-ae468cd3ed16"
                   }
                 }
               }
@@ -755,7 +755,7 @@
                   "title": "Bad Request",
                   "status": 400,
                   "detail": "Invalid value 'not-a-uuid' for parameter 'entityId'",
-                  "instance": "/api/entity/8f4b11e0-77ab-11f0-b6ab-ae468cd3ed16",
+                  "instance": "/api/entity/52bc4e20-77af-11f0-b8da-ae468cd3ed16",
                   "properties": {
                     "parameter": "entityId",
                     "invalidValue": "not-a-uuid"
@@ -805,7 +805,9 @@
             "schema": {
               "type": "integer",
               "format": "int32",
-              "default": 20
+              "default": 20,
+              "maximum": 100,
+              "minimum": 1
             },
             "example": 20
           },
@@ -893,7 +895,7 @@
                       "type": "about:blank",
                       "title": "Bad Request",
                       "status": 400,
-                      "detail": "Page size must be between 1 and 1000",
+                      "detail": "Page size is outside of the bounds [1,100]",
                       "instance": "/api/entity/nobel-prize/1"
                     }
                   }
@@ -1068,17 +1070,17 @@
                   "Entities deleted": {
                     "description": "Entities deleted",
                     "value": {
-                      "entityModelClassId": "8f50de40-77ab-11f0-b6ab-ae468cd3ed16",
+                      "entityModelClassId": "52c37a10-77af-11f0-b8da-ae468cd3ed16",
                       "ids": [
-                        "8f50de4a-77ab-11f0-b6ab-ae468cd3ed16",
-                        "8f50de54-77ab-11f0-b6ab-ae468cd3ed16",
-                        "8f50de5e-77ab-11f0-b6ab-ae468cd3ed16"
+                        "52c37a1a-77af-11f0-b8da-ae468cd3ed16",
+                        "52c37a24-77af-11f0-b8da-ae468cd3ed16",
+                        "52c37a2e-77af-11f0-b8da-ae468cd3ed16"
                       ],
                       "deleteResult": {
                         "numberOfEntitites": 4,
                         "numberOfEntititesRemoved": 3,
                         "idToError": {
-                          "8f50de68-77ab-11f0-b6ab-ae468cd3ed16": "Some error message"
+                          "52c37a38-77af-11f0-b8da-ae468cd3ed16": "Some error message"
                         }
                       }
                     }
@@ -1205,12 +1207,12 @@
                   "description": "Mixed Entity Updates",
                   "value": [
                     {
-                      "id": "8f42d480-77ab-11f0-b6ab-ae468cd3ed16",
+                      "id": "52b45ee0-77af-11f0-b8da-ae468cd3ed16",
                       "payload": "{\n  \"firstName\" : \"John\",\n  \"middleName\" : \"Henry\",\n  \"lastName\" : \"Doe\",\n  \"birthdate\" : \"1964-04-18\",\n  \"married\" : true,\n  \"children\" : [ {\n    \"firstName\" : \"Jane\",\n    \"middleName\" : \"Marie\",\n    \"lastName\" : \"Doe\",\n    \"birthdate\" : \"1990-08-25\",\n    \"married\" : false\n  }, {\n    \"firstName\" : \"James\",\n    \"middleName\" : \"Robert\",\n    \"lastName\" : \"Doe\",\n    \"birthdate\" : \"1992-03-15\",\n    \"married\" : true\n  } ]\n}",
                       "transition": "UPDATE"
                     },
                     {
-                      "id": "8f45e1c0-77ab-11f0-b6ab-ae468cd3ed16",
+                      "id": "52b6cfe0-77af-11f0-b8da-ae468cd3ed16",
                       "payload": "{\n  \"category\" : \"economics\",\n  \"laureates\" : [ {\n    \"firstname\" : \"Daron\",\n    \"surname\" : \"Acemoglu\",\n    \"id\" : \"1044\",\n    \"motivation\" : \"\\\"for studies of how institutions are formed and affect prosperity\\\"\",\n    \"share\" : \"3\"\n  }, {\n    \"firstname\" : \"Simon\",\n    \"surname\" : \"Johnson\",\n    \"id\" : \"1045\",\n    \"motivation\" : \"\\\"for studies of how institutions are formed and affect prosperity\\\"\",\n    \"share\" : \"3\"\n  }, {\n    \"firstname\" : \"James\",\n    \"surname\" : \"Robinson\",\n    \"id\" : \"1046\",\n    \"motivation\" : \"\\\"for studies of how institutions are formed and affect prosperity\\\"\",\n    \"share\" : \"3\"\n  } ],\n  \"year\" : \"2024\"\n}",
                       "transition": "UPDATE"
                     }
