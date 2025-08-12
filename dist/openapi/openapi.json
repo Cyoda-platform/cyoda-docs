@@ -647,12 +647,10 @@
                   "type": "about:blank",
                   "title": "Not Found",
                   "status": 404,
-                  "detail": "entity id=0a7b4080-14ae-11f0-8cd6-ae468cd3ed16 not found",
-                  "instance": "/api/entity/0a7b4080-14ae-11f0-8cd6-ae468cd3ed16",
+                  "detail": "entity id=8f4b11e0-77ab-11f0-b6ab-ae468cd3ed16 not found",
+                  "instance": "/api/entity/8f4b11e0-77ab-11f0-b6ab-ae468cd3ed16",
                   "properties": {
-                    "properties": {
-                      "entityId": "0a7b4080-14ae-11f0-8cd6-ae468cd3ed16"
-                    }
+                    "entityId": "8f4b11e0-77ab-11f0-b6ab-ae468cd3ed16"
                   }
                 }
               }
@@ -670,7 +668,7 @@
                   "title": "Bad Request",
                   "status": 400,
                   "detail": "Invalid value 'not-a-uuid' for parameter 'entityId'",
-                  "instance": "/api/entity/0a7b4080-14ae-11f0-8cd6-ae468cd3ed16",
+                  "instance": "/api/entity/8f4b11e0-77ab-11f0-b6ab-ae468cd3ed16",
                   "properties": {
                     "parameter": "entityId",
                     "invalidValue": "not-a-uuid"
@@ -713,12 +711,12 @@
                   "Deleted a single nobel prize": {
                     "description": "Deleted a single nobel prize",
                     "value": {
-                      "id": "3684e646-10c0-11f0-7f7f-7f7f7f7f7f7f",
+                      "id": "bb4b8fe6-73bd-11f0-7f7f-7f7f7f7f7f7f",
                       "modelKey": {
                         "name": "nobel-prize",
                         "version": 4
                       },
-                      "transactionId": "0a957f40-14ae-11f0-8cd6-ae468cd3ed16"
+                      "transactionId": "8f5c28e0-77ab-11f0-b6ab-ae468cd3ed16"
                     }
                   }
                 }
@@ -736,12 +734,10 @@
                   "type": "about:blank",
                   "title": "Not Found",
                   "status": 404,
-                  "detail": "entity id=0a7b4080-14ae-11f0-8cd6-ae468cd3ed16 not found",
-                  "instance": "/api/entity/0a7b4080-14ae-11f0-8cd6-ae468cd3ed16",
+                  "detail": "entity id=8f4b11e0-77ab-11f0-b6ab-ae468cd3ed16 not found",
+                  "instance": "/api/entity/8f4b11e0-77ab-11f0-b6ab-ae468cd3ed16",
                   "properties": {
-                    "properties": {
-                      "entityId": "0a7b4080-14ae-11f0-8cd6-ae468cd3ed16"
-                    }
+                    "entityId": "8f4b11e0-77ab-11f0-b6ab-ae468cd3ed16"
                   }
                 }
               }
@@ -759,7 +755,7 @@
                   "title": "Bad Request",
                   "status": 400,
                   "detail": "Invalid value 'not-a-uuid' for parameter 'entityId'",
-                  "instance": "/api/entity/0a7b4080-14ae-11f0-8cd6-ae468cd3ed16",
+                  "instance": "/api/entity/8f4b11e0-77ab-11f0-b6ab-ae468cd3ed16",
                   "properties": {
                     "parameter": "entityId",
                     "invalidValue": "not-a-uuid"
@@ -777,7 +773,7 @@
           "Entity Management"
         ],
         "summary": "Get All Entities",
-        "description": "\nRetrieves all entities for a given model name and version, with pagination support.\nResults are returned as a stream of JSON objects.\n\nCommon use cases:\n- Bulk data retrieval\n- Data migration\n- Reporting\n\nNote: \n- For large datasets, consider using the search API with snapshots instead.\n- To find out how many entities there are, use the entity statistics endpoints.\n        ",
+        "description": "\nRetrieves all entities for a given model name and version, with pagination support.\nResults are returned as a stream of JSON objects.\n\nCommon use cases:\n- Bulk data retrieval\n- Data migration\n- Reporting\n\nNote:\n- For large datasets, consider using the search API with snapshots instead.\n- To find out how many entities there are, use the entity statistics endpoints.\n        ",
         "operationId": "getAllEntities",
         "parameters": [
           {
@@ -853,16 +849,23 @@
                       "type": "ENTITY",
                       "data": {
                         "category": "physics",
-                        "year": "2024",
                         "laureates": [
                           {
                             "firstname": "John",
                             "surname": "Hopfield",
                             "id": "1037",
-                            "motivation": "for foundational discoveries and inventions that enable machine learning with artificial neural networks",
+                            "motivation": "\"for foundational discoveries and inventions that enable machine learning with artificial neural networks\"",
+                            "share": "2"
+                          },
+                          {
+                            "firstname": "Geoffrey",
+                            "surname": "Hinton",
+                            "id": "1038",
+                            "motivation": "\"for foundational discoveries and inventions that enable machine learning with artificial neural networks\"",
                             "share": "2"
                           }
-                        ]
+                        ],
+                        "year": "2024"
                       },
                       "meta": {
                         "id": "e4f14c38-34b2-11b2-92cb-fa754528b475",
@@ -912,11 +915,11 @@
                       "type": "about:blank",
                       "title": "Not Found",
                       "status": 404,
-                      "detail": "cannot find model entityName=nobel-prize, version=2",
-                      "instance": "/api/entity/nobel-prize/2",
+                      "detail": "cannot find model entityName=submarine, version=1",
+                      "instance": "/api/entity/submarine/1",
                       "properties": {
-                        "entityName": "nobel-prize",
-                        "entityVersion": 2
+                        "entityName": "submarine",
+                        "entityVersion": 1
                       }
                     }
                   }
@@ -1065,17 +1068,17 @@
                   "Entities deleted": {
                     "description": "Entities deleted",
                     "value": {
-                      "entityModelClassId": "0a87c3a0-14ae-11f0-8cd6-ae468cd3ed16",
+                      "entityModelClassId": "8f50de40-77ab-11f0-b6ab-ae468cd3ed16",
                       "ids": [
-                        "0a87c3aa-14ae-11f0-8cd6-ae468cd3ed16",
-                        "0a87c3b4-14ae-11f0-8cd6-ae468cd3ed16",
-                        "0a87c3be-14ae-11f0-8cd6-ae468cd3ed16"
+                        "8f50de4a-77ab-11f0-b6ab-ae468cd3ed16",
+                        "8f50de54-77ab-11f0-b6ab-ae468cd3ed16",
+                        "8f50de5e-77ab-11f0-b6ab-ae468cd3ed16"
                       ],
                       "deleteResult": {
                         "numberOfEntitites": 4,
                         "numberOfEntititesRemoved": 3,
                         "idToError": {
-                          "0a87c3c8-14ae-11f0-8cd6-ae468cd3ed16": "Some error message"
+                          "8f50de68-77ab-11f0-b6ab-ae468cd3ed16": "Some error message"
                         }
                       }
                     }
@@ -1101,10 +1104,8 @@
                       "detail": "cannot find model entityName=submarine, version=1",
                       "instance": "/api/entity/submarine/1",
                       "properties": {
-                        "properties": {
-                          "entityName": "submarine",
-                          "entityVersion": 1
-                        }
+                        "entityName": "submarine",
+                        "entityVersion": 1
                       }
                     }
                   }
@@ -1143,7 +1144,7 @@
           "Entity Management"
         ],
         "summary": "Update Collection",
-        "description": "\nUpdates a collection of entities. If any of the entities are not found, \nthe request will fail and no entities will be updated.\n        ",
+        "description": "\nUpdates a collection of entities. If any of the entities are not found,\nthe request will fail and no entities will be updated.\n        ",
         "operationId": "updateCollection",
         "parameters": [
           {
@@ -1204,12 +1205,12 @@
                   "description": "Mixed Entity Updates",
                   "value": [
                     {
-                      "id": "0a706b10-14ae-11f0-8cd6-ae468cd3ed16",
+                      "id": "8f42d480-77ab-11f0-b6ab-ae468cd3ed16",
                       "payload": "{\n  \"firstName\" : \"John\",\n  \"middleName\" : \"Henry\",\n  \"lastName\" : \"Doe\",\n  \"birthdate\" : \"1964-04-18\",\n  \"married\" : true,\n  \"children\" : [ {\n    \"firstName\" : \"Jane\",\n    \"middleName\" : \"Marie\",\n    \"lastName\" : \"Doe\",\n    \"birthdate\" : \"1990-08-25\",\n    \"married\" : false\n  }, {\n    \"firstName\" : \"James\",\n    \"middleName\" : \"Robert\",\n    \"lastName\" : \"Doe\",\n    \"birthdate\" : \"1992-03-15\",\n    \"married\" : true\n  } ]\n}",
                       "transition": "UPDATE"
                     },
                     {
-                      "id": "0a73ed80-14ae-11f0-8cd6-ae468cd3ed16",
+                      "id": "8f45e1c0-77ab-11f0-b6ab-ae468cd3ed16",
                       "payload": "{\n  \"category\" : \"economics\",\n  \"laureates\" : [ {\n    \"firstname\" : \"Daron\",\n    \"surname\" : \"Acemoglu\",\n    \"id\" : \"1044\",\n    \"motivation\" : \"\\\"for studies of how institutions are formed and affect prosperity\\\"\",\n    \"share\" : \"3\"\n  }, {\n    \"firstname\" : \"Simon\",\n    \"surname\" : \"Johnson\",\n    \"id\" : \"1045\",\n    \"motivation\" : \"\\\"for studies of how institutions are formed and affect prosperity\\\"\",\n    \"share\" : \"3\"\n  }, {\n    \"firstname\" : \"James\",\n    \"surname\" : \"Robinson\",\n    \"id\" : \"1046\",\n    \"motivation\" : \"\\\"for studies of how institutions are formed and affect prosperity\\\"\",\n    \"share\" : \"3\"\n  } ],\n  \"year\" : \"2024\"\n}",
                       "transition": "UPDATE"
                     }
@@ -1673,25 +1674,25 @@
                   "$ref": "#/components/schemas/EdgeMessageDto"
                 },
                 "examples": {
-                  "Message Response": {
-                    "description": "Message Response",
+                  "Nobel Prize Message": {
+                    "description": "Nobel Prize Message",
                     "value": {
-                      "id": "825ba31c-0b5b-11f0-91f5-667325248341",
-                      "subject": "user.events",
                       "header": {
+                        "subject": "nobel.prize.events",
                         "contentType": "application/json",
+                        "contentLength": 1024,
                         "contentEncoding": "UTF-8",
-                        "messageId": "msg-123",
-                        "userId": "user456",
-                        "timestamp": "2024-01-20T12:00:00Z"
+                        "messageId": "msg-nobel-2024-physics",
+                        "userId": "nobel-committee",
+                        "recipient": "scientific-community",
+                        "replyTo": "announcements@nobelprize.org",
+                        "correlationId": "nobel-2024-physics-announcement"
                       },
-                      "payload": {
-                        "eventType": "user.created",
-                        "data": {
-                          "userId": "user123",
-                          "email": "user@example.com"
-                        }
-                      }
+                      "metaData": {
+                        "values": {},
+                        "indexedValues": {}
+                      },
+                      "content": "{\n  \"eventType\" : \"nobel.prize.announced\",\n  \"timestamp\" : \"2024-10-09T12:00:00Z\",\n  \"data\" : {\n    \"category\" : \"physics\",\n    \"year\" : \"2024\",\n    \"laureates\" : [ {\n      \"firstname\" : \"John\",\n      \"surname\" : \"Hopfield\",\n      \"id\" : \"1037\",\n      \"motivation\" : \"for foundational discoveries and inventions that enable machine learning with artificial neural networks\",\n      \"share\" : \"2\"\n    }, {\n      \"firstname\" : \"Geoffrey\",\n      \"surname\" : \"Hinton\",\n      \"id\" : \"1038\",\n      \"motivation\" : \"for foundational discoveries and inventions that enable machine learning with artificial neural networks\",\n      \"share\" : \"2\"\n    } ]\n  }\n}"
                     }
                   }
                 }
@@ -1712,10 +1713,10 @@
                       "type": "about:blank",
                       "title": "Not Found",
                       "status": 404,
-                      "detail": "message id=825ba31c-0b5b-11f0-91f5-667325248341 not found",
-                      "instance": "/api/message/get/825ba31c-0b5b-11f0-91f5-667325248341",
+                      "detail": "message id=9d95f000-779f-11f0-858c-ae468cd3ed16 not found",
+                      "instance": "/api/message/get/9d95f000-779f-11f0-858c-ae468cd3ed16",
                       "properties": {
-                        "messageId": "825ba31c-0b5b-11f0-91f5-667325248341"
+                        "messageId": "9d95f000-779f-11f0-858c-ae468cd3ed16"
                       }
                     }
                   }
@@ -1875,18 +1876,30 @@
                 "type": "string"
               },
               "examples": {
-                "JSON Message Example": {
-                  "description": "JSON Message Example",
+                "Nobel Prize Announcement": {
+                  "description": "Nobel Prize Announcement",
                   "value": {
-                    "eventType": "user.created",
-                    "timestamp": "2024-01-20T12:00:00Z",
+                    "eventType": "nobel.prize.announced",
+                    "timestamp": "2024-10-09T12:00:00Z",
                     "data": {
-                      "userId": "user123",
-                      "email": "user@example.com",
-                      "attributes": {
-                        "role": "admin",
-                        "status": "active"
-                      }
+                      "category": "physics",
+                      "year": "2024",
+                      "laureates": [
+                        {
+                          "firstname": "John",
+                          "surname": "Hopfield",
+                          "id": "1037",
+                          "motivation": "for foundational discoveries and inventions that enable machine learning with artificial neural networks",
+                          "share": "2"
+                        },
+                        {
+                          "firstname": "Geoffrey",
+                          "surname": "Hinton",
+                          "id": "1038",
+                          "motivation": "for foundational discoveries and inventions that enable machine learning with artificial neural networks",
+                          "share": "2"
+                        }
+                      ]
                     }
                   }
                 }
@@ -1899,11 +1912,19 @@
           "200": {
             "description": "Message successfully created and stored",
             "content": {
-              "application/hal+json": {
+              "application/json": {
                 "schema": {
-                  "type": "array",
-                  "items": {
-                    "$ref": "#/components/schemas/EntityTransactionResponseUUID"
+                  "type": "string"
+                },
+                "examples": {
+                  "Transaction Response": {
+                    "description": "Transaction Response",
+                    "value": {
+                      "entityIds": [
+                        "9d95f000-779f-11f0-858c-ae468cd3ed16"
+                      ],
+                      "success": true
+                    }
                   }
                 }
               }
@@ -1915,6 +1936,21 @@
               "application/json": {
                 "schema": {
                   "$ref": "#/components/schemas/ProblemDetail"
+                },
+                "examples": {
+                  "Invalid Message Format": {
+                    "description": "Invalid Message Format",
+                    "value": {
+                      "type": "about:blank",
+                      "title": "Bad Request",
+                      "status": 400,
+                      "detail": "Invalid JSON format in message payload",
+                      "instance": "/api/message/new/nobel.prize.events",
+                      "properties": {
+                        "error": "Unexpected character at position 15"
+                      }
+                    }
+                  }
                 }
               }
             }
@@ -1925,6 +1961,18 @@
               "application/json": {
                 "schema": {
                   "$ref": "#/components/schemas/ProblemDetail"
+                },
+                "examples": {
+                  "Payload Too Large": {
+                    "description": "Payload Too Large",
+                    "value": {
+                      "type": "about:blank",
+                      "title": "Payload Too Large",
+                      "status": 413,
+                      "detail": "Request payload size exceeds maximum allowed limit of 10MB",
+                      "instance": "/api/message/new/nobel.prize.events"
+                    }
+                  }
                 }
               }
             }
@@ -1950,18 +1998,18 @@
                     "description": "models",
                     "value": [
                       {
-                        "id": "7acdfee0-0cc0-11f0-909b-ae468cd3ed16",
+                        "id": "1f8a6fb0-77a9-11f0-8f30-ae468cd3ed16",
                         "modelName": "nobel-prize",
                         "modelVersion": 1,
                         "currentState": "LOCKED",
-                        "modelUpdateDate": 1742404128218489
+                        "modelUpdateDate": "2025-08-02T11:21:11.101576-07:00"
                       },
                       {
-                        "id": "7acfd3a0-0cc0-11f0-909b-ae468cd3ed16",
+                        "id": "1f8d2ed0-77a9-11f0-8f30-ae468cd3ed16",
                         "modelName": "family-member",
                         "modelVersion": 3,
                         "currentState": "UNLOCKED",
-                        "modelUpdateDate": 1743268128218839
+                        "modelUpdateDate": "2025-08-12T11:21:11.101631-07:00"
                       }
                     ]
                   }
@@ -2123,10 +2171,8 @@
                   "detail": "cannot find model entityName=nobel-prize, version=2",
                   "instance": "/api/model/export/SIMPLE_VIEW/nobel-prize/2",
                   "properties": {
-                    "properties": {
-                      "entityName": "nobel-prize",
-                      "entityVersion": 2
-                    }
+                    "entityName": "nobel-prize",
+                    "entityVersion": 2
                   }
                 }
               }
@@ -2327,10 +2373,8 @@
                   "detail": "cannot find model entityName=nobel-prize, version=2",
                   "instance": "/api/model/nobel-prize/2",
                   "properties": {
-                    "properties": {
-                      "entityName": "nobel-prize",
-                      "entityVersion": 2
-                    }
+                    "entityName": "nobel-prize",
+                    "entityVersion": 2
                   }
                 }
               }
@@ -2414,10 +2458,8 @@
                   "detail": "cannot find model entityName=nobel-prize, version=2",
                   "instance": "/api/model/nobel-prize/2/changeLevel/STRUCTURAL",
                   "properties": {
-                    "properties": {
-                      "entityName": "nobel-prize",
-                      "entityVersion": 2
-                    }
+                    "entityName": "nobel-prize",
+                    "entityVersion": 2
                   }
                 }
               }
@@ -2485,10 +2527,8 @@
                   "detail": "cannot find model entityName=nobel-prize, version=2",
                   "instance": "/api/model/nobel-prize/2/lock",
                   "properties": {
-                    "properties": {
-                      "entityName": "nobel-prize",
-                      "entityVersion": 2
-                    }
+                    "entityName": "nobel-prize",
+                    "entityVersion": 2
                   }
                 }
               }
@@ -2556,10 +2596,8 @@
                   "detail": "cannot find model entityName=nobel-prize, version=2",
                   "instance": "/api/model/nobel-prize/2/unlock",
                   "properties": {
-                    "properties": {
-                      "entityName": "nobel-prize",
-                      "entityVersion": 2
-                    }
+                    "entityName": "nobel-prize",
+                    "entityVersion": 2
                   }
                 }
               }
@@ -2948,10 +2986,8 @@
                   "detail": "cannot find model entityName=nobel-prize, version=2",
                   "instance": "/api/search/snapshot/nobel-prize/2",
                   "properties": {
-                    "properties": {
-                      "entityName": "nobel-prize",
-                      "entityVersion": 2
-                    }
+                    "entityName": "nobel-prize",
+                    "entityVersion": 2
                   }
                 }
               }
@@ -3040,10 +3076,10 @@
                         ]
                       },
                       "meta": {
-                        "id": "64a2eb58-3765-11b2-9128-eee561a7196f",
+                        "id": "70526954-3f37-11b2-b658-125557264b03",
                         "state": "VALIDATED",
-                        "creationDate": "2025-04-04T13:58:06.769Z",
-                        "previousTransition": "VALIDATE"
+                        "creationDate": "2025-08-12T18:22:02.098Z",
+                        "transitionForLatestSave": "VALIDATE"
                       }
                     },
                     {
@@ -3076,10 +3112,10 @@
                         ]
                       },
                       "meta": {
-                        "id": "64a66bca-3765-11b2-9128-eee561a7196f",
+                        "id": "70554c32-3f37-11b2-b658-125557264b03",
                         "state": "VALIDATED",
-                        "creationDate": "2025-04-04T13:58:06.771Z",
-                        "previousTransition": "VALIDATE"
+                        "creationDate": "2025-08-12T18:22:02.1Z",
+                        "transitionForLatestSave": "VALIDATE"
                       }
                     }
                   ],
@@ -3104,12 +3140,10 @@
                   "type": "about:blank",
                   "title": "Not Found",
                   "status": 404,
-                  "detail": "cannot find snapshot by id=d54b2320-115c-11f0-934e-ae468cd3ed16",
-                  "instance": "/api/search/snapshot/d54b2320-115c-11f0-934e-ae468cd3ed16",
+                  "detail": "cannot find snapshot by id=3d983910-77a9-11f0-8b9c-ae468cd3ed16",
+                  "instance": "/api/search/snapshot/3d983910-77a9-11f0-8b9c-ae468cd3ed16",
                   "properties": {
-                    "properties": {
-                      "snapshotId": "d54b2320-115c-11f0-934e-ae468cd3ed16"
-                    }
+                    "snapshotId": "3d983910-77a9-11f0-8b9c-ae468cd3ed16"
                   }
                 }
               }
@@ -3130,7 +3164,7 @@
                       "title": "Bad Request",
                       "status": 400,
                       "detail": "Invalid value '1234' for parameter 'pointInTime'",
-                      "instance": "/api/search/snapshot/d54b2320-115c-11f0-934e-ae468cd3ed16",
+                      "instance": "/api/search/snapshot/3d983910-77a9-11f0-8b9c-ae468cd3ed16",
                       "properties": {
                         "parameter": "pointInTime",
                         "invalidValue": "1234"
@@ -3201,12 +3235,10 @@
                   "type": "about:blank",
                   "title": "Not Found",
                   "status": 404,
-                  "detail": "cannot find snapshot by id=d54b2320-115c-11f0-934e-ae468cd3ed16",
-                  "instance": "/api/search/snapshot/d54b2320-115c-11f0-934e-ae468cd3ed16/cancel",
+                  "detail": "cannot find snapshot by id=3d983910-77a9-11f0-8b9c-ae468cd3ed16",
+                  "instance": "/api/search/snapshot/3d983910-77a9-11f0-8b9c-ae468cd3ed16/cancel",
                   "properties": {
-                    "properties": {
-                      "snapshotId": "d54b2320-115c-11f0-934e-ae468cd3ed16"
-                    }
+                    "snapshotId": "3d983910-77a9-11f0-8b9c-ae468cd3ed16"
                   }
                 }
               }
@@ -3223,13 +3255,11 @@
                   "type": "about:blank",
                   "title": "Bad Request",
                   "status": 400,
-                  "detail": "snapshot by id=d54b2320-115c-11f0-934e-ae468cd3ed16 is not running. current status=SUCCESSFUL",
-                  "instance": "/api/search/snapshot/d54b2320-115c-11f0-934e-ae468cd3ed16/cancel",
+                  "detail": "snapshot by id=3d983910-77a9-11f0-8b9c-ae468cd3ed16 is not running. current status=SUCCESSFUL",
+                  "instance": "/api/search/snapshot/3d983910-77a9-11f0-8b9c-ae468cd3ed16/cancel",
                   "properties": {
-                    "properties": {
-                      "snapshotId": "d54b2320-115c-11f0-934e-ae468cd3ed16",
-                      "currentStatus": "SUCCESSFUL"
-                    }
+                    "snapshotId": "3d983910-77a9-11f0-8b9c-ae468cd3ed16",
+                    "currentStatus": "SUCCESSFUL"
                   }
                 }
               }
@@ -3270,21 +3300,21 @@
                     "description": "Running Status",
                     "value": {
                       "snapshotStatus": "RUNNING",
-                      "expirationDate": "2025-04-05T06:58:06.694205-07:00",
+                      "expirationDate": "2025-08-13T11:22:02.025835-07:00",
                       "entitiesCount": 0,
                       "calculationTimeMillis": 300,
-                      "createTime": "2025-04-04T06:58:06.394205-07:00"
+                      "createTime": "2025-08-12T11:22:01.725835-07:00"
                     }
                   },
                   "Successful Status": {
                     "description": "Successful Status",
                     "value": {
                       "snapshotStatus": "SUCCESSFUL",
-                      "expirationDate": "2025-04-05T06:58:06.694205-07:00",
+                      "expirationDate": "2025-08-13T11:22:02.025835-07:00",
                       "entitiesCount": 2500,
                       "calculationTimeMillis": 2000,
-                      "createTime": "2025-04-04T06:58:04.694205-07:00",
-                      "finishTime": "2025-04-04T06:58:06.694205-07:00"
+                      "createTime": "2025-08-12T11:22:00.025835-07:00",
+                      "finishTime": "2025-08-12T11:22:02.025835-07:00"
                     }
                   }
                 }
@@ -3302,12 +3332,10 @@
                   "type": "about:blank",
                   "title": "Not Found",
                   "status": 404,
-                  "detail": "cannot find snapshot by id=d54b2320-115c-11f0-934e-ae468cd3ed16",
-                  "instance": "/api/search/snapshot/d54b2320-115c-11f0-934e-ae468cd3ed16/status",
+                  "detail": "cannot find snapshot by id=3d983910-77a9-11f0-8b9c-ae468cd3ed16",
+                  "instance": "/api/search/snapshot/3d983910-77a9-11f0-8b9c-ae468cd3ed16/status",
                   "properties": {
-                    "properties": {
-                      "snapshotId": "d54b2320-115c-11f0-934e-ae468cd3ed16"
-                    }
+                    "snapshotId": "3d983910-77a9-11f0-8b9c-ae468cd3ed16"
                   }
                 }
               }
@@ -3469,10 +3497,10 @@
                       ]
                     },
                     "meta": {
-                      "id": "64a2eb58-3765-11b2-9128-eee561a7196f",
+                      "id": "70526954-3f37-11b2-b658-125557264b03",
                       "state": "VALIDATED",
-                      "creationDate": "2025-04-04T13:58:06.769Z",
-                      "previousTransition": "VALIDATE"
+                      "creationDate": "2025-08-12T18:22:02.098Z",
+                      "transitionForLatestSave": "VALIDATE"
                     }
                   },
                   {
@@ -3505,10 +3533,10 @@
                       ]
                     },
                     "meta": {
-                      "id": "64a66bca-3765-11b2-9128-eee561a7196f",
+                      "id": "70554c32-3f37-11b2-b658-125557264b03",
                       "state": "VALIDATED",
-                      "creationDate": "2025-04-04T13:58:06.771Z",
-                      "previousTransition": "VALIDATE"
+                      "creationDate": "2025-08-12T18:22:02.1Z",
+                      "transitionForLatestSave": "VALIDATE"
                     }
                   }
                 ]
@@ -3546,10 +3574,8 @@
                   "detail": "cannot find model entityName=nobel-prize, version=2",
                   "instance": "/api/search/nobel-prize/2",
                   "properties": {
-                    "properties": {
-                      "entityName": "nobel-prize",
-                      "entityVersion": 2
-                    }
+                    "entityName": "nobel-prize",
+                    "entityVersion": 2
                   }
                 }
               }
@@ -3606,7 +3632,7 @@
                   "tables": [
                     {
                       "tableName": "nobel-prize",
-                      "metadataClassId": "3d4cbe3a-14ae-11f0-8738-ae468cd3ed16",
+                      "metadataClassId": "e43e510a-779f-11f0-885b-ae468cd3ed16",
                       "uniformedPath": "$",
                       "fields": [
                         {
@@ -3656,7 +3682,7 @@
                     },
                     {
                       "tableName": "nobel-prize_laureates",
-                      "metadataClassId": "3d4cbe3a-14ae-11f0-8738-ae468cd3ed16",
+                      "metadataClassId": "e43e510a-779f-11f0-885b-ae468cd3ed16",
                       "uniformedPath": "$.laureates[*]",
                       "fields": [
                         {
@@ -3737,6 +3763,50 @@
                         }
                       ],
                       "hidden": false
+                    },
+                    {
+                      "tableName": "nobel-prize_json",
+                      "metadataClassId": "e43e510a-779f-11f0-885b-ae468cd3ed16",
+                      "uniformedPath": "json",
+                      "fields": [
+                        {
+                          "fieldName": "entity_id",
+                          "fieldKey": "ENTITY_ID",
+                          "fieldCategory": "SPECIAL",
+                          "dataType": "UUID_TYPE"
+                        },
+                        {
+                          "fieldName": "point_time",
+                          "fieldKey": "POINT_TIME",
+                          "fieldCategory": "SPECIAL",
+                          "dataType": "DATE"
+                        },
+                        {
+                          "fieldName": "creation_date",
+                          "fieldKey": "creationDate",
+                          "fieldCategory": "ROOT",
+                          "dataType": "DATE"
+                        },
+                        {
+                          "fieldName": "last_update_date",
+                          "fieldKey": "lastUpdateTime",
+                          "fieldCategory": "ROOT",
+                          "dataType": "DATE"
+                        },
+                        {
+                          "fieldName": "state",
+                          "fieldKey": "state",
+                          "fieldCategory": "ROOT",
+                          "dataType": "STRING"
+                        },
+                        {
+                          "fieldName": "entity",
+                          "fieldKey": "JSON",
+                          "fieldCategory": "SPECIAL",
+                          "dataType": "STRING"
+                        }
+                      ],
+                      "hidden": false
                     }
                   ]
                 }
@@ -3754,9 +3824,7 @@
                   "detail": "Schema larry not found",
                   "instance": "/api/sql/schema/",
                   "properties": {
-                    "properties": {
-                      "schemaName": "larry"
-                    }
+                    "schemaName": "larry"
                   }
                 }
               }
@@ -3776,373 +3844,16 @@
             "application/json": {
               "schema": {
                 "$ref": "#/components/schemas/SchemaConfigDto"
-              }
-            }
-          },
-          "required": true
-        },
-        "responses": {
-          "200": {
-            "description": "Schema saved successfully",
-            "content": {
-              "application/json": {
-                "example": "1d1e1b10-1155-11f0-bcd5-ae468cd3ed16"
-              }
-            }
-          },
-          "400": {
-            "description": "Invalid schema configuration",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ProblemDetail"
-                },
-                "example": {
-                  "type": "about:blank",
-                  "title": "Bad Request",
-                  "status": 400,
-                  "detail": "String length of the schema name is outside of the bounds [1,1024]",
-                  "instance": "/api/sql/schema/"
-                }
-              }
-            }
-          }
-        }
-      },
-      "delete": {
-        "tags": [
-          "SQL-Schema"
-        ],
-        "summary": "Delete schema by name",
-        "description": "Deletes an existing schema configuration using its name",
-        "operationId": "deleteSchemaByName",
-        "parameters": [
-          {
-            "name": "schemaName",
-            "in": "query",
-            "description": "Name of the schema to delete",
-            "required": true,
-            "schema": {
-              "type": "string"
-            }
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "Schema deleted successfully",
-            "content": {
-              "application/json": {
-                "example": "SQL Schema with name NOBEL_PRIZES deleted"
-              }
-            }
-          },
-          "404": {
-            "description": "Schema not found",
-            "content": {
-              "application/json": {
-                "example": {
-                  "type": "about:blank",
-                  "title": "Not Found",
-                  "status": 404,
-                  "detail": "Schema larry not found",
-                  "instance": "/api/sql/schema/",
-                  "properties": {
-                    "properties": {
-                      "schemaName": "larry"
-                    }
-                  }
-                }
-              }
-            }
-          }
-        }
-      }
-    },
-    "/sql/schema/genTables/{entityModelId}": {
-      "get": {
-        "tags": [
-          "SQL-Schema"
-        ],
-        "summary": "Generate SQL tables from an entity model",
-        "description": "Generates table configurations based on entity model ID",
-        "operationId": "genTables",
-        "parameters": [
-          {
-            "name": "entityModelId",
-            "in": "path",
-            "description": "The entity model id to generate tables from",
-            "required": true,
-            "schema": {
-              "type": "string",
-              "format": "uuid"
-            }
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "Tables generated successfully",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "array",
-                  "items": {
-                    "$ref": "#/components/schemas/TableConfigDto"
-                  }
-                }
-              }
-            }
-          }
-        }
-      }
-    },
-    "/sql/schema/listAll": {
-      "get": {
-        "tags": [
-          "SQL-Schema"
-        ],
-        "summary": "List all schemas",
-        "description": "Retrieves all available schema configurations",
-        "operationId": "getSchemas",
-        "responses": {
-          "200": {
-            "description": "List of schemas retrieved successfully",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "array",
-                  "items": {
-                    "$ref": "#/components/schemas/SchemaConfigDto"
-                  }
-                }
-              }
-            }
-          }
-        }
-      }
-    },
-    "/sql/schema/putDefault/{schemaName}": {
-      "put": {
-        "tags": [
-          "SQL-Schema"
-        ],
-        "summary": "Create default schema",
-        "description": "Creates a new schema configuration that includes all available entity models with their complete field structures",
-        "operationId": "putSchema",
-        "parameters": [
-          {
-            "name": "schemaName",
-            "in": "path",
-            "description": "Name for the new schema. The name can have a maximum of 1024 characters",
-            "required": true,
-            "schema": {
-              "type": "string",
-              "maxLength": 1024,
-              "minLength": 1
-            }
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "Schema created successfully",
-            "content": {
-              "application/json": {
-                "example": {
-                  "schemaName": "NOBEL_PRIZES",
-                  "tables": [
-                    {
-                      "tableName": "nobel-prize",
-                      "metadataClassId": "3d4cbe3a-14ae-11f0-8738-ae468cd3ed16",
-                      "uniformedPath": "$",
-                      "fields": [
-                        {
-                          "fieldName": "entity_id",
-                          "fieldKey": "ENTITY_ID",
-                          "fieldCategory": "SPECIAL",
-                          "dataType": "UUID_TYPE"
-                        },
-                        {
-                          "fieldName": "point_time",
-                          "fieldKey": "POINT_TIME",
-                          "fieldCategory": "SPECIAL",
-                          "dataType": "DATE"
-                        },
-                        {
-                          "fieldName": "creation_date",
-                          "fieldKey": "creationDate",
-                          "fieldCategory": "ROOT",
-                          "dataType": "DATE"
-                        },
-                        {
-                          "fieldName": "last_update_date",
-                          "fieldKey": "lastUpdateTime",
-                          "fieldCategory": "ROOT",
-                          "dataType": "DATE"
-                        },
-                        {
-                          "fieldName": "state",
-                          "fieldKey": "state",
-                          "fieldCategory": "ROOT",
-                          "dataType": "STRING"
-                        },
-                        {
-                          "fieldName": "category",
-                          "fieldKey": ".category",
-                          "fieldCategory": "DATA",
-                          "dataType": "STRING"
-                        },
-                        {
-                          "fieldName": "year",
-                          "fieldKey": ".year",
-                          "fieldCategory": "DATA",
-                          "dataType": "STRING"
-                        }
-                      ],
-                      "hidden": false
-                    },
-                    {
-                      "tableName": "nobel-prize_laureates",
-                      "metadataClassId": "3d4cbe3a-14ae-11f0-8738-ae468cd3ed16",
-                      "uniformedPath": "$.laureates[*]",
-                      "fields": [
-                        {
-                          "fieldName": "entity_id",
-                          "fieldKey": "ENTITY_ID",
-                          "fieldCategory": "SPECIAL",
-                          "dataType": "UUID_TYPE"
-                        },
-                        {
-                          "fieldName": "point_time",
-                          "fieldKey": "POINT_TIME",
-                          "fieldCategory": "SPECIAL",
-                          "dataType": "DATE"
-                        },
-                        {
-                          "fieldName": "creation_date",
-                          "fieldKey": "creationDate",
-                          "fieldCategory": "ROOT",
-                          "dataType": "DATE"
-                        },
-                        {
-                          "fieldName": "last_update_date",
-                          "fieldKey": "lastUpdateTime",
-                          "fieldCategory": "ROOT",
-                          "dataType": "DATE"
-                        },
-                        {
-                          "fieldName": "state",
-                          "fieldKey": "state",
-                          "fieldCategory": "ROOT",
-                          "dataType": "STRING"
-                        },
-                        {
-                          "fieldName": "index",
-                          "fieldKey": "",
-                          "fieldCategory": "INDEX",
-                          "dataType": "INTEGER",
-                          "isArray": true,
-                          "flatten": true,
-                          "arrayFields": [
-                            {
-                              "fieldName": "index_0",
-                              "fieldKey": "0",
-                              "fieldCategory": "INDEX",
-                              "dataType": "INTEGER"
-                            }
-                          ]
-                        },
-                        {
-                          "fieldName": "firstname",
-                          "fieldKey": ".firstname",
-                          "fieldCategory": "DATA",
-                          "dataType": "STRING"
-                        },
-                        {
-                          "fieldName": "surname",
-                          "fieldKey": ".surname",
-                          "fieldCategory": "DATA",
-                          "dataType": "STRING"
-                        },
-                        {
-                          "fieldName": "id",
-                          "fieldKey": ".id",
-                          "fieldCategory": "DATA",
-                          "dataType": "STRING"
-                        },
-                        {
-                          "fieldName": "motivation",
-                          "fieldKey": ".motivation",
-                          "fieldCategory": "DATA",
-                          "dataType": "STRING"
-                        },
-                        {
-                          "fieldName": "share",
-                          "fieldKey": ".share",
-                          "fieldCategory": "DATA",
-                          "dataType": "STRING"
-                        }
-                      ],
-                      "hidden": false
-                    }
-                  ]
-                }
-              }
-            }
-          },
-          "400": {
-            "description": "Invalid schema name",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ProblemDetail"
-                },
-                "example": {
-                  "type": "about:blank",
-                  "title": "Bad Request",
-                  "status": 400,
-                  "detail": "String length of the schema name is outside of the bounds [1,1024]",
-                  "instance": "/api/sql/schema/putDefault/A-string-that-exceeds-the-maximum-permitted-length-of-1024"
-                }
-              }
-            }
-          }
-        }
-      }
-    },
-    "/sql/schema/updateTables/{entityModelId}": {
-      "post": {
-        "tags": [
-          "SQL-Schema"
-        ],
-        "summary": "Synchronize given SQL table configurations with the current entity model",
-        "description": "Synchronizes given table configurations with the current entity model structure, preserving custom settings while incorporating any model changes",
-        "operationId": "updateTables",
-        "parameters": [
-          {
-            "name": "entityModelId",
-            "in": "path",
-            "description": "The entity model ID to update tables from",
-            "required": true,
-            "schema": {
-              "type": "string",
-              "format": "uuid"
-            }
-          }
-        ],
-        "requestBody": {
-          "content": {
-            "application/json": {
-              "schema": {
-                "type": "string"
               },
               "examples": {
-                "Example Tables from the Nobel Prize model": {
-                  "description": "Example Tables from the Nobel Prize model",
+                "Nobel Prize Schema Configuration": {
+                  "description": "Nobel Prize Schema Configuration",
                   "value": {
                     "schemaName": "NOBEL_PRIZES",
                     "tables": [
                       {
                         "tableName": "nobel-prize",
-                        "metadataClassId": "3d4cbe3a-14ae-11f0-8738-ae468cd3ed16",
+                        "metadataClassId": "e43e510a-779f-11f0-885b-ae468cd3ed16",
                         "uniformedPath": "$",
                         "fields": [
                           {
@@ -4192,7 +3903,7 @@
                       },
                       {
                         "tableName": "nobel-prize_laureates",
-                        "metadataClassId": "3d4cbe3a-14ae-11f0-8738-ae468cd3ed16",
+                        "metadataClassId": "e43e510a-779f-11f0-885b-ae468cd3ed16",
                         "uniformedPath": "$.laureates[*]",
                         "fields": [
                           {
@@ -4273,6 +3984,50 @@
                           }
                         ],
                         "hidden": false
+                      },
+                      {
+                        "tableName": "nobel-prize_json",
+                        "metadataClassId": "e43e510a-779f-11f0-885b-ae468cd3ed16",
+                        "uniformedPath": "json",
+                        "fields": [
+                          {
+                            "fieldName": "entity_id",
+                            "fieldKey": "ENTITY_ID",
+                            "fieldCategory": "SPECIAL",
+                            "dataType": "UUID_TYPE"
+                          },
+                          {
+                            "fieldName": "point_time",
+                            "fieldKey": "POINT_TIME",
+                            "fieldCategory": "SPECIAL",
+                            "dataType": "DATE"
+                          },
+                          {
+                            "fieldName": "creation_date",
+                            "fieldKey": "creationDate",
+                            "fieldCategory": "ROOT",
+                            "dataType": "DATE"
+                          },
+                          {
+                            "fieldName": "last_update_date",
+                            "fieldKey": "lastUpdateTime",
+                            "fieldCategory": "ROOT",
+                            "dataType": "DATE"
+                          },
+                          {
+                            "fieldName": "state",
+                            "fieldKey": "state",
+                            "fieldCategory": "ROOT",
+                            "dataType": "STRING"
+                          },
+                          {
+                            "fieldName": "entity",
+                            "fieldKey": "JSON",
+                            "fieldCategory": "SPECIAL",
+                            "dataType": "STRING"
+                          }
+                        ],
+                        "hidden": false
                       }
                     ]
                   }
@@ -4284,13 +4039,71 @@
         },
         "responses": {
           "200": {
-            "description": "Tables updated successfully",
+            "description": "Schema saved successfully",
+            "content": {
+              "application/json": {
+                "example": "1d1e1b10-1155-11f0-bcd5-ae468cd3ed16"
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid schema configuration",
             "content": {
               "application/json": {
                 "schema": {
-                  "type": "array",
-                  "items": {
-                    "$ref": "#/components/schemas/TableConfigDto"
+                  "$ref": "#/components/schemas/ProblemDetail"
+                },
+                "example": {
+                  "type": "about:blank",
+                  "title": "Bad Request",
+                  "status": 400,
+                  "detail": "String length of the schema name is outside of the bounds [1,1024]",
+                  "instance": "/api/sql/schema/"
+                }
+              }
+            }
+          }
+        }
+      },
+      "delete": {
+        "tags": [
+          "SQL-Schema"
+        ],
+        "summary": "Delete schema by name",
+        "description": "Deletes an existing schema configuration using its name",
+        "operationId": "deleteSchemaByName",
+        "parameters": [
+          {
+            "name": "schemaName",
+            "in": "query",
+            "description": "Name of the schema to delete",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Schema deleted successfully",
+            "content": {
+              "application/json": {
+                "example": "SQL Schema with name NOBEL_PRIZES deleted"
+              }
+            }
+          },
+          "404": {
+            "description": "Schema not found",
+            "content": {
+              "application/json": {
+                "example": {
+                  "type": "about:blank",
+                  "title": "Not Found",
+                  "status": 404,
+                  "detail": "Schema larry not found",
+                  "instance": "/api/sql/schema/",
+                  "properties": {
+                    "schemaName": "larry"
                   }
                 }
               }
@@ -4299,19 +4112,19 @@
         }
       }
     },
-    "/sql/schema/{schemaId}": {
+    "/sql/schema/genTables/{entityModelId}": {
       "get": {
         "tags": [
           "SQL-Schema"
         ],
-        "summary": "Get schema by ID",
-        "description": "Retrieves a schema configuration using its UUID",
-        "operationId": "getSchema",
+        "summary": "Generate SQL tables from an entity model",
+        "description": "Generates table configurations based on entity model ID",
+        "operationId": "genTables",
         "parameters": [
           {
-            "name": "schemaId",
+            "name": "entityModelId",
             "in": "path",
-            "description": "UUID of the schema to retrieve",
+            "description": "The entity model id to generate tables from",
             "required": true,
             "schema": {
               "type": "string",
@@ -4321,7 +4134,423 @@
         ],
         "responses": {
           "200": {
-            "description": "Schema found",
+            "description": "Tables generated successfully",
+            "content": {
+              "application/json": {
+                "example": [
+                  {
+                    "tableName": "nobel-prize",
+                    "metadataClassId": "e43e510a-779f-11f0-885b-ae468cd3ed16",
+                    "uniformedPath": "$",
+                    "fields": [
+                      {
+                        "fieldName": "entity_id",
+                        "fieldKey": "ENTITY_ID",
+                        "fieldCategory": "SPECIAL",
+                        "dataType": "UUID_TYPE"
+                      },
+                      {
+                        "fieldName": "point_time",
+                        "fieldKey": "POINT_TIME",
+                        "fieldCategory": "SPECIAL",
+                        "dataType": "DATE"
+                      },
+                      {
+                        "fieldName": "creation_date",
+                        "fieldKey": "creationDate",
+                        "fieldCategory": "ROOT",
+                        "dataType": "DATE"
+                      },
+                      {
+                        "fieldName": "last_update_date",
+                        "fieldKey": "lastUpdateTime",
+                        "fieldCategory": "ROOT",
+                        "dataType": "DATE"
+                      },
+                      {
+                        "fieldName": "state",
+                        "fieldKey": "state",
+                        "fieldCategory": "ROOT",
+                        "dataType": "STRING"
+                      },
+                      {
+                        "fieldName": "category",
+                        "fieldKey": ".category",
+                        "fieldCategory": "DATA",
+                        "dataType": "STRING"
+                      },
+                      {
+                        "fieldName": "year",
+                        "fieldKey": ".year",
+                        "fieldCategory": "DATA",
+                        "dataType": "STRING"
+                      }
+                    ],
+                    "hidden": false
+                  },
+                  {
+                    "tableName": "nobel-prize_laureates",
+                    "metadataClassId": "e43e510a-779f-11f0-885b-ae468cd3ed16",
+                    "uniformedPath": "$.laureates[*]",
+                    "fields": [
+                      {
+                        "fieldName": "entity_id",
+                        "fieldKey": "ENTITY_ID",
+                        "fieldCategory": "SPECIAL",
+                        "dataType": "UUID_TYPE"
+                      },
+                      {
+                        "fieldName": "point_time",
+                        "fieldKey": "POINT_TIME",
+                        "fieldCategory": "SPECIAL",
+                        "dataType": "DATE"
+                      },
+                      {
+                        "fieldName": "creation_date",
+                        "fieldKey": "creationDate",
+                        "fieldCategory": "ROOT",
+                        "dataType": "DATE"
+                      },
+                      {
+                        "fieldName": "last_update_date",
+                        "fieldKey": "lastUpdateTime",
+                        "fieldCategory": "ROOT",
+                        "dataType": "DATE"
+                      },
+                      {
+                        "fieldName": "state",
+                        "fieldKey": "state",
+                        "fieldCategory": "ROOT",
+                        "dataType": "STRING"
+                      },
+                      {
+                        "fieldName": "index",
+                        "fieldKey": "",
+                        "fieldCategory": "INDEX",
+                        "dataType": "INTEGER",
+                        "isArray": true,
+                        "flatten": true,
+                        "arrayFields": [
+                          {
+                            "fieldName": "index_0",
+                            "fieldKey": "0",
+                            "fieldCategory": "INDEX",
+                            "dataType": "INTEGER"
+                          }
+                        ]
+                      },
+                      {
+                        "fieldName": "firstname",
+                        "fieldKey": ".firstname",
+                        "fieldCategory": "DATA",
+                        "dataType": "STRING"
+                      },
+                      {
+                        "fieldName": "surname",
+                        "fieldKey": ".surname",
+                        "fieldCategory": "DATA",
+                        "dataType": "STRING"
+                      },
+                      {
+                        "fieldName": "id",
+                        "fieldKey": ".id",
+                        "fieldCategory": "DATA",
+                        "dataType": "STRING"
+                      },
+                      {
+                        "fieldName": "motivation",
+                        "fieldKey": ".motivation",
+                        "fieldCategory": "DATA",
+                        "dataType": "STRING"
+                      },
+                      {
+                        "fieldName": "share",
+                        "fieldKey": ".share",
+                        "fieldCategory": "DATA",
+                        "dataType": "STRING"
+                      }
+                    ],
+                    "hidden": false
+                  },
+                  {
+                    "tableName": "nobel-prize_json",
+                    "metadataClassId": "e43e510a-779f-11f0-885b-ae468cd3ed16",
+                    "uniformedPath": "json",
+                    "fields": [
+                      {
+                        "fieldName": "entity_id",
+                        "fieldKey": "ENTITY_ID",
+                        "fieldCategory": "SPECIAL",
+                        "dataType": "UUID_TYPE"
+                      },
+                      {
+                        "fieldName": "point_time",
+                        "fieldKey": "POINT_TIME",
+                        "fieldCategory": "SPECIAL",
+                        "dataType": "DATE"
+                      },
+                      {
+                        "fieldName": "creation_date",
+                        "fieldKey": "creationDate",
+                        "fieldCategory": "ROOT",
+                        "dataType": "DATE"
+                      },
+                      {
+                        "fieldName": "last_update_date",
+                        "fieldKey": "lastUpdateTime",
+                        "fieldCategory": "ROOT",
+                        "dataType": "DATE"
+                      },
+                      {
+                        "fieldName": "state",
+                        "fieldKey": "state",
+                        "fieldCategory": "ROOT",
+                        "dataType": "STRING"
+                      },
+                      {
+                        "fieldName": "entity",
+                        "fieldKey": "JSON",
+                        "fieldCategory": "SPECIAL",
+                        "dataType": "STRING"
+                      }
+                    ],
+                    "hidden": false
+                  }
+                ]
+              }
+            }
+          }
+        }
+      }
+    },
+    "/sql/schema/listAll": {
+      "get": {
+        "tags": [
+          "SQL-Schema"
+        ],
+        "summary": "List all schemas",
+        "description": "Retrieves all available schema configurations",
+        "operationId": "getSchemas",
+        "responses": {
+          "200": {
+            "description": "List of schemas retrieved successfully",
+            "content": {
+              "application/json": {
+                "example": [
+                  {
+                    "schemaName": "NOBEL_PRIZES",
+                    "tables": [
+                      {
+                        "tableName": "nobel-prize",
+                        "metadataClassId": "e43e510a-779f-11f0-885b-ae468cd3ed16",
+                        "uniformedPath": "$",
+                        "fields": [
+                          {
+                            "fieldName": "entity_id",
+                            "fieldKey": "ENTITY_ID",
+                            "fieldCategory": "SPECIAL",
+                            "dataType": "UUID_TYPE"
+                          },
+                          {
+                            "fieldName": "point_time",
+                            "fieldKey": "POINT_TIME",
+                            "fieldCategory": "SPECIAL",
+                            "dataType": "DATE"
+                          },
+                          {
+                            "fieldName": "creation_date",
+                            "fieldKey": "creationDate",
+                            "fieldCategory": "ROOT",
+                            "dataType": "DATE"
+                          },
+                          {
+                            "fieldName": "last_update_date",
+                            "fieldKey": "lastUpdateTime",
+                            "fieldCategory": "ROOT",
+                            "dataType": "DATE"
+                          },
+                          {
+                            "fieldName": "state",
+                            "fieldKey": "state",
+                            "fieldCategory": "ROOT",
+                            "dataType": "STRING"
+                          },
+                          {
+                            "fieldName": "category",
+                            "fieldKey": ".category",
+                            "fieldCategory": "DATA",
+                            "dataType": "STRING"
+                          },
+                          {
+                            "fieldName": "year",
+                            "fieldKey": ".year",
+                            "fieldCategory": "DATA",
+                            "dataType": "STRING"
+                          }
+                        ],
+                        "hidden": false
+                      },
+                      {
+                        "tableName": "nobel-prize_laureates",
+                        "metadataClassId": "e43e510a-779f-11f0-885b-ae468cd3ed16",
+                        "uniformedPath": "$.laureates[*]",
+                        "fields": [
+                          {
+                            "fieldName": "entity_id",
+                            "fieldKey": "ENTITY_ID",
+                            "fieldCategory": "SPECIAL",
+                            "dataType": "UUID_TYPE"
+                          },
+                          {
+                            "fieldName": "point_time",
+                            "fieldKey": "POINT_TIME",
+                            "fieldCategory": "SPECIAL",
+                            "dataType": "DATE"
+                          },
+                          {
+                            "fieldName": "creation_date",
+                            "fieldKey": "creationDate",
+                            "fieldCategory": "ROOT",
+                            "dataType": "DATE"
+                          },
+                          {
+                            "fieldName": "last_update_date",
+                            "fieldKey": "lastUpdateTime",
+                            "fieldCategory": "ROOT",
+                            "dataType": "DATE"
+                          },
+                          {
+                            "fieldName": "state",
+                            "fieldKey": "state",
+                            "fieldCategory": "ROOT",
+                            "dataType": "STRING"
+                          },
+                          {
+                            "fieldName": "index",
+                            "fieldKey": "",
+                            "fieldCategory": "INDEX",
+                            "dataType": "INTEGER",
+                            "isArray": true,
+                            "flatten": true,
+                            "arrayFields": [
+                              {
+                                "fieldName": "index_0",
+                                "fieldKey": "0",
+                                "fieldCategory": "INDEX",
+                                "dataType": "INTEGER"
+                              }
+                            ]
+                          },
+                          {
+                            "fieldName": "firstname",
+                            "fieldKey": ".firstname",
+                            "fieldCategory": "DATA",
+                            "dataType": "STRING"
+                          },
+                          {
+                            "fieldName": "surname",
+                            "fieldKey": ".surname",
+                            "fieldCategory": "DATA",
+                            "dataType": "STRING"
+                          },
+                          {
+                            "fieldName": "id",
+                            "fieldKey": ".id",
+                            "fieldCategory": "DATA",
+                            "dataType": "STRING"
+                          },
+                          {
+                            "fieldName": "motivation",
+                            "fieldKey": ".motivation",
+                            "fieldCategory": "DATA",
+                            "dataType": "STRING"
+                          },
+                          {
+                            "fieldName": "share",
+                            "fieldKey": ".share",
+                            "fieldCategory": "DATA",
+                            "dataType": "STRING"
+                          }
+                        ],
+                        "hidden": false
+                      },
+                      {
+                        "tableName": "nobel-prize_json",
+                        "metadataClassId": "e43e510a-779f-11f0-885b-ae468cd3ed16",
+                        "uniformedPath": "json",
+                        "fields": [
+                          {
+                            "fieldName": "entity_id",
+                            "fieldKey": "ENTITY_ID",
+                            "fieldCategory": "SPECIAL",
+                            "dataType": "UUID_TYPE"
+                          },
+                          {
+                            "fieldName": "point_time",
+                            "fieldKey": "POINT_TIME",
+                            "fieldCategory": "SPECIAL",
+                            "dataType": "DATE"
+                          },
+                          {
+                            "fieldName": "creation_date",
+                            "fieldKey": "creationDate",
+                            "fieldCategory": "ROOT",
+                            "dataType": "DATE"
+                          },
+                          {
+                            "fieldName": "last_update_date",
+                            "fieldKey": "lastUpdateTime",
+                            "fieldCategory": "ROOT",
+                            "dataType": "DATE"
+                          },
+                          {
+                            "fieldName": "state",
+                            "fieldKey": "state",
+                            "fieldCategory": "ROOT",
+                            "dataType": "STRING"
+                          },
+                          {
+                            "fieldName": "entity",
+                            "fieldKey": "JSON",
+                            "fieldCategory": "SPECIAL",
+                            "dataType": "STRING"
+                          }
+                        ],
+                        "hidden": false
+                      }
+                    ]
+                  }
+                ]
+              }
+            }
+          }
+        }
+      }
+    },
+    "/sql/schema/putDefault/{schemaName}": {
+      "put": {
+        "tags": [
+          "SQL-Schema"
+        ],
+        "summary": "Create default schema",
+        "description": "Creates a new schema configuration that includes all available entity models with their complete field structures",
+        "operationId": "putSchema",
+        "parameters": [
+          {
+            "name": "schemaName",
+            "in": "path",
+            "description": "Name for the new schema. The name can have a maximum of 1024 characters",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "maxLength": 1024,
+              "minLength": 1
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Schema created successfully",
             "content": {
               "application/json": {
                 "example": {
@@ -4329,7 +4558,7 @@
                   "tables": [
                     {
                       "tableName": "nobel-prize",
-                      "metadataClassId": "3d4cbe3a-14ae-11f0-8738-ae468cd3ed16",
+                      "metadataClassId": "e43e510a-779f-11f0-885b-ae468cd3ed16",
                       "uniformedPath": "$",
                       "fields": [
                         {
@@ -4379,7 +4608,7 @@
                     },
                     {
                       "tableName": "nobel-prize_laureates",
-                      "metadataClassId": "3d4cbe3a-14ae-11f0-8738-ae468cd3ed16",
+                      "metadataClassId": "e43e510a-779f-11f0-885b-ae468cd3ed16",
                       "uniformedPath": "$.laureates[*]",
                       "fields": [
                         {
@@ -4460,6 +4689,687 @@
                         }
                       ],
                       "hidden": false
+                    },
+                    {
+                      "tableName": "nobel-prize_json",
+                      "metadataClassId": "e43e510a-779f-11f0-885b-ae468cd3ed16",
+                      "uniformedPath": "json",
+                      "fields": [
+                        {
+                          "fieldName": "entity_id",
+                          "fieldKey": "ENTITY_ID",
+                          "fieldCategory": "SPECIAL",
+                          "dataType": "UUID_TYPE"
+                        },
+                        {
+                          "fieldName": "point_time",
+                          "fieldKey": "POINT_TIME",
+                          "fieldCategory": "SPECIAL",
+                          "dataType": "DATE"
+                        },
+                        {
+                          "fieldName": "creation_date",
+                          "fieldKey": "creationDate",
+                          "fieldCategory": "ROOT",
+                          "dataType": "DATE"
+                        },
+                        {
+                          "fieldName": "last_update_date",
+                          "fieldKey": "lastUpdateTime",
+                          "fieldCategory": "ROOT",
+                          "dataType": "DATE"
+                        },
+                        {
+                          "fieldName": "state",
+                          "fieldKey": "state",
+                          "fieldCategory": "ROOT",
+                          "dataType": "STRING"
+                        },
+                        {
+                          "fieldName": "entity",
+                          "fieldKey": "JSON",
+                          "fieldCategory": "SPECIAL",
+                          "dataType": "STRING"
+                        }
+                      ],
+                      "hidden": false
+                    }
+                  ]
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid schema name",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetail"
+                },
+                "example": {
+                  "type": "about:blank",
+                  "title": "Bad Request",
+                  "status": 400,
+                  "detail": "String length of the schema name is outside of the bounds [1,1024]",
+                  "instance": "/api/sql/schema/putDefault/A-string-that-exceeds-the-maximum-permitted-length-of-1024"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/sql/schema/updateTables/{entityModelId}": {
+      "post": {
+        "tags": [
+          "SQL-Schema"
+        ],
+        "summary": "Synchronize given SQL table configurations with the current entity model",
+        "description": "Synchronizes given table configurations with the current entity model structure, preserving custom settings while incorporating any model changes",
+        "operationId": "updateTables",
+        "parameters": [
+          {
+            "name": "entityModelId",
+            "in": "path",
+            "description": "The entity model ID to update tables from",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "string"
+              },
+              "examples": {
+                "Example Tables from the Nobel Prize model": {
+                  "description": "Example Tables from the Nobel Prize model",
+                  "value": [
+                    {
+                      "tableName": "nobel-prize",
+                      "metadataClassId": "e43e510a-779f-11f0-885b-ae468cd3ed16",
+                      "uniformedPath": "$",
+                      "fields": [
+                        {
+                          "fieldName": "entity_id",
+                          "fieldKey": "ENTITY_ID",
+                          "fieldCategory": "SPECIAL",
+                          "dataType": "UUID_TYPE"
+                        },
+                        {
+                          "fieldName": "point_time",
+                          "fieldKey": "POINT_TIME",
+                          "fieldCategory": "SPECIAL",
+                          "dataType": "DATE"
+                        },
+                        {
+                          "fieldName": "creation_date",
+                          "fieldKey": "creationDate",
+                          "fieldCategory": "ROOT",
+                          "dataType": "DATE"
+                        },
+                        {
+                          "fieldName": "last_update_date",
+                          "fieldKey": "lastUpdateTime",
+                          "fieldCategory": "ROOT",
+                          "dataType": "DATE"
+                        },
+                        {
+                          "fieldName": "state",
+                          "fieldKey": "state",
+                          "fieldCategory": "ROOT",
+                          "dataType": "STRING"
+                        },
+                        {
+                          "fieldName": "category",
+                          "fieldKey": ".category",
+                          "fieldCategory": "DATA",
+                          "dataType": "STRING"
+                        },
+                        {
+                          "fieldName": "year",
+                          "fieldKey": ".year",
+                          "fieldCategory": "DATA",
+                          "dataType": "STRING"
+                        }
+                      ],
+                      "hidden": false
+                    },
+                    {
+                      "tableName": "nobel-prize_laureates",
+                      "metadataClassId": "e43e510a-779f-11f0-885b-ae468cd3ed16",
+                      "uniformedPath": "$.laureates[*]",
+                      "fields": [
+                        {
+                          "fieldName": "entity_id",
+                          "fieldKey": "ENTITY_ID",
+                          "fieldCategory": "SPECIAL",
+                          "dataType": "UUID_TYPE"
+                        },
+                        {
+                          "fieldName": "point_time",
+                          "fieldKey": "POINT_TIME",
+                          "fieldCategory": "SPECIAL",
+                          "dataType": "DATE"
+                        },
+                        {
+                          "fieldName": "creation_date",
+                          "fieldKey": "creationDate",
+                          "fieldCategory": "ROOT",
+                          "dataType": "DATE"
+                        },
+                        {
+                          "fieldName": "last_update_date",
+                          "fieldKey": "lastUpdateTime",
+                          "fieldCategory": "ROOT",
+                          "dataType": "DATE"
+                        },
+                        {
+                          "fieldName": "state",
+                          "fieldKey": "state",
+                          "fieldCategory": "ROOT",
+                          "dataType": "STRING"
+                        },
+                        {
+                          "fieldName": "index",
+                          "fieldKey": "",
+                          "fieldCategory": "INDEX",
+                          "dataType": "INTEGER",
+                          "isArray": true,
+                          "flatten": true,
+                          "arrayFields": [
+                            {
+                              "fieldName": "index_0",
+                              "fieldKey": "0",
+                              "fieldCategory": "INDEX",
+                              "dataType": "INTEGER"
+                            }
+                          ]
+                        },
+                        {
+                          "fieldName": "firstname",
+                          "fieldKey": ".firstname",
+                          "fieldCategory": "DATA",
+                          "dataType": "STRING"
+                        },
+                        {
+                          "fieldName": "surname",
+                          "fieldKey": ".surname",
+                          "fieldCategory": "DATA",
+                          "dataType": "STRING"
+                        },
+                        {
+                          "fieldName": "id",
+                          "fieldKey": ".id",
+                          "fieldCategory": "DATA",
+                          "dataType": "STRING"
+                        },
+                        {
+                          "fieldName": "motivation",
+                          "fieldKey": ".motivation",
+                          "fieldCategory": "DATA",
+                          "dataType": "STRING"
+                        },
+                        {
+                          "fieldName": "share",
+                          "fieldKey": ".share",
+                          "fieldCategory": "DATA",
+                          "dataType": "STRING"
+                        }
+                      ],
+                      "hidden": false
+                    },
+                    {
+                      "tableName": "nobel-prize_json",
+                      "metadataClassId": "e43e510a-779f-11f0-885b-ae468cd3ed16",
+                      "uniformedPath": "json",
+                      "fields": [
+                        {
+                          "fieldName": "entity_id",
+                          "fieldKey": "ENTITY_ID",
+                          "fieldCategory": "SPECIAL",
+                          "dataType": "UUID_TYPE"
+                        },
+                        {
+                          "fieldName": "point_time",
+                          "fieldKey": "POINT_TIME",
+                          "fieldCategory": "SPECIAL",
+                          "dataType": "DATE"
+                        },
+                        {
+                          "fieldName": "creation_date",
+                          "fieldKey": "creationDate",
+                          "fieldCategory": "ROOT",
+                          "dataType": "DATE"
+                        },
+                        {
+                          "fieldName": "last_update_date",
+                          "fieldKey": "lastUpdateTime",
+                          "fieldCategory": "ROOT",
+                          "dataType": "DATE"
+                        },
+                        {
+                          "fieldName": "state",
+                          "fieldKey": "state",
+                          "fieldCategory": "ROOT",
+                          "dataType": "STRING"
+                        },
+                        {
+                          "fieldName": "entity",
+                          "fieldKey": "JSON",
+                          "fieldCategory": "SPECIAL",
+                          "dataType": "STRING"
+                        }
+                      ],
+                      "hidden": false
+                    }
+                  ]
+                }
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Tables updated successfully",
+            "content": {
+              "application/json": {
+                "example": [
+                  {
+                    "tableName": "nobel-prize",
+                    "metadataClassId": "e43e510a-779f-11f0-885b-ae468cd3ed16",
+                    "uniformedPath": "$",
+                    "fields": [
+                      {
+                        "fieldName": "entity_id",
+                        "fieldKey": "ENTITY_ID",
+                        "fieldCategory": "SPECIAL",
+                        "dataType": "UUID_TYPE"
+                      },
+                      {
+                        "fieldName": "point_time",
+                        "fieldKey": "POINT_TIME",
+                        "fieldCategory": "SPECIAL",
+                        "dataType": "DATE"
+                      },
+                      {
+                        "fieldName": "creation_date",
+                        "fieldKey": "creationDate",
+                        "fieldCategory": "ROOT",
+                        "dataType": "DATE"
+                      },
+                      {
+                        "fieldName": "last_update_date",
+                        "fieldKey": "lastUpdateTime",
+                        "fieldCategory": "ROOT",
+                        "dataType": "DATE"
+                      },
+                      {
+                        "fieldName": "state",
+                        "fieldKey": "state",
+                        "fieldCategory": "ROOT",
+                        "dataType": "STRING"
+                      },
+                      {
+                        "fieldName": "category",
+                        "fieldKey": ".category",
+                        "fieldCategory": "DATA",
+                        "dataType": "STRING"
+                      },
+                      {
+                        "fieldName": "year",
+                        "fieldKey": ".year",
+                        "fieldCategory": "DATA",
+                        "dataType": "STRING"
+                      }
+                    ],
+                    "hidden": false
+                  },
+                  {
+                    "tableName": "nobel-prize_laureates",
+                    "metadataClassId": "e43e510a-779f-11f0-885b-ae468cd3ed16",
+                    "uniformedPath": "$.laureates[*]",
+                    "fields": [
+                      {
+                        "fieldName": "entity_id",
+                        "fieldKey": "ENTITY_ID",
+                        "fieldCategory": "SPECIAL",
+                        "dataType": "UUID_TYPE"
+                      },
+                      {
+                        "fieldName": "point_time",
+                        "fieldKey": "POINT_TIME",
+                        "fieldCategory": "SPECIAL",
+                        "dataType": "DATE"
+                      },
+                      {
+                        "fieldName": "creation_date",
+                        "fieldKey": "creationDate",
+                        "fieldCategory": "ROOT",
+                        "dataType": "DATE"
+                      },
+                      {
+                        "fieldName": "last_update_date",
+                        "fieldKey": "lastUpdateTime",
+                        "fieldCategory": "ROOT",
+                        "dataType": "DATE"
+                      },
+                      {
+                        "fieldName": "state",
+                        "fieldKey": "state",
+                        "fieldCategory": "ROOT",
+                        "dataType": "STRING"
+                      },
+                      {
+                        "fieldName": "index",
+                        "fieldKey": "",
+                        "fieldCategory": "INDEX",
+                        "dataType": "INTEGER",
+                        "isArray": true,
+                        "flatten": true,
+                        "arrayFields": [
+                          {
+                            "fieldName": "index_0",
+                            "fieldKey": "0",
+                            "fieldCategory": "INDEX",
+                            "dataType": "INTEGER"
+                          }
+                        ]
+                      },
+                      {
+                        "fieldName": "firstname",
+                        "fieldKey": ".firstname",
+                        "fieldCategory": "DATA",
+                        "dataType": "STRING"
+                      },
+                      {
+                        "fieldName": "surname",
+                        "fieldKey": ".surname",
+                        "fieldCategory": "DATA",
+                        "dataType": "STRING"
+                      },
+                      {
+                        "fieldName": "id",
+                        "fieldKey": ".id",
+                        "fieldCategory": "DATA",
+                        "dataType": "STRING"
+                      },
+                      {
+                        "fieldName": "motivation",
+                        "fieldKey": ".motivation",
+                        "fieldCategory": "DATA",
+                        "dataType": "STRING"
+                      },
+                      {
+                        "fieldName": "share",
+                        "fieldKey": ".share",
+                        "fieldCategory": "DATA",
+                        "dataType": "STRING"
+                      }
+                    ],
+                    "hidden": false
+                  },
+                  {
+                    "tableName": "nobel-prize_json",
+                    "metadataClassId": "e43e510a-779f-11f0-885b-ae468cd3ed16",
+                    "uniformedPath": "json",
+                    "fields": [
+                      {
+                        "fieldName": "entity_id",
+                        "fieldKey": "ENTITY_ID",
+                        "fieldCategory": "SPECIAL",
+                        "dataType": "UUID_TYPE"
+                      },
+                      {
+                        "fieldName": "point_time",
+                        "fieldKey": "POINT_TIME",
+                        "fieldCategory": "SPECIAL",
+                        "dataType": "DATE"
+                      },
+                      {
+                        "fieldName": "creation_date",
+                        "fieldKey": "creationDate",
+                        "fieldCategory": "ROOT",
+                        "dataType": "DATE"
+                      },
+                      {
+                        "fieldName": "last_update_date",
+                        "fieldKey": "lastUpdateTime",
+                        "fieldCategory": "ROOT",
+                        "dataType": "DATE"
+                      },
+                      {
+                        "fieldName": "state",
+                        "fieldKey": "state",
+                        "fieldCategory": "ROOT",
+                        "dataType": "STRING"
+                      },
+                      {
+                        "fieldName": "entity",
+                        "fieldKey": "JSON",
+                        "fieldCategory": "SPECIAL",
+                        "dataType": "STRING"
+                      }
+                    ],
+                    "hidden": false
+                  }
+                ]
+              }
+            }
+          }
+        }
+      }
+    },
+    "/sql/schema/{schemaId}": {
+      "get": {
+        "tags": [
+          "SQL-Schema"
+        ],
+        "summary": "Get schema by ID",
+        "description": "Retrieves a schema configuration using its UUID",
+        "operationId": "getSchema",
+        "parameters": [
+          {
+            "name": "schemaId",
+            "in": "path",
+            "description": "UUID of the schema to retrieve",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Schema found",
+            "content": {
+              "application/json": {
+                "example": {
+                  "schemaName": "NOBEL_PRIZES",
+                  "tables": [
+                    {
+                      "tableName": "nobel-prize",
+                      "metadataClassId": "e43e510a-779f-11f0-885b-ae468cd3ed16",
+                      "uniformedPath": "$",
+                      "fields": [
+                        {
+                          "fieldName": "entity_id",
+                          "fieldKey": "ENTITY_ID",
+                          "fieldCategory": "SPECIAL",
+                          "dataType": "UUID_TYPE"
+                        },
+                        {
+                          "fieldName": "point_time",
+                          "fieldKey": "POINT_TIME",
+                          "fieldCategory": "SPECIAL",
+                          "dataType": "DATE"
+                        },
+                        {
+                          "fieldName": "creation_date",
+                          "fieldKey": "creationDate",
+                          "fieldCategory": "ROOT",
+                          "dataType": "DATE"
+                        },
+                        {
+                          "fieldName": "last_update_date",
+                          "fieldKey": "lastUpdateTime",
+                          "fieldCategory": "ROOT",
+                          "dataType": "DATE"
+                        },
+                        {
+                          "fieldName": "state",
+                          "fieldKey": "state",
+                          "fieldCategory": "ROOT",
+                          "dataType": "STRING"
+                        },
+                        {
+                          "fieldName": "category",
+                          "fieldKey": ".category",
+                          "fieldCategory": "DATA",
+                          "dataType": "STRING"
+                        },
+                        {
+                          "fieldName": "year",
+                          "fieldKey": ".year",
+                          "fieldCategory": "DATA",
+                          "dataType": "STRING"
+                        }
+                      ],
+                      "hidden": false
+                    },
+                    {
+                      "tableName": "nobel-prize_laureates",
+                      "metadataClassId": "e43e510a-779f-11f0-885b-ae468cd3ed16",
+                      "uniformedPath": "$.laureates[*]",
+                      "fields": [
+                        {
+                          "fieldName": "entity_id",
+                          "fieldKey": "ENTITY_ID",
+                          "fieldCategory": "SPECIAL",
+                          "dataType": "UUID_TYPE"
+                        },
+                        {
+                          "fieldName": "point_time",
+                          "fieldKey": "POINT_TIME",
+                          "fieldCategory": "SPECIAL",
+                          "dataType": "DATE"
+                        },
+                        {
+                          "fieldName": "creation_date",
+                          "fieldKey": "creationDate",
+                          "fieldCategory": "ROOT",
+                          "dataType": "DATE"
+                        },
+                        {
+                          "fieldName": "last_update_date",
+                          "fieldKey": "lastUpdateTime",
+                          "fieldCategory": "ROOT",
+                          "dataType": "DATE"
+                        },
+                        {
+                          "fieldName": "state",
+                          "fieldKey": "state",
+                          "fieldCategory": "ROOT",
+                          "dataType": "STRING"
+                        },
+                        {
+                          "fieldName": "index",
+                          "fieldKey": "",
+                          "fieldCategory": "INDEX",
+                          "dataType": "INTEGER",
+                          "isArray": true,
+                          "flatten": true,
+                          "arrayFields": [
+                            {
+                              "fieldName": "index_0",
+                              "fieldKey": "0",
+                              "fieldCategory": "INDEX",
+                              "dataType": "INTEGER"
+                            }
+                          ]
+                        },
+                        {
+                          "fieldName": "firstname",
+                          "fieldKey": ".firstname",
+                          "fieldCategory": "DATA",
+                          "dataType": "STRING"
+                        },
+                        {
+                          "fieldName": "surname",
+                          "fieldKey": ".surname",
+                          "fieldCategory": "DATA",
+                          "dataType": "STRING"
+                        },
+                        {
+                          "fieldName": "id",
+                          "fieldKey": ".id",
+                          "fieldCategory": "DATA",
+                          "dataType": "STRING"
+                        },
+                        {
+                          "fieldName": "motivation",
+                          "fieldKey": ".motivation",
+                          "fieldCategory": "DATA",
+                          "dataType": "STRING"
+                        },
+                        {
+                          "fieldName": "share",
+                          "fieldKey": ".share",
+                          "fieldCategory": "DATA",
+                          "dataType": "STRING"
+                        }
+                      ],
+                      "hidden": false
+                    },
+                    {
+                      "tableName": "nobel-prize_json",
+                      "metadataClassId": "e43e510a-779f-11f0-885b-ae468cd3ed16",
+                      "uniformedPath": "json",
+                      "fields": [
+                        {
+                          "fieldName": "entity_id",
+                          "fieldKey": "ENTITY_ID",
+                          "fieldCategory": "SPECIAL",
+                          "dataType": "UUID_TYPE"
+                        },
+                        {
+                          "fieldName": "point_time",
+                          "fieldKey": "POINT_TIME",
+                          "fieldCategory": "SPECIAL",
+                          "dataType": "DATE"
+                        },
+                        {
+                          "fieldName": "creation_date",
+                          "fieldKey": "creationDate",
+                          "fieldCategory": "ROOT",
+                          "dataType": "DATE"
+                        },
+                        {
+                          "fieldName": "last_update_date",
+                          "fieldKey": "lastUpdateTime",
+                          "fieldCategory": "ROOT",
+                          "dataType": "DATE"
+                        },
+                        {
+                          "fieldName": "state",
+                          "fieldKey": "state",
+                          "fieldCategory": "ROOT",
+                          "dataType": "STRING"
+                        },
+                        {
+                          "fieldName": "entity",
+                          "fieldKey": "JSON",
+                          "fieldCategory": "SPECIAL",
+                          "dataType": "STRING"
+                        }
+                      ],
+                      "hidden": false
                     }
                   ]
                 }
@@ -4474,12 +5384,10 @@
                   "type": "about:blank",
                   "title": "Not Found",
                   "status": 404,
-                  "detail": "Schema with id 3d7554d0-14ae-11f0-8738-ae468cd3ed16 not found",
-                  "instance": "/api/sql/schema/3d7554d0-14ae-11f0-8738-ae468cd3ed16",
+                  "detail": "Schema with id e46a1bf0-779f-11f0-885b-ae468cd3ed16 not found",
+                  "instance": "/api/sql/schema/e46a1bf0-779f-11f0-885b-ae468cd3ed16",
                   "properties": {
-                    "properties": {
-                      "schemaId": "3d7554d0-14ae-11f0-8738-ae468cd3ed16"
-                    }
+                    "schemaId": "e46a1bf0-779f-11f0-885b-ae468cd3ed16"
                   }
                 }
               }
@@ -4523,12 +5431,10 @@
                   "type": "about:blank",
                   "title": "Not Found",
                   "status": 404,
-                  "detail": "Schema with id 3d7554d0-14ae-11f0-8738-ae468cd3ed16 not found",
-                  "instance": "/api/sql/schema/3d7554d0-14ae-11f0-8738-ae468cd3ed16",
+                  "detail": "Schema with id e46a1bf0-779f-11f0-885b-ae468cd3ed16 not found",
+                  "instance": "/api/sql/schema/e46a1bf0-779f-11f0-885b-ae468cd3ed16",
                   "properties": {
-                    "properties": {
-                      "schemaId": "3d7554d0-14ae-11f0-8738-ae468cd3ed16"
-                    }
+                    "schemaId": "e46a1bf0-779f-11f0-885b-ae468cd3ed16"
                   }
                 }
               }
@@ -4761,6 +5667,30 @@
           "isArray"
         ]
       },
+      "SchemaConfigDto": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "schemaName": {
+            "type": "string",
+            "maxLength": 1024,
+            "minLength": 1
+          },
+          "tables": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/TableConfigDto"
+            }
+          }
+        },
+        "required": [
+          "schemaName",
+          "tables"
+        ]
+      },
       "TableConfigDto": {
         "type": "object",
         "properties": {
@@ -4794,31 +5724,6 @@
           "metadataClassId",
           "tableName",
           "uniformedPath"
-        ]
-      },
-      "SchemaConfigDto": {
-        "type": "object",
-        "description": "Schema configuration to save",
-        "properties": {
-          "id": {
-            "type": "string",
-            "format": "uuid"
-          },
-          "schemaName": {
-            "type": "string",
-            "maxLength": 1024,
-            "minLength": 1
-          },
-          "tables": {
-            "type": "array",
-            "items": {
-              "$ref": "#/components/schemas/TableConfigDto"
-            }
-          }
-        },
-        "required": [
-          "schemaName",
-          "tables"
         ]
       },
       "AbstractConditionDto": {
