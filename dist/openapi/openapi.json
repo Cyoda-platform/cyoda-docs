@@ -25,7 +25,7 @@
   "tags": [
     {
       "name": "Entity Management",
-      "description": "APIs for managing entities including creation, updates, and statistics retrieval.\n\nA note on transaction handling:\n* All changes are executed transactionally\n* Collections are processed in transactional batches defined by `transactionWindow`\n* Collections exceeding `transactionWindow` size are automatically split into multiple transactional batches"
+      "description": "APIs for managing entities including creation, updates, and statistics retrieval.\n\nA note on transaction handling:\n* All changes are executed transactionally\n* Collections are processed in transactional batches defined by `transactionWindow`\n* Collections exceeding `transactionWindow` size are automatically split into multiple transactional batches\n\nA note on transitions:\n* Normal transitions are explicitly configured in the workflow and move entities between different states\n* Loopback transitions are virtual transitions that loop back to the same state without explicit configuration\n* Loopback transitions trigger the first allowable automated exit transition, enabling subsequent automated workflow traversal"
     },
     {
       "name": "Search",
@@ -1368,6 +1368,126 @@
             "content": {
               "application/json": {
                 "example": "1d1e1b10-1155-11f0-bcd5-ae468cd3ed16"
+              }
+            }
+          }
+        }
+      }
+    },
+    "/entity/{format}/{entityId}": {
+      "put": {
+        "tags": [
+          "Entity Management"
+        ],
+        "summary": "Update Single with a loopback transition",
+        "description": "\nUpdates a single entity with a loopback transition.\n\nPath Parameters:\n- format: The format of the input payload (e.g., JSON, XML)\n- entityId: The UUID of the entity to update\n\nRequest Body:\n- Entity data in the specified format\n            ",
+        "operationId": "updateSingleWithLoopback",
+        "parameters": [
+          {
+            "name": "format",
+            "in": "path",
+            "description": "Format of the input payload",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "enum": [
+                "JSON",
+                "XML"
+              ]
+            }
+          },
+          {
+            "name": "entityId",
+            "in": "path",
+            "description": "The unique identifier (UUID) of the entity to update",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            },
+            "example": "1d1e1b10-1155-11f0-bcd5-ae468cd3ed16"
+          },
+          {
+            "name": "transactionTimeoutMillis",
+            "in": "query",
+            "description": "Maximum time in milliseconds allowed for transaction completion. Operation will fail if it takes longer than this timeout.",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "format": "int64",
+              "default": 10000
+            },
+            "example": 30000
+          },
+          {
+            "name": "waitForConsistencyAfter",
+            "in": "query",
+            "description": "If true, waits for the consistency time to pass before responding. May increase response time but guarantees data consistency when returning, so that subsequent calls will see the updated data.",
+            "required": false,
+            "schema": {
+              "type": "boolean",
+              "default": false
+            },
+            "example": true
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "format": "json"
+              },
+              "examples": {
+                "JSON Example": {
+                  "summary": "An example of a JSON request body",
+                  "description": "JSON Example",
+                  "value": {
+                    "category": "physics",
+                    "laureates": [
+                      {
+                        "firstname": "John",
+                        "surname": "Hopfield",
+                        "id": "1037",
+                        "motivation": "\"for foundational discoveries and inventions that enable machine learning with artificial neural networks\"",
+                        "share": "2"
+                      },
+                      {
+                        "firstname": "Geoffrey",
+                        "surname": "Hinton",
+                        "id": "1038",
+                        "motivation": "\"for foundational discoveries and inventions that enable machine learning with artificial neural networks\"",
+                        "share": "2"
+                      }
+                    ],
+                    "year": "2024"
+                  }
+                }
+              }
+            },
+            "application/xml": {
+              "schema": {
+                "$ref": "#/components/schemas/Prize"
+              },
+              "examples": {
+                "XML Example": {
+                  "summary": "An example of an XML request body",
+                  "description": "XML Example",
+                  "value": "\n<PrizeDto>\n  <category>physics</category>\n  <laureates>\n    <laureates>\n      <firstname>John</firstname>\n      <surname>Hopfield</surname>\n      <id>1037</id>\n      <motivation>\"for foundational discoveries and inventions that enable machine learning with artificial neural networks\"</motivation>\n      <share>2</share>\n    </laureates>\n    <laureates>\n      <firstname>Geoffrey</firstname>\n      <surname>Hinton</surname>\n      <id>1038</id>\n      <motivation>\"for foundational discoveries and inventions that enable machine learning with artificial neural networks\"</motivation>\n      <share>2</share>\n    </laureates>\n  </laureates>\n  <year>2024</year>\n</PrizeDto>\n\n"
+                }
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/EntityTransactionResponseUUID"
+                }
               }
             }
           }
