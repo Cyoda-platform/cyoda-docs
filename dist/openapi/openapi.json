@@ -1268,7 +1268,14 @@
             "description": "Collection updated successfully",
             "content": {
               "application/json": {
-                "example": "1d1e1b10-1155-11f0-bcd5-ae468cd3ed16"
+                "example": {
+                  "transactionId": "cb91fa80-d4a8-11ee-a357-ae468cd3ed16",
+                  "entityIds": [
+                    "74807f00-ed0d-11ee-a357-ae468cd3ed16",
+                    "72428380-0704-11ef-a357-ae468cd3ed16",
+                    "459ac800-2032-11ef-a357-ae468cd3ed16"
+                  ]
+                }
               }
             }
           }
@@ -1367,7 +1374,14 @@
             "description": "Collection created successfully",
             "content": {
               "application/json": {
-                "example": "1d1e1b10-1155-11f0-bcd5-ae468cd3ed16"
+                "example": {
+                  "transactionId": "cb91fa80-d4a8-11ee-a357-ae468cd3ed16",
+                  "entityIds": [
+                    "74807f00-ed0d-11ee-a357-ae468cd3ed16",
+                    "72428380-0704-11ef-a357-ae468cd3ed16",
+                    "459ac800-2032-11ef-a357-ae468cd3ed16"
+                  ]
+                }
               }
             }
           }
@@ -1614,11 +1628,14 @@
         },
         "responses": {
           "200": {
-            "description": "OK",
+            "description": "Entity updated successfully",
             "content": {
               "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/EntityTransactionResponseUUID"
+                "example": {
+                  "transactionId": "733e7180-c055-11ef-a357-ae468cd3ed16",
+                  "entityIds": [
+                    "cdcff600-bab1-11ee-a357-ae468cd3ed16"
+                  ]
                 }
               }
             }
@@ -1798,7 +1815,12 @@
             "description": "Entity created successfully",
             "content": {
               "application/json": {
-                "example": "1d1e1b10-1155-11f0-bcd5-ae468cd3ed16"
+                "example": {
+                  "transactionId": "733e7180-c055-11ef-a357-ae468cd3ed16",
+                  "entityIds": [
+                    "cdcff600-bab1-11ee-a357-ae468cd3ed16"
+                  ]
+                }
               }
             }
           }
