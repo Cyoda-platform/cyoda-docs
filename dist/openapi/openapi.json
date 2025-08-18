@@ -28,12 +28,12 @@
       "description": "APIs for managing entities including creation, updates, and statistics retrieval.\n\nA note on transaction handling:\n* All changes are executed transactionally\n* Collections are processed in transactional batches defined by `transactionWindow`\n* Collections exceeding `transactionWindow` size are automatically split into multiple transactional batches\n\nA note on transitions:\n* Normal transitions are explicitly configured in the workflow and move entities between different states\n* Loopback transitions are virtual transitions that loop back to the same state without explicit configuration\n* Loopback transitions trigger the first allowable automated exit transition, enabling subsequent automated workflow traversal"
     },
     {
-      "name": "Search",
-      "description": "\nProvides endpoints for searching and retrieving entities using both synchronous and asynchronous approaches.\n\nKey Features:\n- Snapshot-based searches for large datasets\n- Real-time synchronous searches for immediate results\n- Point-in-time querying capabilities\n- Pagination support for large result sets\n\nSearch Methods:\n1. Snapshot Search (/snapshot/*):\n   - Creates a persistent snapshot of search results\n   - The query is distributed across the cluster of Cyoda processing nodes\n   - Horizontally scalable - query time decreases linearly with cluster size\n   - Supports asynchronous processing of large datasets\n   - Allows status monitoring and cancellation\n   - Results can be retrieved in pages\n   \n2. Direct Search (/{entityName}/{modelVersion}):\n   - Synchronous, in-memory search\n   - Designed for small to medium datasets\n   - Limited by maximum result set size (default: 1000, max: 10000)\n   - Non-distributed (executes on single node)\n   - Configurable timeout and result limits\n   - Returns immediate streaming results\n\nAll endpoints support:\n- Point-in-time queries using ISO 8601 datetime format\n- Complex search conditions using GroupConditionDto\n- Model-specific searches by entity name and version\n"
+      "name": "Entity model",
+      "description": "\nOperations for managing entity models, including import/export, versioning, and lifecycle management.\nSupports model locking/unlocking, change level control, and metadata conversion through various formats.\n\nModel Lifecycle Rules:\n- Entity models must be locked before any entities can be saved using that model\n- A locked model cannot be unlocked if there are existing entities in the database using that model\n- Models can only be deleted when unlocked and when no entities reference them\n\nChange Level Control:\nModels support hierarchical change levels (from least to most impactful):\n- ARRAY_LENGTH: Only allows UniTypeArray width increases\n- ARRAY_ELEMENTS: Permits MultiTypeArray changes without new types\n- TYPE: Allows type modifications\n- STRUCTURAL: Permits fundamental model changes\n\nWhen a change level is set, all less impactful changes are automatically allowed.\n    "
     },
     {
-      "name": "Entity model",
-      "description": "\nOperations for managing entity models, including import/export, versioning, and lifecycle management. \nSupports model locking/unlocking, change level control, and metadata conversion through various formats. \n        \nModel Lifecycle Rules:\n- Entity models must be locked before any entities can be saved using that model\n- A locked model cannot be unlocked if there are existing entities in the database using that model\n- Models can only be deleted when unlocked and when no entities reference them\n\nChange Level Control:\nModels support hierarchical change levels (from least to most impactful):\n- ARRAY_LENGTH: Only allows UniTypeArray width increases\n- ARRAY_ELEMENTS: Permits MultiTypeArray changes without new types\n- TYPE: Allows type modifications\n- STRUCTURAL: Permits fundamental model changes\n\nWhen a change level is set, all less impactful changes are automatically allowed.\n    "
+      "name": "Search",
+      "description": "\nProvides endpoints for searching and retrieving entities using both synchronous and asynchronous approaches.\n\nKey Features:\n- Snapshot-based searches for large datasets\n- Real-time synchronous searches for immediate results\n- Point-in-time querying capabilities\n- Pagination support for large result sets\n\nSearch Methods:\n1. Snapshot Search (/snapshot/*):\n   - Creates a persistent snapshot of search results\n   - The query is distributed across the cluster of Cyoda processing nodes\n   - Horizontally scalable - query time decreases linearly with cluster size\n   - Supports asynchronous processing of large datasets\n   - Allows status monitoring and cancellation\n   - Results can be retrieved in pages\n\n2. Direct Search (/{entityName}/{modelVersion}):\n   - Synchronous, in-memory search\n   - Designed for small to medium datasets\n   - Limited by maximum result set size (default: 1000, max: 10000)\n   - Non-distributed (executes on single node)\n   - Configurable timeout and result limits\n   - Returns immediate streaming results\n\nAll endpoints support:\n- Point-in-time queries using ISO 8601 datetime format\n- Complex search conditions using GroupConditionDto\n- Model-specific searches by entity name and version\n"
     },
     {
       "name": "SQL-Schema",
@@ -417,60 +417,20 @@
             "description": "Statistics retrieved successfully",
             "content": {
               "application/json": {
+                "schema": {
+                  "type": "array",
+                  "$ref": "#/components/schemas/ModelStatsDto"
+                },
                 "example": [
                   {
                     "modelName": "nobel-prize",
                     "modelVersion": 1,
-                    "state": "AWARDED",
-                    "count": 976
-                  },
-                  {
-                    "modelName": "nobel-prize",
-                    "modelVersion": 1,
-                    "state": "PENDING",
-                    "count": 6
-                  },
-                  {
-                    "modelName": "nobel-prize",
-                    "modelVersion": 1,
-                    "state": "REVOKED",
-                    "count": 0
-                  },
-                  {
-                    "modelName": "nobel-prize",
-                    "modelVersion": 1,
-                    "state": "DECLINED",
-                    "count": 5
+                    "count": 960
                   },
                   {
                     "modelName": "flight-ticket",
                     "modelVersion": 1,
-                    "state": "RESERVED",
-                    "count": 23456
-                  },
-                  {
-                    "modelName": "flight-ticket",
-                    "modelVersion": 1,
-                    "state": "PAID",
-                    "count": 5765456
-                  },
-                  {
-                    "modelName": "flight-ticket",
-                    "modelVersion": 1,
-                    "state": "FLOWN",
-                    "count": 4974636835
-                  },
-                  {
-                    "modelName": "flight-ticket",
-                    "modelVersion": 1,
-                    "state": "NO-SHOW",
-                    "count": 8933456
-                  },
-                  {
-                    "modelName": "flight-ticket",
-                    "modelVersion": 1,
-                    "state": "CANCELLED",
-                    "count": 23452345
+                    "count": 3458659339
                   }
                 ]
               }
@@ -517,6 +477,10 @@
             "description": "Statistics by state retrieved successfully",
             "content": {
               "application/json": {
+                "schema": {
+                  "type": "array",
+                  "$ref": "#/components/schemas/ModelStateStatsDto"
+                },
                 "example": [
                   {
                     "modelName": "nobel-prize",
@@ -705,7 +669,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "type": "object"
+                  "$ref": "#/components/schemas/SingleDeleteResult"
                 },
                 "examples": {
                   "Deleted a single nobel prize": {
@@ -1268,6 +1232,10 @@
             "description": "Collection updated successfully",
             "content": {
               "application/json": {
+                "schema": {
+                  "type": "array",
+                  "$ref": "#/components/schemas/EntityTransactionResponse"
+                },
                 "example": {
                   "transactionId": "cb91fa80-d4a8-11ee-a357-ae468cd3ed16",
                   "entityIds": [
@@ -1374,6 +1342,10 @@
             "description": "Collection created successfully",
             "content": {
               "application/json": {
+                "schema": {
+                  "type": "array",
+                  "$ref": "#/components/schemas/EntityTransactionResponse"
+                },
                 "example": {
                   "transactionId": "cb91fa80-d4a8-11ee-a357-ae468cd3ed16",
                   "entityIds": [
@@ -1496,11 +1468,17 @@
         },
         "responses": {
           "200": {
-            "description": "OK",
+            "description": "Entity updated successfully",
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/EntityTransactionResponseUUID"
+                  "$ref": "#/components/schemas/EntityTransactionResponse"
+                },
+                "example": {
+                  "transactionId": "733e7180-c055-11ef-a357-ae468cd3ed16",
+                  "entityIds": [
+                    "cdcff600-bab1-11ee-a357-ae468cd3ed16"
+                  ]
                 }
               }
             }
@@ -1631,6 +1609,9 @@
             "description": "Entity updated successfully",
             "content": {
               "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/EntityTransactionResponse"
+                },
                 "example": {
                   "transactionId": "733e7180-c055-11ef-a357-ae468cd3ed16",
                   "entityIds": [
@@ -1815,6 +1796,10 @@
             "description": "Entity created successfully",
             "content": {
               "application/json": {
+                "schema": {
+                  "type": "array",
+                  "$ref": "#/components/schemas/EntityTransactionResponse"
+                },
                 "example": {
                   "transactionId": "733e7180-c055-11ef-a357-ae468cd3ed16",
                   "entityIds": [
@@ -2177,6 +2162,10 @@
             "description": "List of available entity models",
             "content": {
               "application/json": {
+                "schema": {
+                  "type": "array",
+                  "$ref": "#/components/schemas/EntityModelDto"
+                },
                 "examples": {
                   "models": {
                     "description": "models",
@@ -2254,6 +2243,9 @@
             "description": "Successfully exported model metadata",
             "content": {
               "application/json": {
+                "schema": {
+                  "type": "string"
+                },
                 "examples": {
                   "Simple View": {
                     "summary": "SIMPLE_VIEW export example",
@@ -2534,6 +2526,9 @@
             "description": "Confirmation of successful deletion",
             "content": {
               "application/json": {
+                "schema": {
+                  "type": "string"
+                },
                 "examples": {
                   "success": {
                     "description": "success",
@@ -2619,6 +2614,9 @@
             "description": "Change level successfully updated",
             "content": {
               "application/json": {
+                "schema": {
+                  "type": "string"
+                },
                 "examples": {
                   "success": {
                     "description": "success",
@@ -2688,6 +2686,9 @@
             "description": "Model successfully locked",
             "content": {
               "application/json": {
+                "schema": {
+                  "type": "string"
+                },
                 "examples": {
                   "success": {
                     "description": "success",
@@ -2757,6 +2758,9 @@
             "description": "Model successfully unlocked",
             "content": {
               "application/json": {
+                "schema": {
+                  "type": "string"
+                },
                 "examples": {
                   "success": {
                     "description": "success",
@@ -3186,7 +3190,7 @@
           "Search"
         ],
         "summary": "Retrieve paginated results from a search snapshot",
-        "description": "\nRetrieves a page of results from a previously created search snapshot. \nTo find out how many entities were found, call the snapshot creation status endpoint.\n\nThe results are sorted in descending order by entity id.\n\nThe results are returned in a paginated format, with:\n- Configurable page size (default: 10)\n- Zero-based page numbering\n- Optional point-in-time specification for the data being retrieved\n        ",
+        "description": "\nRetrieves a page of results from a previously created search snapshot.\nTo find out how many entities were found, call the snapshot creation status endpoint.\n\nThe results are sorted in descending order by entity id.\n\nThe results are returned in a paginated format, with:\n- Configurable page size (default: 10)\n- Zero-based page numbering\n- Optional point-in-time specification for the data being retrieved\n        ",
         "operationId": "getSnapshotResults",
         "parameters": [
           {
@@ -3235,81 +3239,10 @@
             "description": "Successfully retrieved page of results",
             "content": {
               "application/json": {
-                "example": {
-                  "content": [
-                    {
-                      "type": "ENTITY",
-                      "data": {
-                        "category": "physics",
-                        "year": "2024",
-                        "laureates": [
-                          {
-                            "firstname": "John",
-                            "surname": "Hopfield",
-                            "id": "1037",
-                            "motivation": "\"for foundational discoveries and inventions that enable machine learning with artificial neural networks\"",
-                            "share": "2"
-                          },
-                          {
-                            "firstname": "Geoffrey",
-                            "surname": "Hinton",
-                            "id": "1038",
-                            "motivation": "\"for foundational discoveries and inventions that enable machine learning with artificial neural networks\"",
-                            "share": "2"
-                          }
-                        ]
-                      },
-                      "meta": {
-                        "id": "a9d92c64-3f49-11b2-ad21-125557264b03",
-                        "state": "VALIDATED",
-                        "creationDate": "2025-08-12T20:32:29.559Z",
-                        "transitionForLatestSave": "VALIDATE"
-                      }
-                    },
-                    {
-                      "type": "ENTITY",
-                      "data": {
-                        "category": "economics",
-                        "year": "2024",
-                        "laureates": [
-                          {
-                            "firstname": "Daron",
-                            "surname": "Acemoglu",
-                            "id": "1044",
-                            "motivation": "\"for studies of how institutions are formed and affect prosperity\"",
-                            "share": "3"
-                          },
-                          {
-                            "firstname": "Simon",
-                            "surname": "Johnson",
-                            "id": "1045",
-                            "motivation": "\"for studies of how institutions are formed and affect prosperity\"",
-                            "share": "3"
-                          },
-                          {
-                            "firstname": "James",
-                            "surname": "Robinson",
-                            "id": "1046",
-                            "motivation": "\"for studies of how institutions are formed and affect prosperity\"",
-                            "share": "3"
-                          }
-                        ]
-                      },
-                      "meta": {
-                        "id": "a9dc8206-3f49-11b2-ad21-125557264b03",
-                        "state": "VALIDATED",
-                        "creationDate": "2025-08-12T20:32:29.561Z",
-                        "transitionForLatestSave": "VALIDATE"
-                      }
-                    }
-                  ],
-                  "page": {
-                    "size": 2,
-                    "totalElements": 2,
-                    "totalPages": 1,
-                    "number": 0
-                  }
-                }
+                "schema": {
+                  "type": "string"
+                },
+                "example": "{\"content\":[{\"type\":\"ENTITY\",\"data\":{\"category\":\"physics\",\"year\":\"2024\",\"laureates\":[{\"firstname\":\"John\",\"surname\":\"Hopfield\",\"id\":\"1037\",\"motivation\":\"\\\"for foundational discoveries and inventions that enable machine learning with artificial neural networks\\\"\",\"share\":\"2\"},{\"firstname\":\"Geoffrey\",\"surname\":\"Hinton\",\"id\":\"1038\",\"motivation\":\"\\\"for foundational discoveries and inventions that enable machine learning with artificial neural networks\\\"\",\"share\":\"2\"}]},\"meta\":{\"id\":\"a9d92c64-3f49-11b2-ad21-125557264b03\",\"state\":\"VALIDATED\",\"creationDate\":\"2025-08-12T20:32:29.559Z\",\"transitionForLatestSave\":\"VALIDATE\"}},{\"type\":\"ENTITY\",\"data\":{\"category\":\"economics\",\"year\":\"2024\",\"laureates\":[{\"firstname\":\"Daron\",\"surname\":\"Acemoglu\",\"id\":\"1044\",\"motivation\":\"\\\"for studies of how institutions are formed and affect prosperity\\\"\",\"share\":\"3\"},{\"firstname\":\"Simon\",\"surname\":\"Johnson\",\"id\":\"1045\",\"motivation\":\"\\\"for studies of how institutions are formed and affect prosperity\\\"\",\"share\":\"3\"},{\"firstname\":\"James\",\"surname\":\"Robinson\",\"id\":\"1046\",\"motivation\":\"\\\"for studies of how institutions are formed and affect prosperity\\\"\",\"share\":\"3\"}]},\"meta\":{\"id\":\"a9dc8206-3f49-11b2-ad21-125557264b03\",\"state\":\"VALIDATED\",\"creationDate\":\"2025-08-12T20:32:29.561Z\",\"transitionForLatestSave\":\"VALIDATE\"}}],\"page\":{\"size\":2,\"totalElements\":2,\"totalPages\":1,\"number\":0}}"
               }
             }
           },
@@ -3534,7 +3467,7 @@
           "Search"
         ],
         "summary": "Perform synchronous entity search",
-        "description": "\nExecutes a direct, in-memory search for entities without creating a persistent snapshot. This endpoint:\n- Returns results immediately as a streaming response\n- Is optimized for smaller result sets\n- Has configurable timeout and result limits\n- Supports point-in-time querying\n\nThe results are sorted in descending order by entity id.\n\nIf no request body is provided or an empty request body is sent, all entities of the specified model and version \nwill be returned (subject to the limit parameter).\n\nBest suited for:\n- Interactive searches requiring immediate results\n- Queries expected to return limited number of entities\n- UI components with real-time search functionality\n\nLimitations:\n- Maximum result limit: 10000 entities (this will silently limit the result to 10000)\n- Default result limit: 1000 entities\n- Default timeout: 60000 milliseconds\n        ",
+        "description": "\nExecutes a direct, in-memory search for entities without creating a persistent snapshot. This endpoint:\n- Returns results immediately as a streaming response\n- Is optimized for smaller result sets\n- Has configurable timeout and result limits\n- Supports point-in-time querying\n\nThe results are sorted in descending order by entity id.\n\nIf no request body is provided or an empty request body is sent, all entities of the specified model and version\nwill be returned (subject to the limit parameter).\n\nBest suited for:\n- Interactive searches requiring immediate results\n- Queries expected to return limited number of entities\n- UI components with real-time search functionality\n\nLimitations:\n- Maximum result limit: 10000 entities (this will silently limit the result to 10000)\n- Default result limit: 1000 entities\n- Default timeout: 60000 milliseconds\n        ",
         "operationId": "search",
         "parameters": [
           {
@@ -3657,6 +3590,10 @@
             "description": "Search executed successfully",
             "content": {
               "application/x-ndjson": {
+                "schema": {
+                  "type": "array",
+                  "$ref": "#/components/schemas/JsonNode"
+                },
                 "example": [
                   {
                     "type": "ENTITY",
@@ -3811,6 +3748,9 @@
             "description": "Schema found",
             "content": {
               "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SchemaConfigDto"
+                },
                 "example": {
                   "schemaName": "NOBEL_PRIZES",
                   "tables": [
@@ -4226,6 +4166,10 @@
             "description": "Schema saved successfully",
             "content": {
               "application/json": {
+                "schema": {
+                  "type": "string",
+                  "format": "uuid"
+                },
                 "example": "1d1e1b10-1155-11f0-bcd5-ae468cd3ed16"
               }
             }
@@ -4272,6 +4216,9 @@
             "description": "Schema deleted successfully",
             "content": {
               "application/json": {
+                "schema": {
+                  "type": "string"
+                },
                 "example": "SQL Schema with name NOBEL_PRIZES deleted"
               }
             }
@@ -4321,6 +4268,10 @@
             "description": "Tables generated successfully",
             "content": {
               "application/json": {
+                "schema": {
+                  "type": "array",
+                  "$ref": "#/components/schemas/TableConfigDto"
+                },
                 "example": [
                   {
                     "tableName": "nobel-prize",
@@ -4520,6 +4471,10 @@
             "description": "List of schemas retrieved successfully",
             "content": {
               "application/json": {
+                "schema": {
+                  "type": "array",
+                  "$ref": "#/components/schemas/SchemaConfigDto"
+                },
                 "example": [
                   {
                     "schemaName": "NOBEL_PRIZES",
@@ -4737,6 +4692,9 @@
             "description": "Schema created successfully",
             "content": {
               "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SchemaConfigDto"
+                },
                 "example": {
                   "schemaName": "NOBEL_PRIZES",
                   "tables": [
@@ -5163,6 +5121,10 @@
             "description": "Tables updated successfully",
             "content": {
               "application/json": {
+                "schema": {
+                  "type": "array",
+                  "$ref": "#/components/schemas/TableConfigDto"
+                },
                 "example": [
                   {
                     "tableName": "nobel-prize",
@@ -5374,6 +5336,9 @@
             "description": "Schema found",
             "content": {
               "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SchemaConfigDto"
+                },
                 "example": {
                   "schemaName": "NOBEL_PRIZES",
                   "tables": [
@@ -5603,6 +5568,9 @@
             "description": "Schema deleted successfully",
             "content": {
               "application/json": {
+                "schema": {
+                  "type": "string"
+                },
                 "example": "SQL Schema with id 1d1e1b10-1155-11f0-bcd5-ae468cd3ed16 deleted"
               }
             }
@@ -5630,193 +5598,6 @@
   },
   "components": {
     "schemas": {
-      "ProblemDetail": {
-        "type": "object",
-        "properties": {
-          "type": {
-            "type": "string",
-            "format": "uri"
-          },
-          "title": {
-            "type": "string"
-          },
-          "status": {
-            "type": "integer",
-            "format": "int32"
-          },
-          "detail": {
-            "type": "string"
-          },
-          "instance": {
-            "type": "string",
-            "format": "uri"
-          },
-          "properties": {
-            "type": "object",
-            "additionalProperties": {
-              "type": "object"
-            }
-          }
-        }
-      },
-      "CancelSnapshotDto": {
-        "type": "object",
-        "properties": {
-          "isCancelled": {
-            "type": "boolean"
-          },
-          "currentSnapshotStatus": {
-            "type": "string",
-            "enum": [
-              "RUNNING",
-              "FAILED",
-              "CANCELLED",
-              "SUCCESSFUL",
-              "NOT_FOUND"
-            ]
-          }
-        },
-        "required": [
-          "currentSnapshotStatus",
-          "isCancelled"
-        ]
-      },
-      "LaureateDto": {
-        "type": "object",
-        "properties": {
-          "firstname": {
-            "type": "string"
-          },
-          "surname": {
-            "type": "string"
-          },
-          "id": {
-            "type": "string"
-          },
-          "motivation": {
-            "type": "string"
-          },
-          "share": {
-            "type": "string"
-          }
-        },
-        "required": [
-          "firstname",
-          "id",
-          "motivation",
-          "share",
-          "surname"
-        ]
-      },
-      "Prize": {
-        "type": "object",
-        "properties": {
-          "category": {
-            "type": "string"
-          },
-          "laureates": {
-            "type": "array",
-            "items": {
-              "$ref": "#/components/schemas/LaureateDto"
-            }
-          },
-          "year": {
-            "type": "string"
-          }
-        },
-        "required": [
-          "category",
-          "laureates",
-          "year"
-        ],
-        "xml": {
-          "name": "prize"
-        }
-      },
-      "EntityTransactionResponseUUID": {
-        "type": "object",
-        "properties": {
-          "transactionId": {
-            "type": "string",
-            "format": "uuid"
-          },
-          "entityIds": {
-            "type": "array",
-            "items": {
-              "type": "string",
-              "format": "uuid"
-            }
-          }
-        },
-        "required": [
-          "entityIds"
-        ]
-      },
-      "TechnicalUserCredentialsDto": {
-        "type": "object",
-        "properties": {
-          "client_id": {
-            "type": "string",
-            "description": "The client identifier for the M2M client",
-            "example": "abc523BCD",
-            "maxLength": 100,
-            "minLength": 1,
-            "pattern": "^[A-Za-z0-9]+$"
-          },
-          "client_secret": {
-            "type": "string",
-            "description": "The client secret for authentication",
-            "example": "mySecretKey123",
-            "maxLength": 255,
-            "minLength": 8
-          },
-          "grant_type": {
-            "type": "string",
-            "description": "The OAuth2 grant type (must be 'client_credentials')",
-            "enum": [
-              "client_credentials"
-            ],
-            "example": "client_credentials"
-          }
-        },
-        "required": [
-          "client_id",
-          "client_secret",
-          "grant_type"
-        ]
-      },
-      "ErrorResponseDto": {
-        "type": "object",
-        "properties": {
-          "error": {
-            "type": "string",
-            "description": "Error codes from RFC 6749 Section 5.2 (OAuth 2.0 Error Response) identifying the type of error",
-            "enum": [
-              "invalid_request",
-              "invalid_client",
-              "invalid_grant",
-              "unauthorized_client",
-              "unsupported_grant_type",
-              "invalid_scope"
-            ],
-            "example": "invalid_request"
-          },
-          "error_description": {
-            "type": "string",
-            "description": "Human-readable description of the error",
-            "example": "The request is missing required parameters"
-          },
-          "error_uri": {
-            "type": "string",
-            "format": "uri",
-            "description": "Optional URI to documentation about the error"
-          }
-        },
-        "required": [
-          "error",
-          "error_description"
-        ]
-      },
       "FieldConfigDto": {
         "type": "object",
         "properties": {
@@ -5908,6 +5689,192 @@
           "metadataClassId",
           "tableName",
           "uniformedPath"
+        ]
+      },
+      "ProblemDetail": {
+        "type": "object",
+        "properties": {
+          "type": {
+            "type": "string",
+            "format": "uri"
+          },
+          "title": {
+            "type": "string"
+          },
+          "status": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "detail": {
+            "type": "string"
+          },
+          "instance": {
+            "type": "string",
+            "format": "uri"
+          },
+          "properties": {
+            "type": "object",
+            "additionalProperties": {
+              "type": "object"
+            }
+          }
+        }
+      },
+      "CancelSnapshotDto": {
+        "type": "object",
+        "properties": {
+          "isCancelled": {
+            "type": "boolean"
+          },
+          "currentSnapshotStatus": {
+            "type": "string",
+            "enum": [
+              "RUNNING",
+              "FAILED",
+              "CANCELLED",
+              "SUCCESSFUL",
+              "NOT_FOUND"
+            ]
+          }
+        },
+        "required": [
+          "currentSnapshotStatus",
+          "isCancelled"
+        ]
+      },
+      "EntityTransactionResponse": {
+        "type": "object",
+        "properties": {
+          "transactionId": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "entityIds": {
+            "type": "array",
+            "items": {
+              "type": "object"
+            }
+          }
+        },
+        "required": [
+          "entityIds"
+        ]
+      },
+      "LaureateDto": {
+        "type": "object",
+        "properties": {
+          "firstname": {
+            "type": "string"
+          },
+          "surname": {
+            "type": "string"
+          },
+          "id": {
+            "type": "string"
+          },
+          "motivation": {
+            "type": "string"
+          },
+          "share": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "firstname",
+          "id",
+          "motivation",
+          "share",
+          "surname"
+        ]
+      },
+      "Prize": {
+        "type": "object",
+        "properties": {
+          "category": {
+            "type": "string"
+          },
+          "laureates": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/LaureateDto"
+            }
+          },
+          "year": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "category",
+          "laureates",
+          "year"
+        ],
+        "xml": {
+          "name": "prize"
+        }
+      },
+      "TechnicalUserCredentialsDto": {
+        "type": "object",
+        "properties": {
+          "client_id": {
+            "type": "string",
+            "description": "The client identifier for the M2M client",
+            "example": "abc523BCD",
+            "maxLength": 100,
+            "minLength": 1,
+            "pattern": "^[A-Za-z0-9]+$"
+          },
+          "client_secret": {
+            "type": "string",
+            "description": "The client secret for authentication",
+            "example": "mySecretKey123",
+            "maxLength": 255,
+            "minLength": 8
+          },
+          "grant_type": {
+            "type": "string",
+            "description": "The OAuth2 grant type (must be 'client_credentials')",
+            "enum": [
+              "client_credentials"
+            ],
+            "example": "client_credentials"
+          }
+        },
+        "required": [
+          "client_id",
+          "client_secret",
+          "grant_type"
+        ]
+      },
+      "ErrorResponseDto": {
+        "type": "object",
+        "properties": {
+          "error": {
+            "type": "string",
+            "description": "Error codes from RFC 6749 Section 5.2 (OAuth 2.0 Error Response) identifying the type of error",
+            "enum": [
+              "invalid_request",
+              "invalid_client",
+              "invalid_grant",
+              "unauthorized_client",
+              "unsupported_grant_type",
+              "invalid_scope"
+            ],
+            "example": "invalid_request"
+          },
+          "error_description": {
+            "type": "string",
+            "description": "Human-readable description of the error",
+            "example": "The request is missing required parameters"
+          },
+          "error_uri": {
+            "type": "string",
+            "format": "uri",
+            "description": "Optional URI to documentation about the error"
+          }
+        },
+        "required": [
+          "error",
+          "error_description"
         ]
       },
       "AbstractConditionDto": {
@@ -6060,6 +6027,35 @@
           "entityName",
           "modelVersion",
           "workflows"
+        ]
+      },
+      "EntityModelDto": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "modelName": {
+            "type": "string"
+          },
+          "modelVersion": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "currentState": {
+            "type": "string"
+          },
+          "modelUpdateDate": {
+            "type": "string",
+            "format": "date-time"
+          }
+        },
+        "required": [
+          "currentState",
+          "id",
+          "modelName",
+          "modelVersion"
         ]
       },
       "EdgeMessageDto": {
@@ -6418,6 +6414,66 @@
           }
         }
       },
+      "ModelStatsDto": {
+        "type": "object",
+        "properties": {
+          "modelName": {
+            "type": "string",
+            "description": "Entity Model Name",
+            "example": "Payment"
+          },
+          "modelVersion": {
+            "type": "integer",
+            "format": "int32",
+            "description": "Entity Model Version",
+            "example": 1
+          },
+          "count": {
+            "type": "integer",
+            "format": "int64",
+            "description": "Entity Count",
+            "example": 10200300
+          }
+        },
+        "required": [
+          "count",
+          "modelName",
+          "modelVersion"
+        ]
+      },
+      "ModelStateStatsDto": {
+        "type": "object",
+        "properties": {
+          "modelName": {
+            "type": "string",
+            "description": "Entity Model Name",
+            "example": "SolarPanel"
+          },
+          "modelVersion": {
+            "type": "integer",
+            "format": "int32",
+            "description": "Entity Model Version",
+            "example": 4
+          },
+          "state": {
+            "type": "string",
+            "description": "Entity State",
+            "example": "SOLD"
+          },
+          "count": {
+            "type": "integer",
+            "format": "int64",
+            "description": "Entity Count",
+            "example": 30200100
+          }
+        },
+        "required": [
+          "count",
+          "modelName",
+          "modelVersion",
+          "state"
+        ]
+      },
       "TechnicalUserDto": {
         "type": "object",
         "properties": {
@@ -6663,6 +6719,43 @@
         "required": [
           "deleteResult",
           "entityModelClassId"
+        ]
+      },
+      "EntityModelKey": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string"
+          },
+          "version": {
+            "type": "integer",
+            "format": "int32"
+          }
+        },
+        "required": [
+          "name",
+          "version"
+        ]
+      },
+      "SingleDeleteResult": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "modelKey": {
+            "$ref": "#/components/schemas/EntityModelKey"
+          },
+          "transactionId": {
+            "type": "string",
+            "format": "uuid"
+          }
+        },
+        "required": [
+          "id",
+          "modelKey",
+          "transactionId"
         ]
       },
       "DeleteTechnicalUser200ResponseDto": {
