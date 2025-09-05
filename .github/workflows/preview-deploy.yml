@@ -1,0 +1,93 @@
+name: 🚀 Deploy Preview Site
+
+on:
+  workflow_dispatch:
+    inputs:
+      branch:
+        description: 'Branch to deploy (leave empty to use current branch)'
+        required: false
+        default: ''
+      environment_name:
+        description: 'Custom environment name (optional)'
+        required: false
+        default: ''
+
+permissions:
+  contents: read
+
+concurrency:
+  group: "preview-${{ github.ref }}"
+  cancel-in-progress: true
+
+jobs:
+  deploy-preview:
+    runs-on: ubuntu-latest
+    outputs:
+      preview-url: ${{ env.SURGE_URL }}
+      branch-name: ${{ steps.branch-info.outputs.branch-name }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Get branch info
+        id: branch-info
+        run: |
+          # Use custom environment name if provided, otherwise use branch name
+          if [ -n "${{ github.event.inputs.environment_name }}" ]; then
+            ENV_NAME="${{ github.event.inputs.environment_name }}"
+          else
+            ENV_NAME=$(echo "${{ github.ref_name }}" | sed 's/[^a-zA-Z0-9]/-/g' | tr '[:upper:]' '[:lower:]')
+          fi
+          echo "branch-name=$ENV_NAME" >> $GITHUB_OUTPUT
+          echo "Environment: $ENV_NAME"
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '18'
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm install
+
+      - name: Build site with Eleventy
+        run: npm run build:optimized
+        env:
+          NODE_ENV: production
+
+      - name: Run build validation
+        run: npm run validate:build
+
+      - name: Install Surge
+        run: npm install -g surge
+
+      - name: Deploy to Surge
+        run: |
+          ENV_NAME="${{ steps.branch-info.outputs.branch-name }}"
+          SURGE_DOMAIN="cyoda-docs-${ENV_NAME}.surge.sh"
+          echo "🚀 Deploying to: https://$SURGE_DOMAIN"
+          echo "SURGE_URL=https://$SURGE_DOMAIN" >> $GITHUB_ENV
+          surge ./dist $SURGE_DOMAIN --token ${{ secrets.SURGE_TOKEN }}
+
+      - name: Output deployment info
+        run: |
+          echo "🚀 **Preview deployed successfully to Surge.sh!**"
+          echo ""
+          echo "📍 Preview URL: ${{ env.SURGE_URL }}"
+          echo ""
+          echo "📝 Details:"
+          echo "- Branch: ${{ github.ref_name }}"
+          echo "- Commit: ${{ github.sha }}"
+          echo "- Environment: ${{ steps.branch-info.outputs.branch-name }}"
+          echo ""
+          echo "🔍 Test your changes:"
+          echo "- Homepage: ${{ env.SURGE_URL }}"
+          echo "- API Reference: ${{ env.SURGE_URL }}/api-docs.html"
+          echo "- Documentation: ${{ env.SURGE_URL }}/docs/"
+          echo "- Cloud Status: ${{ env.SURGE_URL }}/docs/platform/cyoda-cloud-status/"
+
+      - name: Output preview info
+        run: |
+          echo "🚀 Preview deployed to: ${{ steps.deploy.outputs.page_url }}"
+          echo "📝 Branch: ${{ github.ref_name }}"
+          echo "📦 Commit: ${{ github.sha }}"

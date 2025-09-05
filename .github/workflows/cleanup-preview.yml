@@ -1,0 +1,31 @@
+name: 🗑️ Remove Preview Site
+
+on:
+  workflow_dispatch:
+    inputs:
+      environment_name:
+        description: 'Environment name to remove (e.g., feature-branch-name)'
+        required: true
+        type: string
+
+permissions:
+  contents: read
+
+jobs:
+  cleanup-preview:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Install Surge
+        run: npm install -g surge
+
+      - name: Remove Surge deployment
+        run: |
+          ENV_NAME="${{ github.event.inputs.environment_name }}"
+          SURGE_DOMAIN="cyoda-docs-${ENV_NAME}.surge.sh"
+          echo "🗑️ Removing deployment: https://$SURGE_DOMAIN"
+          surge teardown $SURGE_DOMAIN --token ${{ secrets.SURGE_TOKEN }} || echo "Domain may not exist or already removed"
+
+      - name: Confirm cleanup
+        run: |
+          echo "✅ Cleanup completed for environment: ${{ github.event.inputs.environment_name }}"
+          echo "🗑️ Removed: https://cyoda-docs-${{ github.event.inputs.environment_name }}.surge.sh"
