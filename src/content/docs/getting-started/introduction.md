@@ -1,6 +1,8 @@
 ---
 title: Introduction to Cyoda
 description: Welcome to the Cyoda Platform - your gateway to building intelligent, event-driven applications
+sidebar:
+  order: 1
 ---
 
 # Introduction to Cyoda

@@ -32,44 +32,28 @@ export default defineConfig({
 			sidebar: [
 				{
 					label: 'Getting Started',
-					items: [
-						{ label: 'Introduction', slug: 'getting-started/introduction' },
-						{ label: 'Quickstart', slug: 'getting-started/quickstart' },
-					],
+					collapsed: false,
+					autogenerate: { directory: 'getting-started' }
 				},
 				{
 					label: 'Guides',
-					items: [
-						{ label: 'Provision Environment', slug: 'guides/provision-environment' },
-						{ label: 'Authentication & Authorization', slug: 'guides/authentication-authorization' },
-						{ label: 'API: Saving and Getting Data', slug: 'guides/api-saving-and-getting-data' },
-						{ label: 'SQL and Trino', slug: 'guides/sql-and-trino' },
-						{ label: 'Workflow Configuration', slug: 'guides/workflow-config-guide' },
-						{ label: 'Design Principles', slug: 'guides/cyoda-design-principles' },
-					],
+					collapsed: true,
+					autogenerate: { directory: 'guides' }
 				},
 				{
 					label: 'Concepts',
-					items: [
-						{ label: 'CPL Overview', slug: 'concepts/cpl-overview' },
-						{ label: 'Event-Driven Architecture', slug: 'concepts/event-driven-architecture' },
-						{ label: 'EDBMS', slug: 'concepts/edbms' },
-					],
+					collapsed: true,
+					autogenerate: { directory: 'concepts' }
 				},
 				{
 					label: 'Architecture',
-					items: [
-						{ label: 'Cyoda Cloud Architecture', slug: 'architecture/cyoda-cloud-architecture' },
-					],
+					collapsed: true,
+					autogenerate: { directory: 'architecture' }
 				},
 				{
 					label: 'Platform',
-					items: [
-						{ label: 'Cloud Service Details', slug: 'platform/cloud-service-details' },
-						{ label: 'Cyoda Cloud Status', slug: 'platform/cyoda-cloud-status' },
-						{ label: 'Entitlements', slug: 'platform/entitlements' },
-						{ label: 'Roadmap', slug: 'platform/roadmap' },
-					],
+					collapsed: true,
+					autogenerate: { directory: 'platform' }
 				},
 			],
 			components: {

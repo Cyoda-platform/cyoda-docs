@@ -1,12 +1,8 @@
 ---
-layout: docs
 title: Quick Start Guide
 description: Get up and running with Cyoda in under 10 minutes
-eleventyNavigation:
-  key: Quick Start
-  title: Quick Start
+sidebar:
   order: 2
-  parent: Getting Started
 ---
 
 # Quick Start Guide
