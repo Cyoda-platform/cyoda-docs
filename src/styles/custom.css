@@ -1,0 +1,60 @@
+/* Custom styles for Cyoda Documentation */
+
+/* Footer styling */
+.footer {
+  border-top: 1px solid var(--sl-color-gray-5);
+  margin-top: 2rem;
+  padding: 1.5rem 0;
+  background-color: var(--sl-color-bg-nav);
+}
+
+.footer-content {
+  max-width: var(--sl-content-width);
+  margin: 0 auto;
+  padding: 0 1rem;
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.footer-links {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1.5rem;
+  align-items: center;
+  justify-content: center;
+}
+
+.footer-links a {
+  color: var(--sl-color-text);
+  text-decoration: none;
+  font-size: 0.9rem;
+}
+
+.footer-links a:hover {
+  color: var(--sl-color-text-accent);
+  text-decoration: underline;
+}
+
+.footer-copyright {
+  text-align: center;
+  color: var(--sl-color-gray-3);
+  font-size: 0.85rem;
+}
+
+/* Responsive footer */
+@media (min-width: 50rem) {
+  .footer-content {
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+  }
+  
+  .footer-links {
+    justify-content: flex-start;
+  }
+  
+  .footer-copyright {
+    text-align: right;
+  }
+}
