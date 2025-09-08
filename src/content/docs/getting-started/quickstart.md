@@ -100,14 +100,14 @@ curl -X POST https://client-<your_user_id>.eu.cyoda.net/auth/token \
 - **Processors**: Implement custom business logic
 
 ### Learn the Concepts
-- [Entity Database Management System](../concepts/edbms.md)
-- [Event-Driven Architecture](../concepts/event-driven-architecture.md)
-- [CPL Overview](../concepts/cpl-overview.md)
+- [Entity Database Management System](/concepts/edbms/)
+- [Event-Driven Architecture](/concepts/event-driven-architecture/)
+- [CPL Overview](/concepts/cpl-overview/)
 
 ### Build Your First Application
-- [API: Saving and Getting Data](../guides/api-saving-and-getting-data.md)
-- [Authentication & Authorization](../guides/authentication-authorization.md)
-- [Cyoda Design Principles](../guides/cyoda-design-principles.md)
+- [API: Saving and Getting Data](/guides/api-saving-and-getting-data/)
+- [Authentication & Authorization](/guides/authentication-authorization/)
+- [Cyoda Design Principles](/guides/cyoda-design-principles/)
 
 ## Troubleshooting
 
@@ -132,7 +132,7 @@ If API calls are failing:
 ## Getting Help
 
 - **AI Assistant**: Ask questions directly at [https://ai.cyoda.net](https://ai.cyoda.net)
-- **Documentation**: Browse our [comprehensive guides](../guides/)
+- **Documentation**: Browse our [guides](/guides/provision-environment/)
 - **Community**: Connect with other developers on our platform
 
 ## Free Tier Limits

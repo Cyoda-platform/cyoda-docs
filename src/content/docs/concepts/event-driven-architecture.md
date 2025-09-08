@@ -1,12 +1,6 @@
 ---
-layout: docs
 title: "Event-Driven Architectures"
 description: How Entity Workflows map to event-driven architectures
-order: 2
-eleventyNavigation:
-  key: Event Driven Architecture
-  parent: Concepts
-  order: 2
 ---
 
 A condensed version of the original article by Paul Schleger [Entity Workflows for Event-Driven Architectures](https://medium.com/@paul_42036/entity-workflows-for-event-driven-architectures-4d491cf898a5). 
@@ -66,8 +60,7 @@ conditions and initiates the transition without direct external input. Automated
 in event-driven systems, enabling workflows to advance reactively based on internal state changes, timers, or derived
 signals. This mechanism shifts the system from a pull-based control flow to a responsive, declarative model.
 
-> **Image Placeholder**
-> `![Entity workflow lifecycle](/images/entity_workflow_lifecycle.png)`
+> **Note**: Entity workflow lifecycle diagram will be added here.
 
 ### Workflow
 
@@ -86,8 +79,7 @@ Processors encapsulate the logic to be executed upon traversing a transition; th
 enrich the entity, invoke external services, or enforce invariants. Cyoda supports asynchronous and synchronous
 processors.
 
-> **Image Placeholder**
-> `![Workflow processing pipeline](/images/workflow_processor_pipeline.png)`
+> **Note**: Workflow processing pipeline diagram will be added here.
 
 ## Benefits for System Design
 

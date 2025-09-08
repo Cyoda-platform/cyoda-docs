@@ -231,7 +231,7 @@ stages allow users or systems to correct or re-evaluate the request.
 
 The following section walks through the configuration step by step.
 
-![Payment Request Workflow](/images/payment-request-workflow.png)
+![Payment Request Workflow](../../../assets/payment-request-workflow.png)
 
 ### Step 1: Workflow Metadata
 

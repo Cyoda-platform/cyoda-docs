@@ -1,13 +1,6 @@
 ---
-layout: docs
 title: "Service Details"
-description: Information about the current Cyoda Cloud service, including operational
-  characteristics, service boundaries, and important considerations for users.
-order: 2
-eleventyNavigation:
-  key: Cloud Service Details
-  parent: Platform
-  order: 1
+description: Information about the current Cyoda Cloud service, including operational characteristics, service boundaries, and important considerations for users.
 ---
 
 <!--

@@ -1,12 +1,6 @@
 ---
-layout: docs
 title: "Cloud Architecture"
 description: Physical architecture for Cyoda Cloud deployment
-order: 1
-eleventyNavigation:
-  key: Cyoda Cloud Architecture
-  parent: Architecture
-  order: 1
 ---
 
 This document describes the current physical architecture for Cyoda Cloud's soft launch deployment, supporting **free tier** subscribers. The architecture provides a multi-tenant platform running on bare metal infrastructure in Hetzner datacenters, with isolated client environments and shared backend services.

@@ -1,12 +1,6 @@
 ---
-layout: docs
 title: "Cyoda Platform Library"
 description: Overview of the Cyoda Platform Library (CPL)
-order: 3
-eleventyNavigation:
-  key: CPL Overview
-  parent: Concepts
-  order: 3
 ---
 
 Cyoda Cloud is based on the Cyoda Platform Library (CPL), a hybrid transactional/analytical data processing platform designed for high-volume data ingestion with concurrent transactional and analytical processing capabilities.

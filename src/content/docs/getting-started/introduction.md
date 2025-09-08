@@ -1,12 +1,6 @@
 ---
-layout: docs
 title: Introduction to Cyoda
 description: Welcome to the Cyoda Platform - your gateway to building intelligent, event-driven applications
-eleventyNavigation:
-  key: Introduction
-  title: Introduction
-  order: 1
-  parent: Getting Started
 ---
 
 # Introduction to Cyoda
@@ -58,10 +52,10 @@ Events trigger state transitions, while processors execute the business logic as
 
 ## Getting Started Journey
 
-1. **[Quick Start Guide](quickstart.md)** - Get your first Cyoda environment running in minutes
-2. **[Provision Environment](../guides/provision-environment.md)** - Detailed setup instructions
-3. **[Authentication & Authorization](../guides/authentication-authorization.md)** - Secure access to your environment
-4. **[Core Concepts](../concepts/)** - Deep dive into Cyoda's architectural principles
+1. **[Quick Start Guide](/getting-started/quickstart/)** - Get your first Cyoda environment running in minutes
+2. **[Provision Environment](/guides/provision-environment/)** - Detailed setup instructions
+3. **[Authentication & Authorization](/guides/authentication-authorization/)** - Secure access to your environment
+4. **[Core Concepts](/concepts/cpl-overview/)** - Deep dive into Cyoda's architectural principles
 
 ## Use Cases
 
@@ -74,6 +68,6 @@ Cyoda excels in domains where data and process intertwine deeply:
 
 ## Next Steps
 
-Ready to experience the power of entity-driven development? Start with our [Quick Start Guide](quickstart.md) to get your first Cyoda environment up and running, or dive deeper into our [Core Concepts](../concepts/) to understand the architectural foundations.
+Ready to experience the power of entity-driven development? Start with our [Quick Start Guide](/getting-started/quickstart/) to get your first Cyoda environment up and running, or dive deeper into our [Core Concepts](/concepts/cpl-overview/) to understand the architectural foundations.
 
 For immediate hands-on experience, visit [https://ai.cyoda.net](https://ai.cyoda.net) to interact with our AI Assistant and provision your free environment.

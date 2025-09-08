@@ -1,12 +1,6 @@
 ---
-layout: docs
 title: "EDBMS"
 description: The Entity Database Management System concept and implementation
-order: 1
-eleventyNavigation:
-  key: EDBMS
-  parent: Concepts
-  order: 1
 ---
 
 A condensed version of the original article by Paul Schleger [The Entity Database Management System](https://medium.com/@paul_42036/the-entity-database-management-system-300160660001).
