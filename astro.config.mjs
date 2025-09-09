@@ -101,7 +101,17 @@ export default defineConfig({
 					en: {
 						consentModal: {
 							title: 'Cookie Consent',
-							description: 'We use cookies to enhance your browsing experience and analyze our traffic. By clicking "Accept All", you consent to our use of cookies.',
+							description: 'Our website uses cookies and other related technologies ' +
+                                '(for convenience all technologies are referred to as "cookies"). ' +
+                                'Some cookies ensure that certain parts of the website work properly and that ' +
+                                'your user preferences remain known (Essential cookies). We also place cookies for ' +
+                                'analytics to measure usage and improve your experience, and marketing cookies to ' +
+                                'create user profiles and display personalized advertising. ' +
+                                'By clicking "Accept All", you consent to us using all categories of cookies as ' +
+                                'described in our Cookie Policy. You can disable the use of cookies via your browser, ' +
+                                'but please note that our website may no longer work properly. ' +
+                                'See our <a href="/cookies" target="_blank">Cookie Policy</a> and ' +
+                                '<a href="/privacy" target="_blank">Privacy Policy</a>.',
 							acceptAllBtn: 'Accept All',
 							acceptNecessaryBtn: 'Accept Necessary Only',
 							showPreferencesBtn: 'Manage Preferences',
@@ -115,16 +125,23 @@ export default defineConfig({
 							sections: [
 								{
 									title: 'Cookie Usage',
-									description: 'We use cookies to ensure the basic functionalities of the website and to enhance your online experience. You can choose for each category to opt-in/out whenever you want.',
+									description: 'We use cookies to ensure the basic functionalities of the website ' +
+                                        'and to enhance your online experience. You can choose for each category to ' +
+                                        'opt-in/out whenever you want. See our <a href="/cookies" target="_blank">Cookie Policy</a> and ' +
+                                        '<a href="/privacy" target="_blank">Privacy Policy</a>.',
 								},
 								{
-									title: 'Strictly Necessary Cookies',
-									description: 'These cookies are essential for the proper functioning of our website. Without these cookies, the website would not work properly.',
+									title: 'Strictly Necessary Cookies. Always On.',
+									description: 'These are necessary for the website to function properly.' +
+                                        'Essential cookies are required for basic site functionality and security. ' +
+                                        'These are always on and rely on our legitimate interests and are exempt from ' +
+                                        'consent requirements under applicable law.',
 									linkedCategory: 'necessary',
 								},
 								{
 									title: 'Analytics Cookies',
-									description: 'These cookies allow us to analyze website usage and improve our services. We use Google Analytics with privacy-enhanced settings.',
+									description: 'These cookies allow us to analyze website usage and improve our ' +
+                                        'services. We use Google Analytics with privacy-enhanced settings.',
 									linkedCategory: 'analytics',
 								},
 							],
@@ -136,14 +153,28 @@ export default defineConfig({
 		starlight({
 			title: 'Cyoda Documentation',
 			description: 'Documentation for the Cyoda platform - event-driven architecture and data management solutions.',
-			social: [
-				{
-					icon: 'github',
-					label: 'GitHub',
-					href: 'https://github.com/Cyoda-platform/cyoda-docs'
-				}
-			],
-			head: [
+            social: [
+                {
+                    icon: 'github',
+                    label: 'GitHub',
+                    href: 'https://github.com/Cyoda-platform/cyoda-docs'
+                },
+                {
+                    icon: 'linkedin',
+                    label: 'LinkedIn',
+                    href: 'https://linkedin.com/company/cyoda'
+                },
+                {
+                    icon: 'discord',
+                    label: 'Discord',
+                    href: 'https://discord.com/invite/95rdAyBZr2'
+                },
+                {
+                    icon: 'youtube',
+                    label: 'YouTube',
+                    href: 'https://www.youtube.com/@cyoda934'
+                }
+            ],			head: [
 				// Google Analytics with consent mode (only if GA_MEASUREMENT_ID is provided)
 				...(process.env.GA_MEASUREMENT_ID ? [
 					{
