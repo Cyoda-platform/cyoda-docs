@@ -1,0 +1,132 @@
+---
+// API Reference page - configurable between Scalar and Stoplight Elements
+// Configuration: Choose your API documentation renderer
+// Options: 'scalar' | 'stoplight'
+const API_RENDERER = 'scalar';
+
+// Redirect to the appropriate implementation
+if (API_RENDERER === 'scalar') {
+  return Astro.redirect('/api-reference-scalar/');
+} else if (API_RENDERER === 'stoplight') {
+  return Astro.redirect('/api-reference-stoplight/');
+}
+
+const title = 'API Reference';
+const description = 'Interactive API documentation for the Cyoda platform';
+---
+
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>{title} | Cyoda Documentation</title>
+    <link rel="icon" href="/favicon.ico" sizes="any" />
+    <style>
+      body {
+        margin: 0;
+        font-family: system-ui, sans-serif;
+        background: #0d1117;
+        color: #f0f6fc;
+      }
+      .header {
+        background: #161b22;
+        border-bottom: 1px solid #30363d;
+        padding: 1rem 2rem;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+      }
+      .header h1 {
+        margin: 0;
+        font-size: 1.5rem;
+        font-weight: 600;
+      }
+      .nav-links {
+        display: flex;
+        gap: 1rem;
+        align-items: center;
+      }
+      .nav-link {
+        color: #7d8590;
+        text-decoration: none;
+        font-weight: 500;
+        padding: 0.5rem 1rem;
+        border-radius: 0.25rem;
+        transition: color 0.2s ease;
+      }
+      .nav-link:hover {
+        color: #f0f6fc;
+      }
+      .nav-link.active {
+        color: #58a6ff;
+        font-weight: 600;
+      }
+      .main-content {
+        height: calc(100vh - 80px);
+        overflow: hidden;
+      }
+      #api-reference {
+        height: 100%;
+        width: 100%;
+      }
+      .loading {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        height: 100%;
+        font-size: 1.1rem;
+        color: #7d8590;
+      }
+
+      /* Stoplight Elements specific styling */
+      elements-api {
+        height: 100%;
+        width: 100%;
+        display: block;
+      }
+    </style>
+  </head>
+  <body>
+    <header class="header">
+      <h1>Cyoda Documentation</h1>
+      <nav class="nav-links">
+        <a href="/" class="nav-link">Docs</a>
+        <a href="/api-reference/" class="nav-link active">API Ref</a>
+      </nav>
+    </header>
+    <main class="main-content">
+      {isScalar && (
+        <script
+          id="api-reference"
+          type="application/json"
+          data-configuration='{
+            "spec": {
+              "url": "/openapi/openapi.json"
+            },
+            "theme": "dark"
+          }'>
+        </script>
+      )}
+
+      {isStoplight && (
+        <elements-api
+          apiDescriptionUrl="/openapi/openapi.json"
+          router="hash"
+          layout="sidebar"
+          hideInternal="true">
+        </elements-api>
+      )}
+    </main>
+
+    {isScalar && (
+      <script src="https://cdn.jsdelivr.net/npm/@scalar/api-reference@latest"></script>
+    )}
+
+    {isStoplight && (
+      <>
+        <script src="https://unpkg.com/@stoplight/elements/web-components.min.js"></script>
+        <link rel="stylesheet" href="https://unpkg.com/@stoplight/elements/styles.min.css">
+      </>
+    )}
+  </body>
+</html>

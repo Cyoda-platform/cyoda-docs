@@ -59,6 +59,8 @@ export default defineConfig({
 			components: {
 				// Override the default footer component
 				Footer: './src/components/Footer.astro',
+				// Override the default header component to add navigation
+				Header: './src/components/Header.astro',
 			},
 		}),
 	],
