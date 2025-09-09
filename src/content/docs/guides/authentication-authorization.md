@@ -5,8 +5,6 @@ sidebar:
   order: 4
 ---
 
-import { Aside } from '@astrojs/starlight/components';
-
 ## Overview
 
 Cyoda Cloud provides a secure, OAuth 2.0-based authentication system designed for developers building applications that integrate with the Cyoda platform. This guide explains the authentication flow from user registration to API integration.
@@ -39,22 +37,11 @@ Before using Cyoda Cloud, you must:
 
 ### Free Tier Limitations
 
-The Free Tier includes the following limits:
-- **Model Fields**: 50 fields maximum
-- **Payload Size**: 100KB per request
-- **API Requests**: 60 requests per minute
-- **Externalized Calls**: 60 calls per minute
+See [Entitlements](/platform/entitlements/#subscription-tiers-overview)
 
 ## Environment Setup and Provisioning
 
-**THIS IS A MAJOR WORK IN PROGRESS!**
-If you follow the normal onboarding flow via the AI Assistant, you'll get all the information needed to access your environment.
-
-<Aside type="caution">
-Make sure you save your deployment ID. If you give this to the AI Assistant, it will be able to help you create a technical user or control your environment.
-</Aside>
-
-If you struggle, reach out to us on [Discord](https://discord.gg/95rdAyBZr2)
+See [Provision Environment](/guides/provision-environment/)
 
 ## Connection
 
