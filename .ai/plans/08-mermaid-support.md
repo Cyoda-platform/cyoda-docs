@@ -14,15 +14,7 @@ Render Mermaid diagrams from fenced code blocks at build time to avoid flicker.
      remarkPlugins: [import('remark-mermaidjs')]
    }
    ```
-3. Add a sample page with a mermaid block and verify rendering:
-   ````md
-   ```mermaid
-   graph TD
-     A[Start] --> B{Decision}
-     B -->|Yes| C[Continue]
-     B -->|No| D[Stop]
-   ```
-   ````
+3. Check the page architecture/cyoda-cloud-architecture.md for correctness:
 
 **Acceptance Criteria**  
 - Mermaid diagrams render as SVG/HTML at build time.
