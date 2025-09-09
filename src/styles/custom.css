@@ -1,26 +1,27 @@
 /* Custom styles for Cyoda Documentation */
+/* This file contains component-specific styles that complement the Primer-based branding */
 
 /* Footer styling */
 .footer {
-  border-top: 1px solid var(--sl-color-gray-5);
-  margin-top: 2rem;
-  padding: 1.5rem 0;
+  border-top: 1px solid var(--cyoda-aqua-medium);
+  margin-top: var(--base-size-32, 2rem);
+  padding: var(--base-size-24, 1.5rem) 0;
   background-color: var(--sl-color-bg-nav);
 }
 
 .footer-content {
   max-width: var(--sl-content-width);
   margin: 0 auto;
-  padding: 0 1rem;
+  padding: 0 var(--base-size-16, 1rem);
   display: flex;
   flex-direction: column;
-  gap: 1rem;
+  gap: var(--base-size-16, 1rem);
 }
 
 .footer-links {
   display: flex;
   flex-wrap: wrap;
-  gap: 1.5rem;
+  gap: var(--base-size-24, 1.5rem);
   align-items: center;
   justify-content: center;
 }
@@ -28,18 +29,20 @@
 .footer-links a {
   color: var(--sl-color-text);
   text-decoration: none;
-  font-size: 0.9rem;
+  font-size: var(--base-text-size-14, 0.875rem);
+  font-weight: var(--base-text-weight-medium, 500);
+  transition: all 0.2s ease;
 }
 
 .footer-links a:hover {
-  color: var(--sl-color-text-accent);
   text-decoration: underline;
+  border-bottom: 2px solid var(--cyoda-aqua);
 }
 
 .footer-copyright {
   text-align: center;
   color: var(--sl-color-gray-3);
-  font-size: 0.85rem;
+  font-size: var(--base-text-size-12, 0.75rem);
 }
 
 /* Responsive footer */
@@ -48,6 +51,7 @@
     flex-direction: row;
     justify-content: space-between;
     align-items: center;
+    padding: 0 var(--base-size-24, 1.5rem);
   }
 
   .footer-links {

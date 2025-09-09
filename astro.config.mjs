@@ -30,6 +30,8 @@ export default defineConfig({
 				},
 			],
 			customCss: [
+				// Primer primitives with Cyoda branding
+				'./src/styles/primer.css',
 				// Add custom CSS for footer and other styling
 				'./src/styles/custom.css',
 			],
@@ -65,6 +67,8 @@ export default defineConfig({
 				Footer: './src/components/Footer.astro',
 				// Override the default header component to add navigation
 				Header: './src/components/Header.astro',
+				// Override the default site title to add logo and aqua coloring
+				SiteTitle: './src/components/SiteTitle.astro',
 			},
 		}),
 	],

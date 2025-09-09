@@ -16,6 +16,7 @@
     "sharp": "^0.34.2"
   },
   "devDependencies": {
+    "@primer/primitives": "^11.1.0",
     "playwright": "^1.55.0",
     "rehype-mermaid": "^3.0.0"
   }
