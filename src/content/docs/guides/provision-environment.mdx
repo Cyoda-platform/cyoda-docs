@@ -6,6 +6,7 @@ sidebar:
 ---
 
 import { Image } from 'astro:assets';
+import { Aside } from '@astrojs/starlight/components';
 import aiAssistantConsent from '../../../assets/env-provisioning-flow/01-ai-assistant-consent.webp';
 import aiAssistantGreet from '../../../assets/env-provisioning-flow/02-ai-assistant-greet.webp';
 import deployEnvPrompt from '../../../assets/env-provisioning-flow/03-deploy-env-prompt.webp';
@@ -18,11 +19,12 @@ Getting your first Cyoda Cloud Free Tier environment is very straightforward. Si
 
 ## TL;DR
 
-> [!INFO] Provisioning your first Cyoda Cloud Environment
-> 1. Create an account on [https://ai.cyoda.net](https://ai.cyoda.net)
-> 2. Deploy an environment by prompting the AI Assistant with: `Please deploy my Cyoda environment`
-> 3. Create a technical user by prompting the AI Assistant with: `Please create a technical user for my environment`
-> 4. Access your environment via the Cyoda UI or APIs
+<Aside type="note" title="Provisioning your first Cyoda Cloud Environment">
+1. Create an account on [https://ai.cyoda.net](https://ai.cyoda.net)
+2. Deploy an environment by prompting the AI Assistant with: `Please deploy my Cyoda environment`
+3. Create a technical user by prompting the AI Assistant with: `Please create a technical user for my environment`
+4. Access your environment via the Cyoda UI or APIs
+</Aside>
 
 ## Create an Account
 
