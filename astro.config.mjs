@@ -5,6 +5,32 @@ import rehypeMermaid from 'rehype-mermaid';
 
 // https://astro.build/config
 export default defineConfig({
+	// Site URL for sitemap generation
+	site: 'https://docs.cyoda.net',
+	// Performance optimizations
+	output: 'static',
+	build: {
+		inlineStylesheets: 'auto',
+		assets: '_astro'
+	},
+	prefetch: {
+		prefetchAll: true,
+		defaultStrategy: 'viewport'
+	},
+
+	vite: {
+		build: {
+			cssCodeSplit: true,
+			rollupOptions: {
+				output: {
+					manualChunks: {
+						'vendor': ['@astrojs/starlight'],
+						'mermaid': ['rehype-mermaid']
+					}
+				}
+			}
+		}
+	},
 	markdown: {
 		rehypePlugins: [rehypeMermaid]
 	},

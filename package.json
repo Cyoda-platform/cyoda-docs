@@ -7,7 +7,9 @@
     "start": "astro dev",
     "build": "astro build",
     "preview": "astro preview",
-    "astro": "astro"
+    "astro": "astro",
+    "perf:audit": "npm run build && npx serve dist -l 3000 & sleep 3 && npx lighthouse http://localhost:3000 --budget-path=performance-budget.json --view && pkill -f 'serve dist'",
+    "perf:check": "npm run build && npx lighthouse http://localhost:3000 --budget-path=performance-budget.json --output=json --output-path=lighthouse-report.json"
   },
   "dependencies": {
     "@astrojs/starlight": "^0.35.2",

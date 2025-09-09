@@ -1,13 +1,10 @@
 ---
-layout: docs
-title: "Workflow Config"
+title: Workflow Config Guide
 description: Understanding Cyoda JSON workflow configurations
-order: 3
-eleventyNavigation:
-  key: Workflow Config Guide
-  parent: Guides
-  order: 6
 ---
+
+import { Image } from 'astro:assets';
+import paymentRequestWorkflow from '../../../assets/payment-request-workflow.webp';
 
 > Understanding Cyoda JSON workflow configurations.
 
@@ -221,17 +218,17 @@ As described in the [Architecture](cyoda-cloud-architecture.md) section, the exe
 
 This workflow models the lifecycle of a payment request, covering validation, matching, approval, and notification handling.
 
-It starts in the INVALID state, where the request is either amended or validated. 
-If validation succeeds and a matching order exists, the request advances automatically to the SUBMITTED state. 
-If not, it moves to PENDING, where it awaits a matching order or may be retried manually. 
+It starts in the INVALID state, where the request is either amended or validated.
+If validation succeeds and a matching order exists, the request advances automatically to the SUBMITTED state.
+If not, it moves to PENDING, where it awaits a matching order or may be retried manually.
 Requests in SUBMITTED require an approval decision, leading either to APPROVED, which triggers
-asynchronous processing like payment message creation and ACK notifications, or to DECLINED, 
-which emits a rejection (NACK) notification. Manual amend and retry transitions at key 
+asynchronous processing like payment message creation and ACK notifications, or to DECLINED,
+which emits a rejection (NACK) notification. Manual amend and retry transitions at key
 stages allow users or systems to correct or re-evaluate the request.
 
 The following section walks through the configuration step by step.
 
-![Payment Request Workflow](../../../assets/payment-request-workflow.png)
+<Image src={paymentRequestWorkflow} alt="Payment Request Workflow" width={1000} height={700} loading="lazy" />
 
 ### Step 1: Workflow Metadata
 

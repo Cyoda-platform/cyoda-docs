@@ -1,12 +1,16 @@
 ---
-layout: docs
-title: "Provision Environment"
-description: How to provision your first Cyoda Cloud environment
-eleventyNavigation:
-  key: Provision Environment
-  parent: Guides
-  order: 1
+title: Provision Environment
+description: Step-by-step guide to provisioning your Cyoda environment using the AI Assistant
 ---
+
+import { Image } from 'astro:assets';
+import aiAssistantConsent from '../../../assets/env-provisioning-flow/01-ai-assistant-consent.webp';
+import aiAssistantGreet from '../../../assets/env-provisioning-flow/02-ai-assistant-greet.webp';
+import deployEnvPrompt from '../../../assets/env-provisioning-flow/03-deploy-env-prompt.webp';
+import envDeployedConfirmation from '../../../assets/env-provisioning-flow/04-env-deployed-confirmation.webp';
+import createTechnicalUser from '../../../assets/env-provisioning-flow/05-create-technical-user.webp';
+import loginCyodaUI from '../../../assets/env-provisioning-flow/06-login-cyoda-ui.webp';
+import loggedIn from '../../../assets/env-provisioning-flow/07-logged-in.webp';
 
 Getting your first Cyoda Cloud Free Tier environment is very straightforward. Simply follow the steps below.
 
@@ -22,9 +26,9 @@ Getting your first Cyoda Cloud Free Tier environment is very straightforward. Si
 
 1. **Access the AI Assistant**: Navigate to the Cyoda Cloud web-based Single Page Application (SPA) at [https://ai.cyoda.net](https://ai.cyoda.net) and consent to the terms and conditions.
 
-![AI Assistant Consent](../../../assets/env-provisioning-flow/01-ai-assistant-consent.png)
+<Image src={aiAssistantConsent} alt="AI Assistant Consent" width={800} height={600} loading="lazy" />
 
-![AI Assistant Greeting Screen](../../../assets/env-provisioning-flow/02-ai-assistant-greet.png)
+<Image src={aiAssistantGreet} alt="AI Assistant Greeting Screen" width={800} height={600} loading="lazy" />
 
 2. **Choose Authentication Provider**: Register using one of the supported providers:
     - **Google Auth**: Sign up using your Google account
@@ -36,20 +40,20 @@ Getting your first Cyoda Cloud Free Tier environment is very straightforward. Si
 
 Prompt the AI Assistant with: `Please deploy my Cyoda environment`. Wait a bit. Then confirm the deployment if requested.
 
-![Deploy Env Prompt](../../../assets/env-provisioning-flow/03-deploy-env-prompt.png)
+<Image src={deployEnvPrompt} alt="Deploy Env Prompt" width={800} height={600} loading="lazy" />
 
 
 **Save your Environment URL**: The AI Assistant will provide you with your environment URL. Write it down, you'll need it to access your environment.
 
 Wait for the deployment to complete.
 
-![Deploy Env Prompt](../../../assets/env-provisioning-flow/04-env-deployed-confirmation.png)
+<Image src={envDeployedConfirmation} alt="Environment Deployed Confirmation" width={800} height={600} loading="lazy" />
 
 ## Create a Technical User
 
 **Create a technical user (M2M client)**: Prompt the AI Assistant with: "Please create a technical user for my environment". You will see a button to launch the query against your env to create a new user. Write down the client ID and secret - you'll need them to access your environment.
 
-![Create Technical User Prompt](../../../assets/env-provisioning-flow/05-create-technical-user.png)
+<Image src={createTechnicalUser} alt="Create Technical User Prompt" width={800} height={600} loading="lazy" />
 
 
 ## Access the Environment
@@ -57,14 +61,14 @@ Once your environment is deployed and you have a technical user, you can access 
 
 ### Via the Cyoda UI
 
-Just navigate to your environment URL in your favorite browser at `https://client-<your_caas_user_id>.eu.cyoda.net` 
+Just navigate to your environment URL in your favorite browser at `https://client-<your_caas_user_id>.eu.cyoda.net`
 You can find your environment URL from the previous steps or ask the AI Assistant for the url
 
-![Login Cyoda UI](../../../assets/env-provisioning-flow/06-login-cyoda-ui.png)
+<Image src={loginCyodaUI} alt="Login Cyoda UI" width={800} height={600} loading="lazy" />
 
 With the Cyoda UI you need to login with your personal via Auth0.
 
-![Cyoda UI](../../../assets/env-provisioning-flow/07-logged-in.png)
+<Image src={loggedIn} alt="Cyoda UI Logged In" width={800} height={600} loading="lazy" />
 
 ### Via the API
 To access the APIs you need to use your technical user credentials to authenticate.

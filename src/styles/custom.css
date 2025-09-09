@@ -1,6 +1,21 @@
 /* Custom styles for Cyoda Documentation */
 /* This file contains component-specific styles that complement the Primer-based branding */
 
+/* Performance optimizations */
+img {
+  content-visibility: auto;
+}
+
+/* Prevent layout shift during navigation */
+.sl-nav-list {
+  contain: layout style;
+}
+
+/* Optimize font loading */
+@font-face {
+  font-display: swap;
+}
+
 /* Footer styling */
 .footer {
   border-top: 1px solid var(--cyoda-aqua-medium);

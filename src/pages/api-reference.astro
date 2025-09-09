@@ -119,12 +119,12 @@ const description = 'Interactive API documentation for the Cyoda platform';
     </main>
 
     {isScalar && (
-      <script src="https://cdn.jsdelivr.net/npm/@scalar/api-reference@latest"></script>
+      <script src="https://cdn.jsdelivr.net/npm/@scalar/api-reference@latest" defer></script>
     )}
 
     {isStoplight && (
       <>
-        <script src="https://unpkg.com/@stoplight/elements/web-components.min.js"></script>
+        <script src="https://unpkg.com/@stoplight/elements/web-components.min.js" defer></script>
         <link rel="stylesheet" href="https://unpkg.com/@stoplight/elements/styles.min.css">
       </>
     )}
