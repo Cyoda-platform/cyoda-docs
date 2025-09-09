@@ -223,7 +223,7 @@ export default defineConfig({
 					autogenerate: { directory: 'guides' }
 				},
 				{
-					label: 'Concepts',
+					label: 'Concepts and Ideas',
 					collapsed: true,
 					autogenerate: { directory: 'concepts' }
 				},
@@ -233,7 +233,7 @@ export default defineConfig({
 					autogenerate: { directory: 'architecture' }
 				},
 				{
-					label: 'Platform',
+					label: 'Cloud Info',
 					collapsed: true,
 					autogenerate: { directory: 'platform' }
 				},
