@@ -128,7 +128,7 @@ If API calls are failing:
 ## Getting Help
 
 - **AI Assistant**: Ask questions directly at [https://ai.cyoda.net](https://ai.cyoda.net)
-- **Documentation**: Browse our [guides](/guides/provision-environment/)
+- **Documentation**: Browse our [guides](/guides/)
 - **Community**: Connect with other developers on our platform
 
 ## Free Tier Limits

@@ -50,10 +50,11 @@ jobs:
       - name: Install dependencies
         run: npm install
 
-      - name: Build site with Eleventy
-        run: npm run build:optimized
+      - name: Build site with Astro
+        run: npm run build
         env:
           NODE_ENV: production
+          GA_MEASUREMENT_ID: ${{ secrets.GA_MEASUREMENT_ID }}
 
       - name: Run build validation
         run: npm run validate:build

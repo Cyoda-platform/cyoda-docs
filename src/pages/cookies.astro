@@ -1,0 +1,93 @@
+---
+import StarlightPage from '@astrojs/starlight/components/StarlightPage.astro';
+
+const frontmatter = {
+  title: 'Cookie Policy',
+  description: 'Cookie Policy for Cyoda Documentation Site',
+  template: 'doc',
+  sidebar: {
+    hidden: true,
+  },
+};
+---
+
+<StarlightPage frontmatter={frontmatter}>
+  <div class="sl-markdown-content">
+    <h1>Cookie Policy</h1>
+    
+    <p>This Cookie Policy explains how Cyoda uses cookies and similar technologies on our public documentation website (the "Site"). It applies to visitors in the United Kingdom and the European Economic Area and is intended to meet the requirements of the UK Privacy and Electronic Communications Regulations (PECR) and the EU ePrivacy Directive, alongside UK/EU GDPR.</p>
+
+    <p>We only use cookies that are necessary to operate the Site and (with your consent) analytics cookies to help us understand how visitors use the Site. We do not use advertising cookies.</p>
+
+    <h2>What are cookies?</h2>
+    <p>Cookies are small text files placed on your device by websites you visit. They are widely used to make websites work, or work more efficiently, as well as to provide information to site owners. Similar technologies include local storage, pixels and SDKs; for simplicity we refer to them collectively as "cookies".</p>
+
+    <h2>Your choices</h2>
+    <ul>
+      <li>Analytics cookies are only set after you give consent via our cookie banner.</li>
+      <li>You can withdraw your consent at any time by clearing cookies for this site in your browser settings. If a consent banner/control is present, you can also use it to update your choices.</li>
+      <li>You can block or delete cookies via your browser. Doing so may affect how the Site functions.</li>
+    </ul>
+
+    <div style="margin: 1.5rem 0;">
+      <button
+        type="button"
+        data-cc="show-preferencesModal"
+        style="background: #0969da; color: white; border: none; padding: 0.5rem 1rem; border-radius: 0.375rem; cursor: pointer; font-size: 0.875rem; font-weight: 500;"
+      >
+        Change cookie settings
+      </button>
+      <noscript>
+        <p style="font-style: italic; color: #656d76; margin-top: 0.5rem;">JavaScript is required to change cookie settings here. You can also clear cookies in your browser.</p>
+      </noscript>
+    </div>
+
+    <h2>Cookies we use</h2>
+
+    <h3>1) Strictly necessary cookies (always on)</h3>
+    <p>These cookies are required for the Site to function and do not require your consent.</p>
+    <ul>
+      <li><strong>Consent storage cookie</strong> (name may be <code>cc_cookie</code>): remembers whether you have accepted or rejected analytics cookies so we do not ask you repeatedly. Typical expiry: up to 6 months.</li>
+      <li><strong>Infrastructure cookies</strong> set by our hosting provider may be used for security or load balancing (where applicable) and are essential.</li>
+    </ul>
+
+    <h3>2) Analytics cookies (consent)</h3>
+    <p>We use Google Analytics (GA4) to collect anonymous statistics about how visitors use our Site. These cookies help us improve content and navigation. They are not set until you consent.</p>
+
+    <p>Common GA cookies include:</p>
+    <ul>
+      <li><code>_ga</code> (2 years): distinguishes users</li>
+      <li><code>_ga_*</code> (up to 2 years): maintains session state</li>
+      <li><code>_gid</code> (24 hours): distinguishes users</li>
+    </ul>
+
+    <p>What we do to protect your privacy with GA4:</p>
+    <ul>
+      <li>IP anonymisation/truncation is enabled</li>
+      <li>Advertising features are disabled</li>
+      <li>Data sharing with other Google products is disabled where possible</li>
+    </ul>
+
+    <p>Provider: Google Ireland Limited (data may be transferred to Google LLC in the United States under Standard Contractual Clauses). For more information, see Google's privacy documentation and the GA opt‑out add‑on: <a href="https://tools.google.com/dlpage/gaoptout" target="_blank" rel="noopener noreferrer">https://tools.google.com/dlpage/gaoptout</a></p>
+
+    <h2>Managing cookies in your browser</h2>
+    <p>You can manage cookies by changing your browser settings. The following links may help:</p>
+    <ul>
+      <li><a href="https://support.google.com/chrome/answer/95647" target="_blank" rel="noopener noreferrer">Chrome</a></li>
+      <li><a href="https://support.mozilla.org/kb/enable-and-disable-cookies-website-preferences" target="_blank" rel="noopener noreferrer">Firefox</a></li>
+      <li><a href="https://support.apple.com/guide/safari/manage-cookies-and-website-data-sfri11471/mac" target="_blank" rel="noopener noreferrer">Safari (macOS)</a></li>
+      <li><a href="https://support.microsoft.com/microsoft-edge/delete-cookies-in-microsoft-edge-63947406-40ac-c3b8-57b9-2a946a29ae09" target="_blank" rel="noopener noreferrer">Edge</a></li>
+    </ul>
+
+    <h2>Legal basis</h2>
+    <ul>
+      <li><strong>Strictly necessary cookies:</strong> our legitimate interests in delivering a secure, reliable website.</li>
+      <li><strong>Analytics cookies:</strong> your consent.</li>
+    </ul>
+
+    <h2>Changes to this policy</h2>
+    <p>We may update this Cookie Policy from time to time. Changes will be posted on this page with an updated date below.</p>
+
+    <p><em>Last updated: January 2025</em></p>
+  </div>
+</StarlightPage>

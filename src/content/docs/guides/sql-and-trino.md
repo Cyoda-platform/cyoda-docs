@@ -30,7 +30,7 @@ You can also create and manage schemas programmatically using the SQL Schema API
 
 For complete API endpoint details and request formats, see the [API Documentation](#api).
 
-For authentication details, see [Authentication & Authorization](authentication-authorization.md).
+For authentication details, see [Authentication & Authorization](/guides/authentication-authorization/).
 
 ## Step 3: Configure Trino JDBC Client
 
@@ -40,7 +40,7 @@ jdbc:trino://trino-client-<caas_user_id>.eu.cyoda.net:443/cyoda/<your_schema>
 ```
 where `caas_user_id` is your CAAS user ID and `your_schema` is the schema you created in Step 1.
 
-For authentication credentials and technical user setup, see [Authentication & Authorization](authentication-authorization.md#technical-user-creation).
+For authentication credentials and technical user setup, see [Authentication & Authorization](/guides/authentication-authorization#technical-user-creation).
 
 ## Step 4: Verify Schema
 

@@ -9,16 +9,16 @@ ABOUTME: This document provides comprehensive information about the current Cyod
 TONE: Neutral, factual tone appropriate for alpha-phase SaaS documentation. Focus on clear, actionable information without apologetic language or marketing speak. Present current service state and capabilities.
 -->
 
-**Current Status**: For current service status and known issues, see [Cyoda Cloud Status](cyoda-cloud-status.md).
+**Current Status**: For current service status and known issues, see [Cyoda Cloud Status](/platform/cyoda-cloud-status/).
 
-**Subscription Details**: For tier limits and entitlements, see [Subscription Tiers](entitlements.md).
+**Subscription Details**: For tier limits and entitlements, see [Subscription Tiers](/platform/entitlements/).
 
 ## Service Availability
 
 ### Uptime and Maintenance
 
 - Service operates 24/7
-- Planned maintenance notifications posted on [Status Page](cyoda-cloud-status.md)
+- Planned maintenance notifications posted on [Status Page](/platform/cyoda-cloud-status/)
 
 ### Geographic Deployment
 
@@ -35,7 +35,7 @@ TONE: Neutral, factual tone appropriate for alpha-phase SaaS documentation. Focu
 - Shared backend services (Cassandra, Zookeeper)
 - External access via Cloudflare tunnel
 
-For detailed architecture information, see [Cyoda Cloud Architecture](cyoda-cloud-architecture.md).
+For detailed architecture information, see [Cyoda Cloud Architecture](/architecture/cyoda-cloud-architecture/).
 
 ### Client Integration Points
 
@@ -68,7 +68,7 @@ For detailed architecture information, see [Cyoda Cloud Architecture](cyoda-clou
 
 ### Rate Limiting
 
-Rate limits vary by subscription tier. See [Subscription Tiers](entitlements.md) for specific limits.
+Rate limits vary by subscription tier. See [Subscription Tiers](/platform/entitlements/) for specific limits.
 
 - HTTP 429 responses when limits exceeded
 - Burst capacity available within limits
@@ -79,7 +79,7 @@ Rate limits vary by subscription tier. See [Subscription Tiers](entitlements.md)
 - OAuth 2.0 client credentials flow for technical users
 - Technical user creation via [AI Assistant](https://ai.cyoda.net)
 
-For complete authentication details, see [Authentication & Authorization](authentication-authorization.md).
+For complete authentication details, see [Authentication & Authorization](/guides/authentication-authorization/).
 
 ## Current Service Limitations
 
@@ -99,7 +99,7 @@ For complete authentication details, see [Authentication & Authorization](authen
 
 - API versioning planned for post-alpha release
 - Client libraries available on GitHub. Lots of active development there.
-- In Alpha, expect breaking changes. We'll keep people informed on the [Status Page](cyoda-cloud-status.md) and [Discord](https://discord.com/invite/95rdAyBZr2).
+- In Alpha, expect breaking changes. We'll keep people informed on the [Status Page](/platform/cyoda-cloud-status/) and [Discord](https://discord.com/invite/95rdAyBZr2).
 
 ## Migration and Data Portability
 
