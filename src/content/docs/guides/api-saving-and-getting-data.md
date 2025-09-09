@@ -1,12 +1,8 @@
 ---
-layout: docs
-title: "Saving and Getting Data"
+title: "API: Saving and Getting Data"
 description: Learn how to save and retrieve entity data using the API and SQL
-order: 5
-eleventyNavigation:
-  key: "API: Saving and Getting Data"
-  parent: Guides
-  order: 3
+sidebar:
+  order: 5
 ---
 
 Watch these videos for an overview of saving and searching for entity data from Cyoda using the API and SQL But be careful, the endpoints you see have changed a bit. 

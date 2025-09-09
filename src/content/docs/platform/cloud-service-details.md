@@ -1,6 +1,8 @@
 ---
 title: "Service Details"
 description: Information about the current Cyoda Cloud service, including operational characteristics, service boundaries, and important considerations for users.
+sidebar:
+  order: 2
 ---
 
 <!--

@@ -2,10 +2,7 @@
 layout: docs
 title: "Subscription Tiers"
 description: Available subscription tiers and entitlements for Cyoda Cloud
-order: 3
-eleventyNavigation:
-  key: Entitlements
-  parent: Platform
+sidebar:
   order: 3
 ---
 

@@ -2,9 +2,7 @@
 layout: docs
 title: "Roadmap"
 description: Cyoda Cloud platform development roadmap
-eleventyNavigation:
-  key: Roadmap
-  parent: Platform
+sidebar:
   order: 4
 ---
 

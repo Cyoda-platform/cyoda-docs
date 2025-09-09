@@ -2,11 +2,8 @@
 layout: docs
 title: "Current Status"
 description: Current status and known issues for Cyoda Cloud services
-order: 1
-eleventyNavigation:
-  key: Cyoda Cloud Status
-  parent: Platform
-  order: 2
+sidebar:
+  order: 1
 ---
 
 <!--

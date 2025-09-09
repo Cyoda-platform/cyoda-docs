@@ -1,12 +1,8 @@
 ---
-layout: docs
-title: "Connecting"
+title: "Authentication & Authorization"
 description: OAuth 2.0-based authentication system for Cyoda Cloud
-order: 4
-eleventyNavigation:
-  key: Authentication & Authorization
-  parent: Guides
-  order: 2
+sidebar:
+  order: 4
 ---
 
 ## Overview

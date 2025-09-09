@@ -1,6 +1,8 @@
 ---
 title: "EDBMS"
 description: The Entity Database Management System concept and implementation
+sidebar:
+  order: 1
 ---
 
 A condensed version of the original article by Paul Schleger [The Entity Database Management System](https://medium.com/@paul_42036/the-entity-database-management-system-300160660001).

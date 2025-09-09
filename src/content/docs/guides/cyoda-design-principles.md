@@ -1,12 +1,8 @@
 ---
-layout: docs
 title: "Design Principles"
 description: Core design principles and application architecture for the Cyoda platform
-order: 1
-eleventyNavigation:
-  key: Cyoda Design Principles
-  parent: Guides
-  order: 4
+sidebar:
+  order: 1
 ---
 
 At the heart of Cyoda lies the Entity Database Management System (EDBMS), a system built around the idea that every piece of persisted data is an **Entity**. These entities function as finite state machines governed by workflows, forming the foundation of every Cyoda application.

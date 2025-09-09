@@ -1,12 +1,8 @@
 ---
-layout: docs
-title: "SQL Querying"
+title: "SQL and Trino"
 description: How to query Cyoda entity data with SQL
-order: 6
-eleventyNavigation:
-  key: SQL and Trino
-  parent: Guides
-  order: 5
+sidebar:
+  order: 6
 ---
 
 ## Step 1: Create a SQL Schema
