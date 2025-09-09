@@ -33,7 +33,7 @@ jobs:
           node-version: '18'
           cache: 'npm'
       - name: Install dependencies
-        run: npm install
+        run: npm ci --omit=dev
       - name: Build site
         run: npm run build
         env:

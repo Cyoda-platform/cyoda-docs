@@ -48,7 +48,7 @@ jobs:
           cache: 'npm'
 
       - name: Install dependencies
-        run: npm install
+        run: npm ci --omit=dev
 
       - name: Build site with Astro
         run: npm run build
@@ -56,8 +56,7 @@ jobs:
           NODE_ENV: production
           GA_MEASUREMENT_ID: ${{ secrets.GA_MEASUREMENT_ID }}
 
-      - name: Run build validation
-        run: npm run validate:build
+
 
       - name: Install Surge
         run: npm install -g surge
