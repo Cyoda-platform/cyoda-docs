@@ -95,6 +95,10 @@ export default defineConfig({
 				Header: './src/components/Header.astro',
 				// Override the default site title to add logo and aqua coloring
 				SiteTitle: './src/components/SiteTitle.astro',
+				// Override the table of contents to add copy page button
+				TableOfContents: './src/components/TableOfContents.astro',
+				// Override the mobile table of contents to add copy page button
+				MobileTableOfContents: './src/components/MobileTableOfContents.astro',
 			},
 		}),
 	],
