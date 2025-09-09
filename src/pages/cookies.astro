@@ -1,5 +1,7 @@
 ---
 import StarlightPage from '@astrojs/starlight/components/StarlightPage.astro';
+import { statSync } from 'fs';
+import { fileURLToPath } from 'url';
 
 const frontmatter = {
   title: 'Cookie Policy',
@@ -9,12 +11,18 @@ const frontmatter = {
     hidden: true,
   },
 };
+
+// Get the file modification date
+const filePath = fileURLToPath(import.meta.url);
+const stats = statSync(filePath);
+const lastModified = stats.mtime.toLocaleDateString('en-US', {
+  year: 'numeric',
+  month: 'long'
+});
 ---
 
 <StarlightPage frontmatter={frontmatter}>
   <div class="sl-markdown-content">
-    <h1>Cookie Policy</h1>
-    
     <p>This Cookie Policy explains how Cyoda uses cookies and similar technologies on our public documentation website (the "Site"). It applies to visitors in the United Kingdom and the European Economic Area and is intended to meet the requirements of the UK Privacy and Electronic Communications Regulations (PECR) and the EU ePrivacy Directive, alongside UK/EU GDPR.</p>
 
     <p>We only use cookies that are necessary to operate the Site and (with your consent) analytics cookies to help us understand how visitors use the Site. We do not use advertising cookies.</p>
@@ -88,6 +96,6 @@ const frontmatter = {
     <h2>Changes to this policy</h2>
     <p>We may update this Cookie Policy from time to time. Changes will be posted on this page with an updated date below.</p>
 
-    <p><em>Last updated: January 2025</em></p>
+    <p><em>Last updated: {lastModified}</em></p>
   </div>
 </StarlightPage>
