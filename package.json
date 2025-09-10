@@ -5,7 +5,7 @@
   "scripts": {
     "dev": "astro dev",
     "start": "astro dev",
-    "build": "astro build && npm run export:markdown && npm run generate:llms && npm run surge:headers",
+    "build": "astro build && npm run export:markdown && npm run generate:llms",
     "build:only": "astro build",
     "export:markdown": "node scripts/export-markdown.js",
     "generate:llms": "node scripts/generate-llms-txt.js",
