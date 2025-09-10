@@ -28,18 +28,35 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.inputs.branch || github.ref }}
 
       - name: Get branch info
         id: branch-info
         run: |
+          # Determine which branch to use
+          BRANCH_NAME="${{ github.event.inputs.branch }}"
+          if [ -z "$BRANCH_NAME" ]; then
+            BRANCH_NAME="${{ github.ref_name }}"
+          fi
+
           # Use custom environment name if provided, otherwise use branch name
           if [ -n "${{ github.event.inputs.environment_name }}" ]; then
             ENV_NAME="${{ github.event.inputs.environment_name }}"
           else
-            ENV_NAME=$(echo "${{ github.ref_name }}" | sed 's/[^a-zA-Z0-9]/-/g' | tr '[:upper:]' '[:lower:]')
+            ENV_NAME="$BRANCH_NAME"
           fi
-          echo "branch-name=$ENV_NAME" >> $GITHUB_OUTPUT
-          echo "Environment: $ENV_NAME"
+
+          # Sanitize environment name for URL
+          CLEAN_ENV=$(echo "$ENV_NAME" | sed 's/[^a-zA-Z0-9]/-/g' | sed 's/--*/-/g' | sed 's/^-\|-$//g' | tr '[:upper:]' '[:lower:]')
+          SURGE_DOMAIN="cyoda-docs-${CLEAN_ENV}.surge.sh"
+          SURGE_URL="https://$SURGE_DOMAIN"
+
+          echo "branch-name=$CLEAN_ENV" >> $GITHUB_OUTPUT
+          echo "original-branch=$BRANCH_NAME" >> $GITHUB_OUTPUT
+          echo "SURGE_URL=$SURGE_URL" >> $GITHUB_ENV
+          echo "Environment: $CLEAN_ENV (from branch: $BRANCH_NAME)"
+          echo "🔧 Will build and deploy to: $SURGE_URL"
 
       - name: Setup Node.js
         uses: actions/setup-node@v4
@@ -52,13 +69,12 @@ jobs:
 
       - name: Build site with Astro
         run: |
-          ENV_NAME="${{ steps.branch-info.outputs.branch-name }}"
-          SURGE_DOMAIN="cyoda-docs-${ENV_NAME}.surge.sh"
+          echo "🔧 Building with SITE_URL: ${{ env.SURGE_URL }}"
           npm run build
         env:
           NODE_ENV: production
           GA_MEASUREMENT_ID: ${{ secrets.GA_MEASUREMENT_ID }}
-          SITE_URL: https://cyoda-docs-${{ steps.branch-info.outputs.branch-name }}.surge.sh
+          SITE_URL: ${{ env.SURGE_URL }}
 
 
 
@@ -69,8 +85,7 @@ jobs:
         run: |
           ENV_NAME="${{ steps.branch-info.outputs.branch-name }}"
           SURGE_DOMAIN="cyoda-docs-${ENV_NAME}.surge.sh"
-          echo "🚀 Deploying to: https://$SURGE_DOMAIN"
-          echo "SURGE_URL=https://$SURGE_DOMAIN" >> $GITHUB_ENV
+          echo "🚀 Deploying to: ${{ env.SURGE_URL }}"
           surge ./dist $SURGE_DOMAIN --token ${{ secrets.SURGE_TOKEN }}
 
       - name: Output deployment info
