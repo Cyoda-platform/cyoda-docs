@@ -75,9 +75,55 @@ The documentation is automatically deployed to GitHub Pages and available at:
 
 
 ## Development
-### install http-server
+
+### Local Development
+```bash
+# Install dependencies
+npm install
+
+# Start development server
+npm run dev
+
+# Build for production
+npm run build
+
+# Preview production build
+npm run preview
+```
+
+### Legacy Development (http-server)
+```bash
+# Install http-server
 npm install --global http-server
 
-### run http-server
+# Run http-server
 http-server dist
+```
+
+## Deployment Configuration
+
+### Google Analytics Setup
+
+The site includes EU/UK GDPR-compliant cookie consent and Google Analytics integration. To enable analytics:
+
+1. **Set up GitHub Secret:**
+   - Go to your repository Settings → Secrets and variables → Actions
+   - Add a new repository secret named `GA_MEASUREMENT_ID`
+   - Set the value to your Google Analytics 4 measurement ID (e.g., `G-XXXXXXXXXX`)
+
+2. **Local Development:**
+   - Copy `.env.example` to `.env`
+   - Set your `GA_MEASUREMENT_ID` in the `.env` file
+   - Analytics will only be loaded if the environment variable is set
+
+3. **Cookie Consent:**
+   - The site includes a cookie consent banner compliant with EU/UK law
+   - Analytics cookies are only set after user consent
+   - Users can manage their preferences at any time
+
+### Deployment Workflows
+
+- **Production:** Automatic deployment to GitHub Pages on push to `main` branch
+- **Preview:** Manual deployment to Surge.sh for testing branches
+- Both workflows automatically include the `GA_MEASUREMENT_ID` secret during build
 

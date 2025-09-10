@@ -1,0 +1,186 @@
+---
+// API Reference page using Stoplight Elements
+const title = 'API Reference';
+const description = 'Interactive API documentation for the Cyoda platform';
+---
+
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>{title} | Cyoda Documentation</title>
+    <link rel="icon" href="/favicon.ico" sizes="any" />
+    <link rel="stylesheet" href="https://unpkg.com/@stoplight/elements/styles.min.css">
+    <style>
+      body {
+        margin: 0;
+        font-family: system-ui, sans-serif;
+        background: #0d1117;
+        color: #f0f6fc;
+      }
+      .header {
+        background: #161b22;
+        border-bottom: 1px solid #30363d;
+        padding: 1rem 2rem;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        position: sticky;
+        top: 0;
+        z-index: 100;
+      }
+      .header h1 {
+        margin: 0;
+        font-size: 1.5rem;
+        font-weight: 600;
+        color: #f0f6fc;
+      }
+      .nav-links {
+        display: flex;
+        gap: 1.5rem;
+      }
+      .nav-link {
+        color: #7d8590;
+        text-decoration: none;
+        font-weight: 500;
+        padding: 0.5rem 1rem;
+        border-radius: 6px;
+        transition: all 0.2s ease;
+      }
+      .nav-link:hover {
+        color: #f0f6fc;
+        background: #21262d;
+      }
+      .nav-link.active {
+        color: #f0f6fc;
+        background: #21262d;
+      }
+      .main-content {
+        height: calc(100vh - 80px);
+        width: 100%;
+        overflow: auto;
+      }
+
+      /* Stoplight Elements specific styling */
+      elements-api {
+        height: 100%;
+        width: 100%;
+        display: block;
+      }
+
+      /* Dropdown Styles */
+      .dropdown {
+        position: relative;
+        display: inline-block;
+      }
+
+      .dropdown-toggle {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        background: none;
+        border: none;
+        cursor: pointer;
+        transition: all 0.2s ease;
+      }
+
+      .dropdown-arrow {
+        transition: transform 0.2s ease;
+      }
+
+      .dropdown:hover .dropdown-arrow {
+        transform: rotate(180deg);
+      }
+
+      .dropdown-menu {
+        position: absolute;
+        top: 100%;
+        right: 0;
+        background: #161b22;
+        border: 1px solid #30363d;
+        border-radius: 0.5rem;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+        min-width: 220px;
+        opacity: 0;
+        visibility: hidden;
+        transform: translateY(-10px);
+        transition: all 0.2s ease;
+        z-index: 1000;
+      }
+
+      .dropdown:hover .dropdown-menu {
+        opacity: 1;
+        visibility: visible;
+        transform: translateY(0);
+      }
+
+      .dropdown-item {
+        display: block;
+        padding: 0.75rem 1rem;
+        color: #7d8590;
+        text-decoration: none;
+        border-bottom: 1px solid #30363d;
+        transition: background-color 0.2s ease;
+      }
+
+      .dropdown-item:last-child {
+        border-bottom: none;
+      }
+
+      .dropdown-item:hover,
+      .dropdown-item.active {
+        background: #21262d;
+        color: #f0f6fc;
+      }
+
+      .dropdown-label {
+        display: block;
+        font-weight: 600;
+        font-size: 0.9rem;
+      }
+
+      .dropdown-desc {
+        display: block;
+        font-size: 0.75rem;
+        color: #8b949e;
+        margin-top: 0.125rem;
+      }
+    </style>
+  </head>
+  <body>
+    <header class="header">
+      <h1>Cyoda Documentation</h1>
+      <nav class="nav-links">
+        <a href="/" class="nav-link">Docs</a>
+        <div class="dropdown">
+          <button class="nav-link dropdown-toggle active" aria-expanded="false">
+            API Ref
+            <svg class="dropdown-arrow" width="12" height="12" viewBox="0 0 12 12" fill="currentColor">
+              <path d="M6 8.5L2.5 5h7L6 8.5z"/>
+            </svg>
+          </button>
+          <div class="dropdown-menu">
+            <a href="/api-reference-scalar/" class="dropdown-item">
+              <span class="dropdown-label">Scalar</span>
+              <span class="dropdown-desc">Modern, interactive</span>
+            </a>
+            <a href="/api-reference-stoplight/" class="dropdown-item active">
+              <span class="dropdown-label">Stoplight Elements</span>
+              <span class="dropdown-desc">Professional, traditional</span>
+            </a>
+          </div>
+        </div>
+      </nav>
+    </header>
+    <main class="main-content">
+      <elements-api
+        apiDescriptionUrl="/openapi/openapi.json"
+        router="hash"
+        layout="sidebar"
+        hideInternal="true">
+      </elements-api>
+    </main>
+
+    <script src="https://unpkg.com/@stoplight/elements/web-components.min.js" defer></script>
+  </body>
+</html>

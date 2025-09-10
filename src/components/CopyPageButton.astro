@@ -1,0 +1,232 @@
+---
+// Get the current page path to construct markdown URL
+const { pathname } = Astro.url;
+
+// Generate a unique ID for this instance
+const uniqueId = Math.random().toString(36).substr(2, 9);
+
+// Convert HTML path to markdown path
+function getMarkdownUrl(htmlPath: string): string {
+  // Remove leading/trailing slashes and convert to markdown path
+  let cleanPath = htmlPath.replace(/^\/+|\/+$/g, '');
+
+  // Handle root case
+  if (!cleanPath) {
+    return '/markdown/index.md';
+  }
+
+  // Convert path segments to markdown file path
+  const segments = cleanPath.split('/');
+
+  // If it ends with a directory name, it's likely an index page
+  if (segments.length === 1) {
+    return `/markdown/${segments[0]}.md`;
+  } else {
+    return `/markdown/${segments.join('/')}.md`;
+  }
+}
+
+const markdownUrl = getMarkdownUrl(pathname);
+---
+
+<div class="copy-page-container">
+  <div class="copy-page-dropdown">
+    <button class="copy-page-button" id={`copyPageButton-${uniqueId}`} aria-expanded="false" aria-haspopup="true" title="Copy page options">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <path d="M8 5H6a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2v-1M8 5a2 2 0 002 2h2a2 2 0 002-2M8 5a2 2 0 012-2h2a2 2 0 012 2m0 0h2a2 2 0 012 2v3m2 4H10m0 0l3-3m-3 3l3 3" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+      </svg>
+    </button>
+
+    <div class="copy-page-menu" id={`copyPageMenu-${uniqueId}`} role="menu">
+      <a href={markdownUrl} target="_blank" class="copy-page-option" role="menuitem" data-astro-prefetch="false">
+        View Markdown
+      </a>
+    </div>
+  </div>
+</div>
+
+<style>
+  .copy-page-container {
+    position: relative;
+    display: inline-block;
+  }
+
+  .copy-page-dropdown {
+    position: relative;
+  }
+
+  .copy-page-button {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 24px;
+    height: 24px;
+    padding: 0;
+    background: transparent;
+    color: var(--sl-color-gray-3);
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+  }
+
+  .copy-page-button:hover {
+    color: var(--sl-color-white);
+    background: var(--sl-color-gray-6);
+  }
+
+  .copy-page-button:active {
+    background: var(--sl-color-gray-5);
+  }
+
+  .copy-icon {
+    flex-shrink: 0;
+  }
+
+  .dropdown-arrow {
+    flex-shrink: 0;
+    transition: transform 0.2s ease;
+  }
+
+  .copy-page-button[aria-expanded="true"] .dropdown-arrow {
+    transform: rotate(180deg);
+  }
+
+  .copy-page-menu {
+    position: absolute;
+    top: 100%;
+    right: 0;
+    margin-top: 4px;
+    background: var(--sl-color-bg-nav);
+    border: 1px solid var(--sl-color-gray-5);
+    border-radius: 6px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    min-width: 140px;
+    opacity: 0;
+    visibility: hidden;
+    transform: translateY(-4px);
+    transition: all 0.15s ease;
+    z-index: 1000;
+  }
+
+  .copy-page-menu.show {
+    opacity: 1;
+    visibility: visible;
+    transform: translateY(0);
+  }
+
+  .copy-page-option {
+    display: block;
+    padding: 8px 12px;
+    text-decoration: none;
+    color: var(--sl-color-gray-2);
+    border-radius: 4px;
+    transition: background-color 0.2s ease;
+    font-size: 14px;
+    white-space: nowrap;
+  }
+
+  .copy-page-option:hover {
+    background: var(--sl-color-gray-6);
+    color: var(--sl-color-white);
+  }
+
+
+
+  /* Dark theme support */
+  :global([data-theme="dark"]) .copy-page-menu {
+    background: var(--sl-color-black);
+    border-color: var(--sl-color-gray-1);
+  }
+
+  :global([data-theme="dark"]) .copy-page-option:hover {
+    background: var(--sl-color-gray-1);
+  }
+</style>
+
+<script define:vars={{ uniqueId }}>
+  // Handle dropdown functionality for this specific instance
+  function initCopyPageButton() {
+    // Find all copy page buttons and initialize each one
+    const containers = document.querySelectorAll('.copy-page-container');
+
+    containers.forEach(container => {
+      const button = container.querySelector('.copy-page-button');
+      const menu = container.querySelector('.copy-page-menu');
+
+      if (!button || !menu) return;
+
+      // Skip if already initialized
+      if (button.hasAttribute('data-initialized')) return;
+      button.setAttribute('data-initialized', 'true');
+
+      // Create closure for this specific button/menu pair
+      function openDropdown() {
+        button.setAttribute('aria-expanded', 'true');
+        menu.classList.add('show');
+      }
+
+      function closeDropdown() {
+        button.setAttribute('aria-expanded', 'false');
+        menu.classList.remove('show');
+      }
+
+      // Toggle dropdown
+      button.addEventListener('click', (e) => {
+        e.preventDefault();
+        e.stopPropagation();
+        const isExpanded = button.getAttribute('aria-expanded') === 'true';
+
+        // Close all other dropdowns first
+        containers.forEach(otherContainer => {
+          if (otherContainer !== container) {
+            const otherButton = otherContainer.querySelector('.copy-page-button');
+            const otherMenu = otherContainer.querySelector('.copy-page-menu');
+            if (otherButton && otherMenu) {
+              otherButton.setAttribute('aria-expanded', 'false');
+              otherMenu.classList.remove('show');
+            }
+          }
+        });
+
+        if (isExpanded) {
+          closeDropdown();
+        } else {
+          openDropdown();
+        }
+      });
+
+      // Close dropdown when clicking outside
+      document.addEventListener('click', (e) => {
+        if (!container.contains(e.target)) {
+          closeDropdown();
+        }
+      });
+
+      // Close dropdown on escape key
+      document.addEventListener('keydown', (e) => {
+        if (e.key === 'Escape') {
+          closeDropdown();
+        }
+      });
+
+      // Close dropdown when clicking any menu item
+      const menuItems = menu.querySelectorAll('[role="menuitem"]');
+      menuItems.forEach(item => {
+        item.addEventListener('click', () => {
+          closeDropdown();
+        });
+      });
+    });
+  }
+
+  // Initialize on DOM ready and on page navigation (for SPA-like behavior)
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', initCopyPageButton);
+  } else {
+    initCopyPageButton();
+  }
+
+  // Re-initialize on Astro page transitions
+  document.addEventListener('astro:page-load', initCopyPageButton);
+</script>

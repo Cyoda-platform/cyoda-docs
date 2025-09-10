@@ -1,0 +1,92 @@
+/* Custom styles for Cyoda Documentation */
+/* This file contains component-specific styles that complement the Primer-based branding */
+
+/* Performance optimizations */
+img {
+  content-visibility: auto;
+}
+
+/* Prevent layout shift during navigation */
+.sl-nav-list {
+  contain: layout style;
+}
+
+/* Optimize font loading */
+@font-face {
+  font-display: swap;
+}
+
+/* Footer styling */
+.footer {
+  border-top: 1px solid var(--cyoda-aqua-medium);
+  margin-top: var(--base-size-32, 2rem);
+  padding: var(--base-size-24, 1.5rem) 0;
+  background-color: var(--sl-color-bg-nav);
+}
+
+.footer-content {
+  max-width: var(--sl-content-width);
+  margin: 0 auto;
+  padding: 0 var(--base-size-16, 1rem);
+  display: flex;
+  flex-direction: column;
+  gap: var(--base-size-16, 1rem);
+}
+
+.footer-links {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--base-size-24, 1.5rem);
+  align-items: center;
+  justify-content: center;
+}
+
+.footer-links a {
+  color: var(--sl-color-text);
+  text-decoration: none;
+  font-size: var(--base-text-size-14, 0.875rem);
+  font-weight: var(--base-text-weight-medium, 500);
+  transition: all 0.2s ease;
+}
+
+.footer-links a:hover {
+  text-decoration: underline;
+  border-bottom: 2px solid var(--cyoda-aqua);
+}
+
+.footer-copyright {
+  text-align: center;
+  color: var(--sl-color-gray-3);
+  font-size: var(--base-text-size-12, 0.75rem);
+}
+
+/* Responsive footer */
+@media (min-width: 50rem) {
+  .footer-content {
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0 var(--base-size-24, 1.5rem);
+  }
+
+  .footer-links {
+    justify-content: flex-start;
+  }
+
+  .footer-copyright {
+    text-align: right;
+  }
+}
+
+/* Hide sidebar on API reference page for full-width display */
+[data-page-slug="api/reference"] .sidebar {
+  display: none !important;
+}
+
+[data-page-slug="api/reference"] .main-frame {
+  grid-template-columns: 1fr !important;
+}
+
+[data-page-slug="api/reference"] .content-panel {
+  max-width: none !important;
+}

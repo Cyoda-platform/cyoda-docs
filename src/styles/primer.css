@@ -1,0 +1,238 @@
+/* Primer primitives with Cyoda brand integration */
+
+/* Import Primer base primitives */
+@import '@primer/primitives/dist/css/base/typography/typography.css';
+@import '@primer/primitives/dist/css/base/size/size.css';
+@import '@primer/primitives/dist/css/base/motion/motion.css';
+@import '@primer/primitives/dist/css/functional/themes/light.css';
+@import '@primer/primitives/dist/css/functional/themes/dark.css';
+
+/* Cyoda Brand Palettes */
+:root {
+  /* Palette 1a - Primary brand colors */
+  --cyoda-aqua: #4FB8B0;
+  --cyoda-aqua-rgb: 79, 184, 176;
+  --cyoda-orange: #FD9E29;
+  --cyoda-orange-rgb: 253, 158, 41;
+  --cyoda-purple: #5A18AC;
+  --cyoda-purple-rgb: 90, 24, 172;
+  --cyoda-green: #6BB45A;
+  --cyoda-green-rgb: 107, 180, 90;
+
+  /* Palette 1b - Secondary colors */
+  --cyoda-grey: #6B6A6D;
+  --cyoda-grey-rgb: 107, 106, 109;
+  --cyoda-flieder: #920E77;
+  --cyoda-flieder-rgb: 146, 14, 119;
+
+  /* Palette 1c - Extended colors */
+  --cyoda-blue: #081780;
+  --cyoda-blue-rgb: 8, 23, 128;
+  --cyoda-yellow: #FBE735;
+  --cyoda-yellow-rgb: 251, 231, 53;
+
+  /* Derived color variations for better UX */
+  --cyoda-aqua-light: rgba(var(--cyoda-aqua-rgb), 0.1);
+  --cyoda-aqua-medium: rgba(var(--cyoda-aqua-rgb), 0.2);
+  --cyoda-orange-light: rgba(var(--cyoda-orange-rgb), 0.1);
+  --cyoda-purple-light: rgba(var(--cyoda-purple-rgb), 0.1);
+  --cyoda-green-light: rgba(var(--cyoda-green-rgb), 0.1);
+
+  /* Map Cyoda colors to Starlight variables - keeping defaults for text */
+  --sl-color-accent: var(--cyoda-aqua);
+  --sl-color-accent-low: var(--cyoda-aqua-light);
+
+  /* Border and UI elements only */
+  --sl-color-border-accent: var(--cyoda-aqua);
+
+  /* Navigation and sidebar accents */
+  --sl-color-bg-sidebar: var(--sl-color-bg);
+  --sl-color-hairline-shade: rgba(var(--cyoda-grey-rgb), 0.2);
+}
+
+/* Dark mode adjustments */
+:root[data-theme='dark'] {
+  /* Keep default text colors, only adjust structural elements */
+  --sl-color-accent: var(--cyoda-aqua);
+  --sl-color-accent-low: rgba(var(--cyoda-aqua-rgb), 0.15);
+  --sl-color-border-accent: rgba(var(--cyoda-aqua-rgb), 0.5);
+}
+
+/* Enhanced typography using Primer tokens */
+.sl-markdown-content h1,
+.sl-markdown-content h2,
+.sl-markdown-content h3,
+.sl-markdown-content h4,
+.sl-markdown-content h5,
+.sl-markdown-content h6 {
+  font-weight: var(--base-text-weight-semibold, 600);
+  line-height: var(--base-text-lineHeight-condensed, 1.25);
+  margin-bottom: var(--base-size-8, 0.5rem);
+}
+
+/* H1 - No styling since it duplicates frontmatter elements */
+.sl-markdown-content h1 {
+  font-size: var(--base-text-size-32, 2rem);
+}
+
+/* Frontmatter title - full horizontal aqua line */
+.content-panel h1:first-of-type,
+.main-frame h1:first-of-type {
+  border-bottom: 3px solid var(--cyoda-aqua);
+  padding-bottom: var(--base-size-8, 0.5rem);
+  margin-bottom: var(--base-size-16, 1rem);
+}
+
+/* H2 - Horizontal aqua rule */
+.sl-markdown-content h2 {
+  font-size: var(--base-text-size-24, 1.5rem);
+  border-bottom: 2px solid var(--cyoda-aqua);
+  padding-bottom: var(--base-size-4, 0.25rem);
+  margin-bottom: var(--base-size-12, 0.75rem);
+}
+
+/* H3 - Vertical aqua rule */
+.sl-markdown-content h3 {
+  font-size: var(--base-text-size-20, 1.25rem);
+  padding-left: var(--base-size-8, 0.5rem);
+  position: relative;
+}
+
+.sl-markdown-content h3::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 0.25em;
+  width: 3px;
+  height: 1.2em;
+  background: var(--cyoda-aqua);
+  border-radius: 1px;
+}
+
+/* H4, H5, H6 - No special styling */
+.sl-markdown-content h4,
+.sl-markdown-content h5,
+.sl-markdown-content h6 {
+  /* Use default styling */
+}
+
+/* Enhanced code blocks */
+.sl-markdown-content pre {
+  border-left: 4px solid var(--cyoda-aqua);
+  border-radius: var(--base-borderRadius-medium, 6px);
+  background: var(--cyoda-aqua-light);
+}
+
+.sl-markdown-content code {
+  background: var(--cyoda-aqua-light);
+  border-radius: var(--base-borderRadius-small, 3px);
+  padding: var(--base-size-2, 0.125rem) var(--base-size-4, 0.25rem);
+}
+
+/* Enhanced blockquotes and callouts */
+.sl-markdown-content blockquote {
+  border-left: 4px solid var(--cyoda-aqua);
+  background: var(--cyoda-aqua-light);
+  padding: var(--base-size-12, 0.75rem) var(--base-size-16, 1rem);
+  margin: var(--base-size-16, 1rem) 0;
+  border-radius: 0 var(--base-borderRadius-medium, 6px) var(--base-borderRadius-medium, 6px) 0;
+}
+
+/* Navigation enhancements */
+.sidebar-content a[aria-current="page"] {
+  background: var(--cyoda-aqua) !important;
+  color: #000 !important;
+  border-right: 3px solid var(--cyoda-aqua);
+  font-weight: var(--base-text-weight-semibold, 600);
+}
+
+.sidebar-content a:hover {
+  border-right: 2px solid var(--cyoda-aqua);
+  /* Keep default text colors for hover */
+}
+
+/* Button and interactive element styling */
+.sl-link-button {
+  background: var(--cyoda-aqua);
+  border-radius: var(--base-borderRadius-medium, 6px);
+  padding: var(--base-size-8, 0.5rem) var(--base-size-16, 1rem);
+  font-weight: var(--base-text-weight-semibold, 600);
+  transition: all 0.2s ease;
+  border: 2px solid var(--cyoda-aqua);
+}
+
+.sl-link-button:hover {
+  background: var(--cyoda-purple);
+  border-color: var(--cyoda-purple);
+  transform: translateY(-1px);
+  box-shadow: 0 4px 8px rgba(var(--cyoda-purple-rgb), 0.2);
+}
+
+/* Table styling */
+.sl-markdown-content table {
+  border-collapse: collapse;
+  border-radius: var(--base-borderRadius-medium, 6px);
+  overflow: hidden;
+  box-shadow: 0 1px 3px rgba(var(--cyoda-grey-rgb), 0.1);
+}
+
+.sl-markdown-content th {
+  background: var(--cyoda-aqua);
+  font-weight: var(--base-text-weight-semibold, 600);
+  padding: var(--base-size-12, 0.75rem);
+}
+
+.sl-markdown-content td {
+  padding: var(--base-size-12, 0.75rem);
+  border-bottom: 1px solid var(--cyoda-aqua-medium);
+}
+
+.sl-markdown-content tr:hover {
+  background: var(--cyoda-aqua-light);
+}
+
+/* Badge and tag styling */
+.sl-badge {
+  background: var(--cyoda-green);
+  padding: var(--base-size-2, 0.125rem) var(--base-size-8, 0.5rem);
+  border-radius: var(--base-borderRadius-full, 999px);
+  font-size: var(--base-text-size-12, 0.75rem);
+  font-weight: var(--base-text-weight-semibold, 600);
+  border: 1px solid var(--cyoda-green);
+}
+
+/* Search and input styling */
+.search-input {
+  border: 2px solid var(--cyoda-aqua-medium);
+  border-radius: var(--base-borderRadius-medium, 6px);
+  padding: var(--base-size-8, 0.5rem) var(--base-size-12, 0.75rem);
+  transition: border-color 0.2s ease;
+}
+
+.search-input:focus {
+  border-color: var(--cyoda-aqua);
+  outline: none;
+  box-shadow: 0 0 0 3px var(--cyoda-aqua-light);
+}
+
+/* Responsive spacing using Primer tokens */
+@media (min-width: 50rem) {
+  .sl-markdown-content {
+    font-size: var(--base-text-size-16, 1rem);
+    line-height: var(--base-text-lineHeight-default, 1.5);
+  }
+}
+
+/* Print styles */
+@media print {
+  .sl-markdown-content h1::before,
+  .sl-markdown-content h2::before,
+  .sl-markdown-content h3::before {
+    display: none;
+  }
+
+  .sl-markdown-content h1,
+  .sl-markdown-content h2 {
+    border-bottom-color: #000 !important;
+  }
+}

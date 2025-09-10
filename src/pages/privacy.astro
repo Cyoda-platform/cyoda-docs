@@ -1,0 +1,118 @@
+---
+import StarlightPage from '@astrojs/starlight/components/StarlightPage.astro';
+import { statSync } from 'fs';
+import { fileURLToPath } from 'url';
+
+const frontmatter = {
+  title: 'Privacy Notice',
+  description: 'Privacy Notice for Cyoda Documentation Site',
+  template: 'doc',
+  sidebar: {
+    hidden: true,
+  },
+};
+
+// Get the file modification date
+const filePath = fileURLToPath(import.meta.url);
+const stats = statSync(filePath);
+const lastModified = stats.mtime.toLocaleDateString('en-US', {
+  year: 'numeric',
+  month: 'long'
+});
+---
+
+<StarlightPage frontmatter={frontmatter}>
+  <div class="sl-markdown-content">
+    <h1>Privacy Notice</h1>
+    
+    <p>This Privacy Notice explains how Cyoda collects and uses personal data when you visit our public documentation website (the "Site"). It applies to visitors in the United Kingdom and the European Economic Area and is written to meet the requirements of UK GDPR, EU GDPR and the ePrivacy rules on cookies and similar technologies.</p>
+
+    <p>We operate a static site hosted on GitHub Pages and we use Google Analytics to understand how the Site is used. We do not use advertising cookies and we do not sell personal data.</p>
+
+    <h2>Who we are (Data Controller)</h2>
+    <ul>
+      <li>Controller: Cyoda</li>
+      <li>Contact: <a href="mailto:privacy@cyoda.com">privacy@cyoda.com</a></li>
+      <li>Postal contact available on request. If you are in the EEA/UK you may contact your local authority or the UK Information Commissioner's Office (ICO) using the details under "Your Rights".</li>
+    </ul>
+
+    <h2>Personal data we process</h2>
+    <p>We only process limited personal data necessary to operate the Site:</p>
+    <ul>
+      <li><strong>Technical and usage data:</strong> IP address (truncated/anonymised), device and browser information, pages viewed, referrer, timestamps, and events such as clicks and scroll depth. This is collected via Google Analytics and server logs from our hosting provider (GitHub Pages).</li>
+      <li><strong>Communications:</strong> If you contact us (for example by email), we process the personal data you provide so we can respond.</li>
+    </ul>
+    <p>We do not create user accounts on this Site and we do not knowingly collect special category data.</p>
+
+    <h2>Why we process your data (purposes and lawful bases)</h2>
+    <ul>
+      <li><strong>Provide and secure the Site</strong> (including basic logging and security monitoring)
+        <ul><li>Lawful basis: legitimate interests (running a secure, reliable website)</li></ul>
+      </li>
+      <li><strong>Measure and improve Site performance using analytics</strong> (Google Analytics)
+        <ul><li>Lawful basis: your consent (only set after you agree via the cookie banner)</li></ul>
+      </li>
+      <li><strong>Respond to enquiries</strong>
+        <ul><li>Lawful basis: legitimate interests (responding to messages we receive) or contract (where applicable)</li></ul>
+      </li>
+      <li><strong>Comply with law and enforce our rights</strong>
+        <ul><li>Lawful basis: legal obligation and legitimate interests</li></ul>
+      </li>
+    </ul>
+
+    <h2>Cookies and similar technologies</h2>
+    <p>We use essential cookies that are necessary for the Site to function and, with your consent, analytics cookies from Google. For details of each cookie, retention periods and how to manage your choices, see our <a href="/cookies/">Cookie Policy</a>.</p>
+    <p>Analytics cookies are not set until you provide consent. You can withdraw your consent at any time as described in the Cookie Policy.</p>
+
+    <h2>Google Analytics</h2>
+    <p>We use Google Analytics (GA4) to understand aggregate Site usage. We have configured GA to enhance privacy:</p>
+    <ul>
+      <li>IP anonymisation/truncation enabled</li>
+      <li>No advertising features and no remarketing</li>
+      <li>Data sharing with other Google products disabled where possible</li>
+    </ul>
+    <p>Provider: Google Ireland Limited. Analytics data may be transferred to Google LLC in the United States. We rely on Standard Contractual Clauses approved by the European Commission/UK for such transfers. For more information, see Google's privacy documentation and terms.</p>
+
+    <h2>Hosting and processors</h2>
+    <ul>
+      <li><strong>Hosting:</strong> GitHub Pages (GitHub, Inc.). Basic server logs may include IP address, date/time, requested resource and user‑agent. These logs are used for security and operational purposes and are retained by the provider per their policies.</li>
+      <li><strong>Analytics:</strong> Google Analytics (see above).</li>
+    </ul>
+    <p>We have appropriate contracts in place with our service providers to process data on our behalf.</p>
+
+    <h2>Data retention</h2>
+    <ul>
+      <li><strong>Analytics data:</strong> retained by Google Analytics for up to 14 months (or a shorter period if configured) and then deleted or aggregated.</li>
+      <li><strong>Server logs:</strong> retained by our hosting provider per their operational needs.</li>
+      <li><strong>Communications:</strong> retained as long as needed to respond and for a reasonable period thereafter.</li>
+    </ul>
+
+    <h2>International data transfers</h2>
+    <p>Where data is transferred outside the UK/EEA (for example to the United States), we rely on appropriate safeguards such as the EU/UK Standard Contractual Clauses and additional measures where necessary.</p>
+
+    <h2>Your rights (UK/EU)</h2>
+    <p>Subject to conditions and exceptions under applicable law, you have the right to:</p>
+    <ul>
+      <li>Access your personal data</li>
+      <li>Rectify inaccurate data</li>
+      <li>Erase your data</li>
+      <li>Restrict processing</li>
+      <li>Object to processing based on legitimate interests</li>
+      <li>Data portability (where applicable)</li>
+      <li>Withdraw consent at any time (this will not affect processing that has already occurred)</li>
+      <li>Lodge a complaint with a supervisory authority</li>
+    </ul>
+    <p>Supervisory authorities include the UK Information Commissioner's Office (ico.org.uk) and your local EU data protection authority.</p>
+
+    <h2>Children</h2>
+    <p>This Site is not directed to children and we do not knowingly collect data from children.</p>
+
+    <h2>Security</h2>
+    <p>We take appropriate technical and organisational measures to protect personal data. However, no internet transmission is completely secure.</p>
+
+    <h2>Changes to this notice</h2>
+    <p>We may update this Privacy Notice from time to time. We will change the "Last updated" date below and, where appropriate, provide more prominent notice.</p>
+
+    <p><em>Last updated: {lastModified}</em></p>
+  </div>
+</StarlightPage>
