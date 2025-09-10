@@ -9,7 +9,6 @@
     "build:only": "astro build",
     "export:markdown": "node scripts/export-markdown.js",
     "generate:llms": "node scripts/generate-llms-txt.js",
-    "surge:headers": "node scripts/create-surge-headers.js",
     "preview": "astro preview",
     "astro": "astro",
     "perf:audit": "npm run build && npx serve dist -l 3000 & sleep 3 && npx lighthouse http://localhost:3000 --budget-path=performance-budget.json --view && pkill -f 'serve dist'",
