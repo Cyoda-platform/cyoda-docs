@@ -51,10 +51,14 @@ jobs:
         run: npm ci --omit=dev
 
       - name: Build site with Astro
-        run: npm run build
+        run: |
+          ENV_NAME="${{ steps.branch-info.outputs.branch-name }}"
+          SURGE_DOMAIN="cyoda-docs-${ENV_NAME}.surge.sh"
+          npm run build
         env:
           NODE_ENV: production
           GA_MEASUREMENT_ID: ${{ secrets.GA_MEASUREMENT_ID }}
+          SITE_URL: https://cyoda-docs-${{ steps.branch-info.outputs.branch-name }}.surge.sh
 
 
 
