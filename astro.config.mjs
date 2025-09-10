@@ -9,8 +9,10 @@ dotenv.config();
 
 // https://astro.build/config
 export default defineConfig({
-	// Site URL for sitemap generation
-	site: 'https://docs.cyoda.net',
+	// Site URL for sitemap generation - use environment variable for flexible deployment
+	site: process.env.SITE_URL || 'https://docs.cyoda.net',
+	// Base path for deployment (useful for subdirectory deployments)
+	base: process.env.BASE_PATH || '/',
 	// Performance optimizations
 	output: 'static',
 	build: {
@@ -153,6 +155,10 @@ export default defineConfig({
 		starlight({
 			title: 'Cyoda Documentation',
 			description: 'Documentation for the Cyoda platform - event-driven architecture and data management solutions.',
+			// Configure Pagefind search to work with different deployment URLs
+			pagefind: {
+				forceLanguage: 'en',
+			},
             social: [
                 {
                     icon: 'github',
