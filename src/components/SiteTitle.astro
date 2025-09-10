@@ -1,15 +1,13 @@
 ---
 import config from 'virtual:starlight/user-config';
-import { Image } from 'astro:assets';
-import cyodaIcon from '../assets/cyoda-icon.webp';
 ---
 
 <a href="/" class="site-title">
-  <Image
-    src={cyodaIcon}
+  <img
+    src="/favicon.svg"
     alt="Cyoda Logo"
-    width={32}
-    height={32}
+    width="32"
+    height="32"
     class="site-logo"
   />
   <span class="site-title-text">Cyoda Documentation</span>

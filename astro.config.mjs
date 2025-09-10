@@ -38,7 +38,13 @@ export default defineConfig({
 		}
 	},
 	markdown: {
-		rehypePlugins: [rehypeMermaid]
+		rehypePlugins: [
+			[rehypeMermaid, {
+				strategy: 'img-svg',
+				dark: true,
+				colorScheme: 'default'
+			}]
+		]
 	},
 	integrations: [
 		cookieconsent({
