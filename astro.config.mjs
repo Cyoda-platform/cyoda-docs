@@ -18,8 +18,8 @@ export default defineConfig({
 		assets: '_astro'
 	},
 	prefetch: {
-		prefetchAll: true,
-		defaultStrategy: 'viewport'
+		prefetchAll: false,
+		defaultStrategy: 'hover'
 	},
 
 	vite: {

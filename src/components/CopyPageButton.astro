@@ -38,7 +38,7 @@ const markdownUrl = getMarkdownUrl(pathname);
     </button>
 
     <div class="copy-page-menu" id={`copyPageMenu-${uniqueId}`} role="menu">
-      <a href={markdownUrl} target="_blank" class="copy-page-option" role="menuitem">
+      <a href={markdownUrl} target="_blank" class="copy-page-option" role="menuitem" data-astro-prefetch="false">
         View Markdown
       </a>
     </div>
