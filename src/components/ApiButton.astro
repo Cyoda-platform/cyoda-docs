@@ -1,0 +1,140 @@
+---
+// API navigation button that uses settings to determine which renderer to navigate to
+---
+
+<button 
+  class="api-button nav-link" 
+  data-api-button
+  aria-label="Navigate to API Reference"
+>
+
+  <span class="api-text">API</span>
+</button>
+
+<style>
+  .api-button {
+    background: none;
+    border: none;
+    color: var(--sl-color-gray-2);
+    text-decoration: none;
+    font-weight: 500;
+    padding: 0.5rem 1rem;
+    border-radius: 0.25rem;
+    transition: color 0.2s ease;
+    cursor: pointer;
+    font-size: inherit;
+    font-family: inherit;
+  }
+
+  .api-button:hover,
+  .api-button:focus {
+    color: var(--sl-color-white);
+  }
+
+  .api-button[aria-current="page"] {
+    color: var(--sl-color-text-accent);
+    font-weight: 600;
+  }
+
+  .api-text {
+    white-space: nowrap;
+  }
+</style>
+
+<script>
+  // Simple settings manager for API button
+  class SimpleSettingsManager {
+    constructor() {
+      this.API_RENDERER_COOKIE = 'cyoda-api-renderer';
+      this.DEFAULT_API_RENDERER = 'scalar';
+    }
+
+    getApiRenderer() {
+      const renderer = this.getCookie(this.API_RENDERER_COOKIE);
+      return this.isValidApiRenderer(renderer) ? renderer : this.DEFAULT_API_RENDERER;
+    }
+
+    getApiReferenceUrl() {
+      const renderer = this.getApiRenderer();
+      return renderer === 'scalar' ? '/api-reference-scalar/' : '/api-reference-stoplight/';
+    }
+
+    isValidApiRenderer(renderer) {
+      return ['scalar', 'stoplight'].includes(renderer);
+    }
+
+    getCookie(name) {
+      if (typeof document === 'undefined') return null;
+
+      const nameEQ = name + "=";
+      const ca = document.cookie.split(';');
+
+      for (let i = 0; i < ca.length; i++) {
+        let c = ca[i];
+        while (c.charAt(0) === ' ') {
+          c = c.substring(1, c.length);
+        }
+        if (c.indexOf(nameEQ) === 0) {
+          return c.substring(nameEQ.length, c.length);
+        }
+      }
+      return null;
+    }
+  }
+
+  class ApiButton {
+    constructor() {
+      this.settingsManager = new SimpleSettingsManager();
+      this.init();
+    }
+
+    init() {
+      this.setupEventListeners();
+      this.updateActiveState();
+    }
+
+    setupEventListeners() {
+      const button = document.querySelector('[data-api-button]');
+      if (!button) return;
+
+      // Handle click navigation
+      button.addEventListener('click', (e) => {
+        e.preventDefault();
+        this.navigateToApi();
+      });
+
+      // Update active state on page load
+      this.updateActiveState();
+    }
+
+    navigateToApi() {
+      const url = this.settingsManager.getApiReferenceUrl();
+      window.location.href = url;
+    }
+
+    updateActiveState() {
+      const button = document.querySelector('[data-api-button]');
+      if (!button) return;
+
+      // Check if we're currently on an API reference page
+      const currentPath = window.location.pathname;
+      const isApiPage = currentPath.includes('/api-reference');
+
+      if (isApiPage) {
+        button.setAttribute('aria-current', 'page');
+      } else {
+        button.removeAttribute('aria-current');
+      }
+    }
+  }
+
+  // Initialize API button when DOM is ready
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', () => new ApiButton());
+  } else {
+    new ApiButton();
+  }
+
+  // Re-initialize on navigation (for SPA-like behavior)
+  document.addEventListener('astro:page-load', () => new ApiButton());
+</script>
