@@ -19,6 +19,7 @@
     "@jop-software/astro-cookieconsent": "^3.0.1",
     "@primer/primitives": "^11.1.0",
     "@scalar/api-reference": "^1.35.0",
+    "@stoplight/elements": "^9.0.6",
     "astro": "^5.6.1",
     "dotenv": "^17.2.2",
     "glob": "^11.0.3",
