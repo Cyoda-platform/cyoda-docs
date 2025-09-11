@@ -2,6 +2,13 @@
 // API Reference page using Scalar
 const title = 'API Reference';
 const description = 'Interactive API documentation for the Cyoda platform';
+
+// Read URL parameters for configuration
+const url = new URL(Astro.request.url);
+const theme = url.searchParams.get('theme') || 'light';
+const layout = url.searchParams.get('layout') || 'modern';
+const hideModels = url.searchParams.get('hideModels') === 'true';
+const showSidebar = url.searchParams.get('showSidebar') !== 'false'; // default true
 ---
 
 <html lang="en">
@@ -13,99 +20,29 @@ const description = 'Interactive API documentation for the Cyoda platform';
     <style>
       body {
         margin: 0;
-        font-family: system-ui, sans-serif;
-        background: #ffffff;
-        color: #24292f;
+        padding: 0;
+        font-family: system-ui, -apple-system, sans-serif;
       }
-      .header {
-        background: hsl(224, 19%, 97%);
-        border-bottom: 1px solid #e1e4e8;
-        padding: 1rem 2rem;
-        display: flex;
-        align-items: center;
-        position: sticky;
-        top: 0;
-        z-index: 100;
-      }
-      .site-title {
-        display: flex;
-        align-items: center;
-        gap: 0.75rem;
-        text-decoration: none;
-        color: #4FB8B0;
-        font-weight: 600;
-        font-size: 1.25rem;
-        transition: opacity 0.2s ease;
-        margin: 0;
-      }
-
-      .site-title:hover {
-        opacity: 0.8;
-      }
-
-      .site-logo {
-        flex-shrink: 0;
-        border-radius: 4px;
-        width: 32px;
-        height: 32px;
-      }
-
-      .site-title-text {
-        white-space: nowrap;
-        overflow: hidden;
-        text-overflow: ellipsis;
-      }
-
-      /* Responsive adjustments */
-      @media (max-width: 50rem) {
-        .site-title {
-          font-size: 1.125rem;
-          gap: 0.5rem;
-        }
-
-        .site-logo {
-          width: 28px;
-          height: 28px;
-        }
-      }
-
       .main-content {
-        height: calc(100vh - 80px);
         width: 100%;
-        overflow: auto;
+        height: 100vh;
       }
-
-      #api-reference {
-        height: 100%;
-        width: 100%;
-        display: block;
-      }
-
-
     </style>
   </head>
   <body>
-    <header class="header">
-      <a href="/" class="site-title">
-        <img
-          src="/favicon.svg"
-          alt="Cyoda Logo"
-          class="site-logo"
-        />
-        <span class="site-title-text">Cyoda Documentation</span>
-      </a>
-
-    </header>
     <main class="main-content">
       <script
         id="api-reference"
         type="application/json"
-        data-configuration='{
-          "spec": {
-            "url": "/openapi/openapi.json"
+        data-configuration={JSON.stringify({
+          spec: {
+            url: "/openapi/openapi.json"
           },
-          "theme": "light"
-        }'>
+          theme: theme,
+          layout: layout,
+          hideModels: hideModels,
+          showSidebar: showSidebar
+        })}>
       </script>
     </main>
 
