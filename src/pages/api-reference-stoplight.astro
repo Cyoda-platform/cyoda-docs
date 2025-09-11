@@ -10,7 +10,6 @@ const description = 'Interactive API documentation for the Cyoda platform';
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>{title} | Cyoda Documentation</title>
     <link rel="icon" href="/favicon.svg" sizes="any" />
-    <link rel="stylesheet" href="/src/styles/primer.css" />
     <link rel="stylesheet" href="https://unpkg.com/@stoplight/elements/styles.min.css">
     <style>
       body {
@@ -21,7 +20,7 @@ const description = 'Interactive API documentation for the Cyoda platform';
       }
       .header {
         background: hsl(224, 19%, 97%);
-        border-bottom: 1px solid var(--sl-color-hairline);
+        border-bottom: 1px solid #e1e4e8;
         padding: 1rem 2rem;
         display: flex;
         align-items: center;
@@ -39,7 +38,6 @@ const description = 'Interactive API documentation for the Cyoda platform';
         font-size: 1.25rem;
         transition: opacity 0.2s ease;
         margin: 0;
-        font-family: system-ui, sans-serif;
       }
 
       .site-title:hover {
@@ -54,7 +52,6 @@ const description = 'Interactive API documentation for the Cyoda platform';
       }
 
       .site-title-text {
-        color: #4FB8B0;
         white-space: nowrap;
         overflow: hidden;
         text-overflow: ellipsis;
