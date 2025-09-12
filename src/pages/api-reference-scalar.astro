@@ -31,24 +31,12 @@ const showSidebar = url.searchParams.get('showSidebar') !== 'false'; // default 
   </head>
   <body>
     <main class="main-content">
-      <div id="api-reference"></div>
+      <div id="api-reference" data-url="/openapi/openapi.json"></div>
     </main>
 
     <!-- Use CDN for Scalar API Reference -->
-    <script src="https://cdn.jsdelivr.net/npm/@scalar/api-reference@latest"></script>
+    <script is:inline src="https://cdn.jsdelivr.net/npm/@scalar/api-reference@latest"></script>
 
-    <script
-    id="api-reference"
-    type="application/json"
-    data-configuration={JSON.stringify({
-        spec: {
-            url: "/openapi/openapi.json"
-        },
-        theme: theme,
-        layout: layout,
-        hideModels: hideModels,
-        showSidebar: showSidebar
-    })}>
-    </script>
+
   </body>
 </html>

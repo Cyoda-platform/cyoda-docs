@@ -1,0 +1,9 @@
+---
+// Custom Head component that extends Starlight's default Head
+// Includes optimized Analytics component
+import StarlightHead from '@astrojs/starlight/components/Head.astro';
+import Analytics from './Analytics.astro';
+---
+
+<StarlightHead {...Astro.props} />
+<Analytics />

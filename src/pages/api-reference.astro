@@ -169,7 +169,21 @@ const description = 'Interactive API documentation for the Cyoda platform';
     </main>
 
     <script>
-      import { settingsManager } from '../utils/settings.ts';
+      // Inline settings manager to avoid ES module import issues in static builds
+      const settingsManager = {
+        getApiRenderer() {
+          if (typeof localStorage === 'undefined') return 'scalar';
+          return localStorage.getItem('cyoda-api-renderer') || 'scalar';
+        },
+        setApiRenderer(renderer) {
+          if (typeof localStorage === 'undefined') return;
+          localStorage.setItem('cyoda-api-renderer', renderer);
+          // Dispatch custom event for API renderer change
+          window.dispatchEvent(new CustomEvent('cyoda:settings-change', {
+            detail: { setting: 'apiRenderer', value: renderer }
+          }));
+        }
+      };
 
       const getIframeUrl = (renderer) => {
         switch (renderer) {

@@ -27,13 +27,18 @@ export default defineConfig({
 	vite: {
 		build: {
 			cssCodeSplit: true,
+			target: 'es2022', // Modern browsers for better tree-shaking
 			rollupOptions: {
 				output: {
 					manualChunks: {
 						'vendor': ['@astrojs/starlight'],
-						'mermaid': ['rehype-mermaid'],
-						'api-reference': ['@scalar/api-reference', '@stoplight/elements']
+						'mermaid': ['rehype-mermaid']
+						// Removed api-reference chunk to allow dynamic imports
 					}
+				},
+				treeshake: {
+					preset: 'recommended',
+					moduleSideEffects: false
 				}
 			},
 			// Optimize CSS delivery
@@ -41,7 +46,7 @@ export default defineConfig({
 			minify: 'esbuild'
 		},
 		optimizeDeps: {
-			include: ['@scalar/api-reference', '@stoplight/elements']
+			// Removed API reference libraries to allow dynamic imports
 		},
 		// CSS optimization
 		css: {
@@ -176,6 +181,11 @@ export default defineConfig({
 			pagefind: {
 				forceLanguage: 'en',
 			},
+			// Override components for custom functionality
+			components: {
+				// Override the default head component to include Analytics
+				Head: './src/components/Head.astro',
+			},
             social: [
                 {
                     icon: 'github',
@@ -212,36 +222,8 @@ export default defineConfig({
 					tag: 'noscript',
 					content: '<link rel="stylesheet" href="/src/styles/non-critical.css">'
 				},
-				// Google Analytics with consent mode (only if GA_MEASUREMENT_ID is provided)
-				// Note: Keeping CDN for GA as it's highly optimized and cached across sites
-				...(process.env.GA_MEASUREMENT_ID ? [
-					{
-						tag: 'script',
-						attrs: {
-							async: true,
-							src: `https://www.googletagmanager.com/gtag/js?id=${process.env.GA_MEASUREMENT_ID}`,
-						},
-					},
-					{
-						tag: 'script',
-						content: `
-							window.dataLayer = window.dataLayer || [];
-							function gtag(){dataLayer.push(arguments);}
-
-							// Set default consent to 'denied' until user provides consent
-							gtag('consent', 'default', {
-								'analytics_storage': 'denied'
-							});
-
-							gtag('js', new Date());
-							gtag('config', '${process.env.GA_MEASUREMENT_ID}', {
-								anonymize_ip: true,
-								allow_google_signals: false,
-								allow_ad_personalization_signals: false
-							});
-						`,
-					}
-				] : []),
+				// Google Analytics is now handled by the Analytics component
+				// for better performance and conditional loading
 			],
 			customCss: [
 				// Critical CSS - inlined for immediate rendering

@@ -1,12 +1,8 @@
 ---
-// API Reference page using Stoplight Elements (local npm package)
+// API Reference page using Stoplight Elements (dynamic import)
 const title = 'API Reference';
 const description = 'Interactive API documentation for the Cyoda platform';
 ---
-
-<script>
-    import '@stoplight/elements/web-components.min.js';
-</script>
 
 <html lang="en">
   <head>
@@ -18,12 +14,48 @@ const description = 'Interactive API documentation for the Cyoda platform';
   </head>
   <body>
     <main class="main-content">
+      <div id="loading-indicator" style="padding: 2rem; text-align: center; color: #666;">
+        Loading API documentation...
+      </div>
       <elements-api
+              id="stoplight-api"
               apiDescriptionUrl="/openapi/openapi.json"
               router="hash"
               layout="sidebar"
-              hideInternal="true">
+              hideInternal="true"
+              style="display: none;">
       </elements-api>
     </main>
+
+    <script>
+      // Dynamically import Stoplight Elements to avoid bundling
+      async function loadStoplightElements() {
+        try {
+          // Dynamic import to avoid bundling the large library
+          await import('@stoplight/elements/web-components.min.js');
+
+          // Hide loading indicator and show API
+          const loading = document.getElementById('loading-indicator');
+          const api = document.getElementById('stoplight-api');
+
+          if (loading) loading.style.display = 'none';
+          if (api) api.style.display = 'block';
+        } catch (error) {
+          console.error('Failed to load Stoplight Elements:', error);
+          const loading = document.getElementById('loading-indicator');
+          if (loading) {
+            loading.innerHTML = 'Failed to load API documentation. Please refresh the page.';
+            loading.style.color = '#dc2626';
+          }
+        }
+      }
+
+      // Load when page is ready
+      if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', loadStoplightElements);
+      } else {
+        loadStoplightElements();
+      }
+    </script>
   </body>
 </html>
