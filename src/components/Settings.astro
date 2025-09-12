@@ -4,9 +4,9 @@
 ---
 
 <div class="settings-dropdown">
-  <button 
-    class="settings-button" 
-    aria-expanded="false" 
+  <button
+    class="settings-button"
+    aria-expanded="false"
     aria-haspopup="true"
     aria-label="Settings"
     data-settings-toggle
@@ -20,7 +20,7 @@
       <path d="M6 8.5L2.5 5h7L6 8.5z"/>
     </svg>
   </button>
-  
+
   <div class="settings-menu" data-settings-menu>
     <div class="settings-header">
       <span class="settings-title">Settings</span>
@@ -53,9 +53,9 @@
         </button>
       </div>
     </div>
-    
+
     <div class="settings-divider"></div>
-    
+
     <div class="settings-section">
       <label class="settings-label">API Reference</label>
       <div class="settings-options">
@@ -248,7 +248,7 @@
     .settings-text {
       display: none;
     }
-    
+
     .settings-menu {
       right: -50px;
       min-width: 180px;
@@ -257,100 +257,12 @@
 </style>
 
 <script>
-  // Settings functionality with cookie persistence
-  class SettingsManager {
-    constructor() {
-      this.THEME_COOKIE = 'cyoda-theme';
-      this.API_RENDERER_COOKIE = 'cyoda-api-renderer';
-      this.STARLIGHT_THEME_KEY = 'starlight-theme';
-      this.DEFAULT_THEME = 'auto';
-      this.DEFAULT_API_RENDERER = 'scalar';
-    }
-
-    getTheme() {
-      if (typeof window === 'undefined') return this.DEFAULT_THEME;
-
-      const starlightTheme = localStorage.getItem(this.STARLIGHT_THEME_KEY);
-      if (starlightTheme && this.isValidTheme(starlightTheme)) {
-        return starlightTheme;
-      }
-
-      const cookieTheme = this.getCookie(this.THEME_COOKIE);
-      if (cookieTheme && this.isValidTheme(cookieTheme)) {
-        return cookieTheme;
-      }
-
-      return this.DEFAULT_THEME;
-    }
-
-    setTheme(theme) {
-      if (!this.isValidTheme(theme)) {
-        theme = this.DEFAULT_THEME;
-      }
-
-      if (typeof window === 'undefined') return;
-
-      document.documentElement.setAttribute('data-theme', theme);
-      localStorage.setItem(this.STARLIGHT_THEME_KEY, theme);
-      this.setCookie(this.THEME_COOKIE, theme, 365);
-    }
-
-    getApiRenderer() {
-      const renderer = this.getCookie(this.API_RENDERER_COOKIE);
-      return this.isValidApiRenderer(renderer) ? renderer : this.DEFAULT_API_RENDERER;
-    }
-
-    setApiRenderer(renderer) {
-      if (!this.isValidApiRenderer(renderer)) {
-        renderer = this.DEFAULT_API_RENDERER;
-      }
-      this.setCookie(this.API_RENDERER_COOKIE, renderer, 365);
-    }
-
-    getApiReferenceUrl() {
-      const renderer = this.getApiRenderer();
-      return renderer === 'scalar' ? '/api-reference-scalar/' : '/api-reference-stoplight/';
-    }
-
-    isValidTheme(theme) {
-      return ['auto', 'light', 'dark'].includes(theme);
-    }
-
-    isValidApiRenderer(renderer) {
-      return ['scalar', 'stoplight'].includes(renderer);
-    }
-
-    setCookie(name, value, days) {
-      if (typeof document === 'undefined') return;
-
-      const expires = new Date();
-      expires.setTime(expires.getTime() + (days * 24 * 60 * 60 * 1000));
-      document.cookie = `${name}=${value};expires=${expires.toUTCString()};path=/;SameSite=Lax`;
-    }
-
-    getCookie(name) {
-      if (typeof document === 'undefined') return null;
-
-      const nameEQ = name + "=";
-      const ca = document.cookie.split(';');
-
-      for (let i = 0; i < ca.length; i++) {
-        let c = ca[i];
-        while (c.charAt(0) === ' ') {
-          c = c.substring(1, c.length);
-        }
-        if (c.indexOf(nameEQ) === 0) {
-          return c.substring(nameEQ.length, c.length);
-        }
-      }
-      return null;
-    }
-  }
+  import { settingsManager } from '../utils/settings.ts';
 
   // Settings UI controller
   class SettingsUI {
     constructor() {
-      this.settingsManager = new SettingsManager();
+      this.settingsManager = settingsManager;
       this.init();
     }
 

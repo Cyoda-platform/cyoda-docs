@@ -2,23 +2,6 @@
 // Main API Reference router that embeds the selected renderer in an iframe
 const title = 'API Reference';
 const description = 'Interactive API documentation for the Cyoda platform';
-
-// Configuration: Choose your API documentation renderer
-// Options: 'scalar' | 'stoplight'
-const API_RENDERER = 'scalar';  // Change this to 'stoplight' to use Stoplight Elements
-
-// Build iframe URL based on renderer selection
-const getIframeUrl = (renderer: string) => {
-  switch (renderer) {
-    case 'stoplight':
-      return '/api-reference-stoplight/';
-    case 'scalar':
-    default:
-      return '/api-reference-scalar/?theme=light&layout=modern&showSidebar=true';
-  }
-};
-
-const iframeUrl = getIframeUrl(API_RENDERER);
 ---
 
 <html lang="en">
@@ -28,7 +11,7 @@ const iframeUrl = getIframeUrl(API_RENDERER);
     <title>{title} | Cyoda Documentation</title>
     <meta name="description" content={description} />
     <link rel="icon" href="/favicon.svg" sizes="any" />
-    
+
     <style>
       body {
         margin: 0;
@@ -78,7 +61,6 @@ const iframeUrl = getIframeUrl(API_RENDERER);
         text-overflow: ellipsis;
       }
 
-      /* Responsive adjustments */
       @media (max-width: 50rem) {
         .site-title {
           font-size: 1.125rem;
@@ -90,21 +72,21 @@ const iframeUrl = getIframeUrl(API_RENDERER);
           height: 28px;
         }
       }
-      
+
       .iframe-container {
         position: relative;
         width: 100%;
-        height: calc(100vh - 80px); /* Subtract header height */
+        height: calc(100vh - 80px);
         background: white;
       }
-      
+
       .api-iframe {
         width: 100%;
         height: 100%;
         border: none;
         display: block;
       }
-      
+
       .loading-overlay {
         position: absolute;
         top: 0;
@@ -118,12 +100,12 @@ const iframeUrl = getIframeUrl(API_RENDERER);
         z-index: 10;
         transition: opacity 0.3s ease;
       }
-      
+
       .loading-overlay.hidden {
         opacity: 0;
         pointer-events: none;
       }
-      
+
       .loading-spinner {
         width: 40px;
         height: 40px;
@@ -132,12 +114,12 @@ const iframeUrl = getIframeUrl(API_RENDERER);
         border-radius: 50%;
         animation: spin 1s linear infinite;
       }
-      
+
       @keyframes spin {
         0% { transform: rotate(0deg); }
         100% { transform: rotate(360deg); }
       }
-      
+
       .error-message {
         display: none;
         padding: 2rem;
@@ -148,38 +130,30 @@ const iframeUrl = getIframeUrl(API_RENDERER);
         border-radius: 0.5rem;
         margin: 2rem;
       }
-      
-
     </style>
   </head>
   <body>
-    <!-- Header with navigation -->
     <header class="header">
       <a href="/" class="site-title">
-        <img
-          src="/favicon.svg"
-          alt="Cyoda Logo"
-          class="site-logo"
-        />
+        <img src="/favicon.svg" alt="Cyoda Logo" class="site-logo" />
         <span class="site-title-text">Cyoda Documentation</span>
       </a>
     </header>
 
-    <!-- Main content with iframe -->
     <main class="iframe-container">
       <div class="loading-overlay" id="loading-overlay">
         <div class="loading-spinner"></div>
       </div>
-      
+
       <div class="error-message" id="error-message">
         <h3>Failed to load API reference</h3>
-        <p>Please try refreshing the page or <a href={iframeUrl} target="_blank">open in a new tab</a>.</p>
+        <p>Please try refreshing the page or try a different renderer in settings.</p>
       </div>
-      
+
       <iframe
         id="api-iframe"
         class="api-iframe"
-        src={iframeUrl}
+        src=""
         title="API Reference Documentation"
         loading="lazy"
         sandbox="allow-scripts allow-same-origin allow-forms allow-popups allow-popups-to-escape-sandbox"
@@ -187,55 +161,76 @@ const iframeUrl = getIframeUrl(API_RENDERER);
     </main>
 
     <script>
-      // Handle iframe loading states
+      import { settingsManager } from '../utils/settings.ts';
+
+      const getIframeUrl = (renderer) => {
+        switch (renderer) {
+          case 'stoplight':
+            return '/api-reference-stoplight/';
+          case 'scalar':
+          default:
+            return '/api-reference-scalar/?theme=light&layout=modern&showSidebar=true';
+        }
+      };
+
       const iframe = document.getElementById('api-iframe');
       const loadingOverlay = document.getElementById('loading-overlay');
       const errorMessage = document.getElementById('error-message');
-      
+
       let loadTimeout;
-      
-      // Show loading state initially
-      loadingOverlay.style.display = 'flex';
-      
-      // Set a timeout for loading
-      loadTimeout = setTimeout(() => {
-        loadingOverlay.style.display = 'none';
-        errorMessage.style.display = 'block';
-        console.error('API reference iframe failed to load within timeout');
-      }, 10000); // 10 second timeout
-      
-      // Handle successful load
+
+      function loadRenderer() {
+        const renderer = settingsManager.getApiRenderer();
+        const iframeUrl = getIframeUrl(renderer);
+
+        console.log('Loading renderer:', renderer, 'URL:', iframeUrl);
+
+        loadingOverlay.style.display = 'flex';
+        errorMessage.style.display = 'none';
+
+        if (loadTimeout) clearTimeout(loadTimeout);
+
+        iframe.src = iframeUrl;
+
+        loadTimeout = setTimeout(() => {
+          loadingOverlay.style.display = 'none';
+          errorMessage.style.display = 'block';
+          console.error('API reference iframe failed to load within timeout');
+        }, 10000);
+      }
+
       iframe.addEventListener('load', () => {
         clearTimeout(loadTimeout);
         loadingOverlay.classList.add('hidden');
-        
-        // Hide loading overlay after transition
         setTimeout(() => {
           loadingOverlay.style.display = 'none';
         }, 300);
       });
-      
-      // Handle load errors
+
       iframe.addEventListener('error', () => {
         clearTimeout(loadTimeout);
         loadingOverlay.style.display = 'none';
         errorMessage.style.display = 'block';
         console.error('API reference iframe failed to load');
       });
-      
-      // Optional: Handle iframe communication for dynamic resizing
+
+      loadRenderer();
+
+      window.addEventListener('cyoda:settings-change', (e) => {
+        if (e.detail.setting === 'apiRenderer') {
+          console.log('API renderer setting changed, reloading');
+          loadRenderer();
+        }
+      });
+
       window.addEventListener('message', (event) => {
-        // Only accept messages from same origin for security
         if (event.origin !== window.location.origin) return;
-        
         if (event.data.type === 'resize' && event.data.height) {
           iframe.style.height = event.data.height + 'px';
         }
       });
-      
-      // Handle browser back/forward navigation
+
       window.addEventListener('popstate', () => {
-        // Reload iframe if needed for navigation consistency
         if (iframe.contentWindow) {
           iframe.contentWindow.location.reload();
         }

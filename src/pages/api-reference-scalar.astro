@@ -31,21 +31,23 @@ const showSidebar = url.searchParams.get('showSidebar') !== 'false'; // default 
   </head>
   <body>
     <main class="main-content">
-      <script
-        id="api-reference"
-        type="application/json"
-        data-configuration={JSON.stringify({
-          spec: {
-            url: "/openapi/openapi.json"
-          },
-          theme: theme,
-          layout: layout,
-          hideModels: hideModels,
-          showSidebar: showSidebar
-        })}>
-      </script>
+      <div id="api-reference"></div>
     </main>
 
-    <script src="https://cdn.jsdelivr.net/npm/@scalar/api-reference@latest" defer></script>
+    <script src="https://cdn.jsdelivr.net/npm/@scalar/api-reference@latest"></script>
+
+    <script
+    id="api-reference"
+    type="application/json"
+    data-configuration={JSON.stringify({
+        spec: {
+            url: "/openapi/openapi.json"
+        },
+        theme: theme,
+        layout: layout,
+        hideModels: hideModels,
+        showSidebar: showSidebar
+    })}>
+    </script>
   </body>
 </html>
