@@ -1,10 +1,8 @@
 /* Non-critical CSS - Loaded asynchronously after initial render */
 /* This file contains styles that don't affect above-the-fold content */
 
-/* Import non-critical Primer primitives */
-@import '@primer/primitives/dist/css/base/motion/motion.css';
-@import '@primer/primitives/dist/css/functional/themes/light.css';
-@import '@primer/primitives/dist/css/functional/themes/dark.css';
+/* Note: Primer primitives imports removed to avoid 404 errors when served from public directory */
+/* These styles are now included directly in the bundled CSS via primer.css */
 
 /* Extended Cyoda Brand Palette - Non-critical */
 :root {
