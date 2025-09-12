@@ -1,5 +1,5 @@
 ---
-// API Reference page using Scalar
+// API Reference page using Stoplight Elements (local npm package)
 const title = 'API Reference';
 const description = 'Interactive API documentation for the Cyoda platform';
 ---
@@ -17,15 +17,13 @@ const description = 'Interactive API documentation for the Cyoda platform';
     <link rel="stylesheet" href="/node_modules/@stoplight/elements/styles.min.css">
   </head>
   <body>
-  <main class="main-content">
+    <main class="main-content">
       <elements-api
               apiDescriptionUrl="/openapi/openapi.json"
               router="hash"
               layout="sidebar"
               hideInternal="true">
       </elements-api>
-  </main>
-
-    <script src="https://cdn.jsdelivr.net/npm/@scalar/api-reference@latest" defer></script>
+    </main>
   </body>
 </html>

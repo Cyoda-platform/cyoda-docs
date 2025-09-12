@@ -1,5 +1,5 @@
 ---
-// API Reference page using Scalar
+// API Reference page using Scalar (local npm package)
 const title = 'API Reference';
 const description = 'Interactive API documentation for the Cyoda platform';
 
@@ -34,6 +34,7 @@ const showSidebar = url.searchParams.get('showSidebar') !== 'false'; // default 
       <div id="api-reference"></div>
     </main>
 
+    <!-- Use CDN for Scalar API Reference -->
     <script src="https://cdn.jsdelivr.net/npm/@scalar/api-reference@latest"></script>
 
     <script

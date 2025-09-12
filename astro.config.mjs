@@ -31,10 +31,14 @@ export default defineConfig({
 				output: {
 					manualChunks: {
 						'vendor': ['@astrojs/starlight'],
-						'mermaid': ['rehype-mermaid']
+						'mermaid': ['rehype-mermaid'],
+						'api-reference': ['@scalar/api-reference', '@stoplight/elements']
 					}
 				}
 			}
+		},
+		optimizeDeps: {
+			include: ['@scalar/api-reference', '@stoplight/elements']
 		}
 	},
 	markdown: {
@@ -188,6 +192,7 @@ export default defineConfig({
                 }
             ],			head: [
 				// Google Analytics with consent mode (only if GA_MEASUREMENT_ID is provided)
+				// Note: Keeping CDN for GA as it's highly optimized and cached across sites
 				...(process.env.GA_MEASUREMENT_ID ? [
 					{
 						tag: 'script',
