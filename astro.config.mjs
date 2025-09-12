@@ -208,20 +208,6 @@ export default defineConfig({
                     href: 'https://www.youtube.com/@cyoda934'
                 }
             ],			head: [
-				// Async load non-critical CSS for better performance
-				{
-					tag: 'link',
-					attrs: {
-						rel: 'preload',
-						href: '/src/styles/non-critical.css',
-						as: 'style',
-						onload: "this.onload=null;this.rel='stylesheet'"
-					}
-				},
-				{
-					tag: 'noscript',
-					content: '<link rel="stylesheet" href="/src/styles/non-critical.css">'
-				},
 				// Google Analytics is now handled by the Analytics component
 				// for better performance and conditional loading
 			],
@@ -232,6 +218,8 @@ export default defineConfig({
 				'./src/styles/primer.css',
 				// Custom styles for components
 				'./src/styles/custom.css',
+				// Non-critical CSS - now properly processed by build system
+				'./src/styles/non-critical.css',
 			],
 			sidebar: [
 				{
