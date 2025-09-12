@@ -1,5 +1,7 @@
 ---
 // Main API Reference router that embeds the selected renderer in an iframe
+import ApiSettings from '../components/ApiSettings.astro';
+
 const title = 'API Reference';
 const description = 'Interactive API documentation for the Cyoda platform';
 ---
@@ -13,6 +15,8 @@ const description = 'Interactive API documentation for the Cyoda platform';
     <link rel="icon" href="/favicon.svg" sizes="any" />
 
     <style>
+      @import '../styles/primer.css';
+
       body {
         margin: 0;
         padding: 0;
@@ -21,12 +25,15 @@ const description = 'Interactive API documentation for the Cyoda platform';
         color: #24292f;
       }
 
+
+
       .header {
         background: hsl(224, 19%, 97%);
         border-bottom: 1px solid #e1e4e8;
         padding: 1rem 2rem;
         display: flex;
         align-items: center;
+        justify-content: space-between;
         position: sticky;
         top: 0;
         z-index: 100;
@@ -138,6 +145,7 @@ const description = 'Interactive API documentation for the Cyoda platform';
         <img src="/favicon.svg" alt="Cyoda Logo" class="site-logo" />
         <span class="site-title-text">Cyoda Documentation</span>
       </a>
+      <ApiSettings />
     </header>
 
     <main class="iframe-container">
