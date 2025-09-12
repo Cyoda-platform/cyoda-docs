@@ -1,62 +1,12 @@
-/* Primer primitives with Cyoda brand integration */
+/* Primer primitives with Cyoda brand integration - Optimized loading */
 
-/* Import Primer base primitives */
+/* Import only essential Primer primitives to reduce render-blocking */
 @import '@primer/primitives/dist/css/base/typography/typography.css';
 @import '@primer/primitives/dist/css/base/size/size.css';
-@import '@primer/primitives/dist/css/base/motion/motion.css';
-@import '@primer/primitives/dist/css/functional/themes/light.css';
-@import '@primer/primitives/dist/css/functional/themes/dark.css';
+/* Motion and theme imports moved to non-critical CSS */
 
-/* Cyoda Brand Palettes */
-:root {
-  /* Palette 1a - Primary brand colors */
-  --cyoda-aqua: #4FB8B0;
-  --cyoda-aqua-rgb: 79, 184, 176;
-  --cyoda-orange: #FD9E29;
-  --cyoda-orange-rgb: 253, 158, 41;
-  --cyoda-purple: #5A18AC;
-  --cyoda-purple-rgb: 90, 24, 172;
-  --cyoda-green: #6BB45A;
-  --cyoda-green-rgb: 107, 180, 90;
-
-  /* Palette 1b - Secondary colors */
-  --cyoda-grey: #6B6A6D;
-  --cyoda-grey-rgb: 107, 106, 109;
-  --cyoda-flieder: #920E77;
-  --cyoda-flieder-rgb: 146, 14, 119;
-
-  /* Palette 1c - Extended colors */
-  --cyoda-blue: #081780;
-  --cyoda-blue-rgb: 8, 23, 128;
-  --cyoda-yellow: #FBE735;
-  --cyoda-yellow-rgb: 251, 231, 53;
-
-  /* Derived color variations for better UX */
-  --cyoda-aqua-light: rgba(var(--cyoda-aqua-rgb), 0.1);
-  --cyoda-aqua-medium: rgba(var(--cyoda-aqua-rgb), 0.2);
-  --cyoda-orange-light: rgba(var(--cyoda-orange-rgb), 0.1);
-  --cyoda-purple-light: rgba(var(--cyoda-purple-rgb), 0.1);
-  --cyoda-green-light: rgba(var(--cyoda-green-rgb), 0.1);
-
-  /* Map Cyoda colors to Starlight variables - keeping defaults for text */
-  --sl-color-accent: var(--cyoda-aqua);
-  --sl-color-accent-low: var(--cyoda-aqua-light);
-
-  /* Border and UI elements only */
-  --sl-color-border-accent: var(--cyoda-aqua);
-
-  /* Navigation and sidebar accents */
-  --sl-color-bg-sidebar: var(--sl-color-bg);
-  --sl-color-hairline-shade: rgba(var(--cyoda-grey-rgb), 0.2);
-}
-
-/* Dark mode adjustments */
-:root[data-theme='dark'] {
-  /* Keep default text colors, only adjust structural elements */
-  --sl-color-accent: var(--cyoda-aqua);
-  --sl-color-accent-low: rgba(var(--cyoda-aqua-rgb), 0.15);
-  --sl-color-border-accent: rgba(var(--cyoda-aqua-rgb), 0.5);
-}
+/* Extended Cyoda Brand Palettes - Non-critical colors moved to non-critical.css */
+/* Only essential brand colors remain here for critical rendering */
 
 /* Enhanced typography using Primer tokens */
 .sl-markdown-content h1,

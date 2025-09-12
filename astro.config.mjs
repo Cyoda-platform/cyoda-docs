@@ -16,7 +16,7 @@ export default defineConfig({
 	// Performance optimizations
 	output: 'static',
 	build: {
-		inlineStylesheets: 'auto',
+		inlineStylesheets: 'always', // Inline critical CSS for better performance
 		assets: '_astro'
 	},
 	prefetch: {
@@ -35,10 +35,17 @@ export default defineConfig({
 						'api-reference': ['@scalar/api-reference', '@stoplight/elements']
 					}
 				}
-			}
+			},
+			// Optimize CSS delivery
+			cssMinify: true,
+			minify: 'esbuild'
 		},
 		optimizeDeps: {
 			include: ['@scalar/api-reference', '@stoplight/elements']
+		},
+		// CSS optimization
+		css: {
+			devSourcemap: false
 		}
 	},
 	markdown: {
@@ -191,6 +198,20 @@ export default defineConfig({
                     href: 'https://www.youtube.com/@cyoda934'
                 }
             ],			head: [
+				// Async load non-critical CSS for better performance
+				{
+					tag: 'link',
+					attrs: {
+						rel: 'preload',
+						href: '/src/styles/non-critical.css',
+						as: 'style',
+						onload: "this.onload=null;this.rel='stylesheet'"
+					}
+				},
+				{
+					tag: 'noscript',
+					content: '<link rel="stylesheet" href="/src/styles/non-critical.css">'
+				},
 				// Google Analytics with consent mode (only if GA_MEASUREMENT_ID is provided)
 				// Note: Keeping CDN for GA as it's highly optimized and cached across sites
 				...(process.env.GA_MEASUREMENT_ID ? [
@@ -223,9 +244,11 @@ export default defineConfig({
 				] : []),
 			],
 			customCss: [
-				// Primer primitives with Cyoda branding
+				// Critical CSS - inlined for immediate rendering
+				'./src/styles/critical.css',
+				// Primer primitives with Cyoda branding - optimized loading
 				'./src/styles/primer.css',
-				// Add custom CSS for footer and other styling
+				// Custom styles for components
 				'./src/styles/custom.css',
 			],
 			sidebar: [
