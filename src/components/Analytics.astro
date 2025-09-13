@@ -1,14 +1,16 @@
 ---
 // Optimized Google Analytics component with conditional loading
 // Only loads GA when user provides consent via cookie consent manager
+const GA_MEASUREMENT_ID = import.meta.env.GA_MEASUREMENT_ID;
 ---
 
-<script>
+<script define:vars={{ GA_MEASUREMENT_ID }}>
   // Google Analytics with conditional loading and consent management
   (function() {
     // Only proceed if GA_MEASUREMENT_ID is available
-    const GA_MEASUREMENT_ID = import.meta.env.GA_MEASUREMENT_ID;
-    if (!GA_MEASUREMENT_ID) return;
+    console.log('Initializing analytics with ID:', GA_MEASUREMENT_ID);
+
+      if (!GA_MEASUREMENT_ID) return;
 
     // Initialize dataLayer
     window.dataLayer = window.dataLayer || [];
@@ -50,7 +52,7 @@
         gtag('consent', 'update', {
           'analytics_storage': 'granted'
         });
-        
+
         // Load GA script if not already loaded
         if (typeof requestIdleCallback === 'function') {
           // Use requestIdleCallback for better performance
@@ -74,7 +76,7 @@
         gtag('consent', 'update', {
           'analytics_storage': 'granted'
         });
-        
+
         if (typeof requestIdleCallback === 'function') {
           requestIdleCallback(loadGoogleAnalytics, { timeout: 2000 });
         } else {
@@ -94,7 +96,7 @@
             gtag('consent', 'update', {
               'analytics_storage': 'granted'
             });
-            
+
             if (typeof requestIdleCallback === 'function') {
               requestIdleCallback(loadGoogleAnalytics, { timeout: 2000 });
             } else {
