@@ -1,0 +1,51 @@
+/* Critical CSS - Above-the-fold styles for immediate rendering */
+/* This file contains only the essential styles needed for initial page render */
+
+/* Essential CSS Custom Properties - Critical for layout */
+:root {
+  /* Cyoda Brand Colors - Critical for header/navigation */
+  --cyoda-aqua: #4FB8B0;
+  --cyoda-aqua-rgb: 79, 184, 176;
+  --cyoda-aqua-light: rgba(79, 184, 176, 0.1);
+  --cyoda-aqua-medium: rgba(79, 184, 176, 0.2);
+  
+  /* Essential Starlight mappings */
+  --sl-color-accent: var(--cyoda-aqua);
+  --sl-color-accent-low: var(--cyoda-aqua-light);
+  --sl-color-border-accent: var(--cyoda-aqua);
+}
+
+/* Dark mode critical adjustments */
+:root[data-theme='dark'] {
+  --sl-color-accent: var(--cyoda-aqua);
+  --sl-color-accent-low: rgba(79, 184, 176, 0.15);
+  --sl-color-border-accent: rgba(79, 184, 176, 0.5);
+}
+
+/* Critical layout styles - prevent layout shift */
+.sl-nav-list {
+  contain: layout style;
+}
+
+/* Critical performance optimizations */
+img {
+  content-visibility: auto;
+}
+
+/* Essential font loading optimization */
+@font-face {
+  font-display: swap;
+}
+
+/* Critical header/navigation styles */
+.site-title {
+  color: var(--sl-color-accent);
+}
+
+/* Essential responsive layout */
+@media (min-width: 50rem) {
+  .sl-markdown-content {
+    font-size: 1rem;
+    line-height: 1.5;
+  }
+}

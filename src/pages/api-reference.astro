@@ -1,15 +1,6 @@
 ---
-// API Reference page - configurable between Scalar and Stoplight Elements
-// Configuration: Choose your API documentation renderer
-// Options: 'scalar' | 'stoplight'
-const API_RENDERER = 'scalar';
-
-// Redirect to the appropriate implementation
-if (API_RENDERER === 'scalar') {
-  return Astro.redirect('/api-reference-scalar/');
-} else if (API_RENDERER === 'stoplight') {
-  return Astro.redirect('/api-reference-stoplight/');
-}
+// Main API Reference router that embeds the selected renderer in an iframe
+import ApiSettings from '../components/ApiSettings.astro';
 
 const title = 'API Reference';
 const description = 'Interactive API documentation for the Cyoda platform';
@@ -20,113 +11,252 @@ const description = 'Interactive API documentation for the Cyoda platform';
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>{title} | Cyoda Documentation</title>
-    <link rel="icon" href="/favicon.ico" sizes="any" />
+    <meta name="description" content={description} />
+    <link rel="icon" href="/favicon.svg" sizes="any" />
+
     <style>
+      @import '../styles/primer.css';
+
       body {
         margin: 0;
+        padding: 0;
         font-family: system-ui, sans-serif;
-        background: #0d1117;
-        color: #f0f6fc;
+        background: #ffffff;
+        color: #24292f;
       }
+
+
+
       .header {
-        background: #161b22;
-        border-bottom: 1px solid #30363d;
+        background: hsl(224, 19%, 97%);
+        border-bottom: 1px solid #e1e4e8;
         padding: 1rem 2rem;
         display: flex;
         align-items: center;
         justify-content: space-between;
+        position: sticky;
+        top: 0;
+        z-index: 100;
       }
-      .header h1 {
-        margin: 0;
-        font-size: 1.5rem;
-        font-weight: 600;
-      }
-      .nav-links {
+
+      .site-title {
         display: flex;
-        gap: 1rem;
         align-items: center;
-      }
-      .nav-link {
-        color: #7d8590;
+        gap: 0.75rem;
         text-decoration: none;
-        font-weight: 500;
-        padding: 0.5rem 1rem;
-        border-radius: 0.25rem;
-        transition: color 0.2s ease;
-      }
-      .nav-link:hover {
-        color: #f0f6fc;
-      }
-      .nav-link.active {
-        color: #58a6ff;
+        color: #4FB8B0;
         font-weight: 600;
+        font-size: 1.25rem;
+        transition: opacity 0.2s ease;
+        margin: 0;
       }
-      .main-content {
-        height: calc(100vh - 80px);
+
+      .site-title:hover {
+        opacity: 0.8;
+      }
+
+      .site-logo {
+        flex-shrink: 0;
+        border-radius: 4px;
+        width: 32px;
+        height: 32px;
+      }
+
+      .site-title-text {
+        white-space: nowrap;
         overflow: hidden;
+        text-overflow: ellipsis;
       }
-      #api-reference {
-        height: 100%;
+
+      @media (max-width: 50rem) {
+        .site-title {
+          font-size: 1.125rem;
+          gap: 0.5rem;
+        }
+
+        .site-logo {
+          width: 28px;
+          height: 28px;
+        }
+      }
+
+      .iframe-container {
+        position: relative;
         width: 100%;
+        height: calc(100vh - 80px);
+        background: white;
       }
-      .loading {
+
+      .api-iframe {
+        width: 100%;
+        height: 100%;
+        border: none;
+        display: block;
+      }
+
+      .loading-overlay {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: white;
         display: flex;
         align-items: center;
         justify-content: center;
-        height: 100%;
-        font-size: 1.1rem;
-        color: #7d8590;
+        z-index: 10;
+        transition: opacity 0.3s ease;
       }
 
-      /* Stoplight Elements specific styling */
-      elements-api {
-        height: 100%;
-        width: 100%;
-        display: block;
+      .loading-overlay.hidden {
+        opacity: 0;
+        pointer-events: none;
+      }
+
+      .loading-spinner {
+        width: 40px;
+        height: 40px;
+        border: 3px solid #e1e5e9;
+        border-top: 3px solid #059669;
+        border-radius: 50%;
+        animation: spin 1s linear infinite;
+      }
+
+      @keyframes spin {
+        0% { transform: rotate(0deg); }
+        100% { transform: rotate(360deg); }
+      }
+
+      .error-message {
+        display: none;
+        padding: 2rem;
+        text-align: center;
+        color: #dc2626;
+        background: #fef2f2;
+        border: 1px solid #fecaca;
+        border-radius: 0.5rem;
+        margin: 2rem;
       }
     </style>
   </head>
   <body>
     <header class="header">
-      <h1>Cyoda Documentation</h1>
-      <nav class="nav-links">
-        <a href="/" class="nav-link">Docs</a>
-        <a href="/api-reference/" class="nav-link active">API Ref</a>
-      </nav>
+      <a href="/" class="site-title">
+        <img src="/favicon.svg" alt="Cyoda Logo" class="site-logo" />
+        <span class="site-title-text">Cyoda Documentation</span>
+      </a>
+      <ApiSettings />
     </header>
-    <main class="main-content">
-      {isScalar && (
-        <script
-          id="api-reference"
-          type="application/json"
-          data-configuration='{
-            "spec": {
-              "url": "/openapi/openapi.json"
-            },
-            "theme": "dark"
-          }'>
-        </script>
-      )}
 
-      {isStoplight && (
-        <elements-api
-          apiDescriptionUrl="/openapi/openapi.json"
-          router="hash"
-          layout="sidebar"
-          hideInternal="true">
-        </elements-api>
-      )}
+    <main class="iframe-container">
+      <div class="loading-overlay" id="loading-overlay">
+        <div class="loading-spinner"></div>
+      </div>
+
+      <div class="error-message" id="error-message">
+        <h3>Failed to load API reference</h3>
+        <p>Please try refreshing the page or try a different renderer in settings.</p>
+      </div>
+
+      <iframe
+        id="api-iframe"
+        class="api-iframe"
+        src=""
+        title="API Reference Documentation"
+        loading="lazy"
+        sandbox="allow-scripts allow-same-origin allow-forms allow-popups allow-popups-to-escape-sandbox"
+      ></iframe>
     </main>
 
-    {isScalar && (
-      <script src="https://cdn.jsdelivr.net/npm/@scalar/api-reference@latest" defer></script>
-    )}
+    <script>
+      // Inline settings manager to avoid ES module import issues in static builds
+      const settingsManager = {
+        getApiRenderer() {
+          if (typeof localStorage === 'undefined') return 'scalar';
+          return localStorage.getItem('cyoda-api-renderer') || 'scalar';
+        },
+        setApiRenderer(renderer) {
+          if (typeof localStorage === 'undefined') return;
+          localStorage.setItem('cyoda-api-renderer', renderer);
+          // Dispatch custom event for API renderer change
+          window.dispatchEvent(new CustomEvent('cyoda:settings-change', {
+            detail: { setting: 'apiRenderer', value: renderer }
+          }));
+        }
+      };
 
-    {isStoplight && (
-      <>
-        <script src="https://unpkg.com/@stoplight/elements/web-components.min.js" defer></script>
-        <link rel="stylesheet" href="https://unpkg.com/@stoplight/elements/styles.min.css">
-      </>
-    )}
+      const getIframeUrl = (renderer) => {
+        switch (renderer) {
+          case 'stoplight':
+            return '/api-reference-stoplight/';
+          case 'scalar':
+          default:
+            return '/api-reference-scalar/?theme=light&layout=modern&showSidebar=true';
+        }
+      };
+
+      const iframe = document.getElementById('api-iframe');
+      const loadingOverlay = document.getElementById('loading-overlay');
+      const errorMessage = document.getElementById('error-message');
+
+      let loadTimeout;
+
+      function loadRenderer() {
+        const renderer = settingsManager.getApiRenderer();
+        const iframeUrl = getIframeUrl(renderer);
+
+        console.log('Loading renderer:', renderer, 'URL:', iframeUrl);
+
+        loadingOverlay.style.display = 'flex';
+        errorMessage.style.display = 'none';
+
+        if (loadTimeout) clearTimeout(loadTimeout);
+
+        iframe.src = iframeUrl;
+
+        loadTimeout = setTimeout(() => {
+          loadingOverlay.style.display = 'none';
+          errorMessage.style.display = 'block';
+          console.error('API reference iframe failed to load within timeout');
+        }, 10000);
+      }
+
+      iframe.addEventListener('load', () => {
+        clearTimeout(loadTimeout);
+        loadingOverlay.classList.add('hidden');
+        setTimeout(() => {
+          loadingOverlay.style.display = 'none';
+        }, 300);
+      });
+
+      iframe.addEventListener('error', () => {
+        clearTimeout(loadTimeout);
+        loadingOverlay.style.display = 'none';
+        errorMessage.style.display = 'block';
+        console.error('API reference iframe failed to load');
+      });
+
+      loadRenderer();
+
+      window.addEventListener('cyoda:settings-change', (e) => {
+        if (e.detail.setting === 'apiRenderer') {
+          console.log('API renderer setting changed, reloading');
+          loadRenderer();
+        }
+      });
+
+      window.addEventListener('message', (event) => {
+        if (event.origin !== window.location.origin) return;
+        if (event.data.type === 'resize' && event.data.height) {
+          iframe.style.height = event.data.height + 'px';
+        }
+      });
+
+      window.addEventListener('popstate', () => {
+        if (iframe.contentWindow) {
+          iframe.contentWindow.location.reload();
+        }
+      });
+    </script>
   </body>
 </html>

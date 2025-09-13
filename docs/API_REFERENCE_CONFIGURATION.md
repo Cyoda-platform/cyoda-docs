@@ -1,6 +1,6 @@
 # API Reference Configuration Guide
 
-This documentation site supports two different API documentation renderers that you can easily switch between:
+This documentation site supports two different API documentation renderers that you can easily switch between. The API reference is now embedded using an iframe for better isolation and configuration flexibility.
 
 ## Available Options
 
@@ -12,6 +12,7 @@ This documentation site supports two different API documentation renderers that 
 - **Authentication configuration panel** for Bearer tokens
 - **Full OpenAPI 3.x support** with excellent rendering
 - **Client code generation** examples in Shell, Ruby, Node.js, PHP, Python, and more
+- **Isolated rendering context** via iframe implementation
 
 ### 2. Stoplight Elements
 - **Clean, professional interface** with sidebar navigation
@@ -20,6 +21,7 @@ This documentation site supports two different API documentation renderers that 
 - **Security configuration** with clear authentication guidance
 - **Responsive design** that works well on all screen sizes
 - **React-based components** with smooth interactions
+- **Isolated rendering context** via iframe implementation
 
 ## How to Switch Between Renderers
 
@@ -35,10 +37,11 @@ const API_RENDERER = 'scalar';  // Change this to 'stoplight' to use Stoplight E
 
 ### Method 2: Direct URL Access
 
-You can also access each renderer directly:
+You can access the main iframe page or individual renderers directly:
 
-- **Scalar**: `http://localhost:4321/api-reference-scalar/`
-- **Stoplight Elements**: `http://localhost:4321/api-reference-stoplight/`
+- **Main API Reference (iframe)**: `http://localhost:4321/api-reference/`
+- **Scalar (direct)**: `http://localhost:4321/api-reference-scalar/`
+- **Stoplight Elements (direct)**: `http://localhost:4321/api-reference-stoplight/`
 
 ## Implementation Details
 
@@ -46,10 +49,18 @@ You can also access each renderer directly:
 
 ```
 src/pages/
-├── api-reference.astro          # Main router that redirects based on configuration
-├── api-reference-scalar.astro   # Scalar implementation
-└── api-reference-stoplight.astro # Stoplight Elements implementation
+├── api-reference.astro          # Main iframe container with header and navigation
+├── api-reference-scalar.astro   # Scalar implementation (embedded via iframe)
+└── api-reference-stoplight.astro # Stoplight Elements implementation (embedded via iframe)
 ```
+
+### iframe Benefits
+
+- **Isolated rendering context** - Complete separation from parent page CSS/JS
+- **Independent configuration** - Scalar/Stoplight run in their own environment
+- **Security isolation** - Prevents conflicts with main site scripts
+- **Performance isolation** - API reference resources don't affect main page metrics
+- **Easy configuration** - URL parameters can control renderer behavior
 
 ### Features Comparison
 
@@ -73,19 +84,44 @@ Both implementations maintain consistent navigation:
 
 ## Customization Options
 
-### Scalar Customization
+### iframe Configuration
 
-The Scalar configuration can be modified in `/src/pages/api-reference-scalar.astro`:
+The main iframe page (`/src/pages/api-reference.astro`) can be configured by modifying the `getIframeUrl` function:
 
 ```javascript
-data-configuration='{
-  "spec": {
-    "url": "/openapi/openapi.json"
-  },
-  "theme": "dark",
-  "layout": "modern",
-  "showSidebar": true
-}'
+const getIframeUrl = (renderer: string) => {
+  switch (renderer) {
+    case 'stoplight':
+      return '/api-reference-stoplight/';
+    case 'scalar':
+    default:
+      return '/api-reference-scalar/?theme=light&layout=modern&showSidebar=true';
+  }
+};
+```
+
+### Scalar Customization
+
+The Scalar implementation supports URL parameters for configuration:
+
+- `theme` - `light` or `dark`
+- `layout` - `modern` or `classic`
+- `hideModels` - `true` or `false`
+- `showSidebar` - `true` or `false`
+
+Example iframe URL with custom configuration:
+```
+/api-reference-scalar/?theme=dark&layout=classic&hideModels=true&showSidebar=false
+```
+
+The Scalar page (`/src/pages/api-reference-scalar.astro`) reads these parameters and applies them:
+
+```javascript
+const url = new URL(Astro.request.url);
+const theme = url.searchParams.get('theme') || 'light';
+const layout = url.searchParams.get('layout') || 'modern';
+const hideModels = url.searchParams.get('hideModels') === 'true';
+const showSidebar = url.searchParams.get('showSidebar') !== 'false';
 ```
 
 ### Stoplight Elements Customization
@@ -117,6 +153,24 @@ The Stoplight Elements configuration can be modified in `/src/pages/api-referenc
 - You want React-based components
 - Export functionality is needed
 - You're already familiar with Stoplight's ecosystem
+
+## iframe Implementation Notes
+
+### Security Features
+- **Sandbox attributes** - The iframe includes security restrictions
+- **Same-origin policy** - Only accepts messages from same origin
+- **Content isolation** - API reference cannot access parent page data
+
+### Performance Features
+- **Lazy loading** - iframe content loads only when needed
+- **Loading states** - Visual feedback during iframe initialization
+- **Error handling** - Graceful fallback if iframe fails to load
+- **Timeout protection** - 10-second timeout with error message
+
+### Mobile Responsiveness
+- **Responsive design** - Header adapts to mobile screens
+- **Touch-friendly** - All interactive elements work on mobile
+- **Viewport optimization** - iframe adjusts height for mobile devices
 
 ## Maintenance
 

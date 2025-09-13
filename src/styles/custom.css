@@ -1,20 +1,6 @@
 /* Custom styles for Cyoda Documentation */
 /* This file contains component-specific styles that complement the Primer-based branding */
-
-/* Performance optimizations */
-img {
-  content-visibility: auto;
-}
-
-/* Prevent layout shift during navigation */
-.sl-nav-list {
-  contain: layout style;
-}
-
-/* Optimize font loading */
-@font-face {
-  font-display: swap;
-}
+/* Performance optimizations moved to critical.css for better loading */
 
 /* Footer styling */
 .footer {

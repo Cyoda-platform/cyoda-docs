@@ -16,7 +16,7 @@ export default defineConfig({
 	// Performance optimizations
 	output: 'static',
 	build: {
-		inlineStylesheets: 'auto',
+		inlineStylesheets: 'always', // Inline critical CSS for better performance
 		assets: '_astro'
 	},
 	prefetch: {
@@ -27,18 +27,40 @@ export default defineConfig({
 	vite: {
 		build: {
 			cssCodeSplit: true,
+			target: 'es2022', // Modern browsers for better tree-shaking
 			rollupOptions: {
 				output: {
 					manualChunks: {
 						'vendor': ['@astrojs/starlight'],
 						'mermaid': ['rehype-mermaid']
+						// Removed api-reference chunk to allow dynamic imports
 					}
+				},
+				treeshake: {
+					preset: 'recommended',
+					moduleSideEffects: false
 				}
-			}
+			},
+			// Optimize CSS delivery
+			cssMinify: true,
+			minify: 'esbuild'
+		},
+		optimizeDeps: {
+			// Removed API reference libraries to allow dynamic imports
+		},
+		// CSS optimization
+		css: {
+			devSourcemap: false
 		}
 	},
 	markdown: {
-		rehypePlugins: [rehypeMermaid]
+		rehypePlugins: [
+			[rehypeMermaid, {
+				strategy: 'img-svg',
+				dark: true,
+				colorScheme: 'default'
+			}]
+		]
 	},
 	integrations: [
 		cookieconsent({
@@ -159,6 +181,11 @@ export default defineConfig({
 			pagefind: {
 				forceLanguage: 'en',
 			},
+			// Override components for custom functionality
+			components: {
+				// Override the default head component to include Analytics
+				Head: './src/components/Head.astro',
+			},
             social: [
                 {
                     icon: 'github',
@@ -181,41 +208,31 @@ export default defineConfig({
                     href: 'https://www.youtube.com/@cyoda934'
                 }
             ],			head: [
-				// Google Analytics with consent mode (only if GA_MEASUREMENT_ID is provided)
-				...(process.env.GA_MEASUREMENT_ID ? [
-					{
-						tag: 'script',
-						attrs: {
-							async: true,
-							src: `https://www.googletagmanager.com/gtag/js?id=${process.env.GA_MEASUREMENT_ID}`,
-						},
-					},
-					{
-						tag: 'script',
-						content: `
-							window.dataLayer = window.dataLayer || [];
-							function gtag(){dataLayer.push(arguments);}
-
-							// Set default consent to 'denied' until user provides consent
-							gtag('consent', 'default', {
-								'analytics_storage': 'denied'
-							});
-
-							gtag('js', new Date());
-							gtag('config', '${process.env.GA_MEASUREMENT_ID}', {
-								anonymize_ip: true,
-								allow_google_signals: false,
-								allow_ad_personalization_signals: false
-							});
-						`,
+				// Async load non-critical CSS for better performance
+				{
+					tag: 'link',
+					attrs: {
+						rel: 'preload',
+						href: '/styles/non-critical.css',
+						as: 'style',
+						onload: "this.onload=null;this.rel='stylesheet'"
 					}
-				] : []),
+				},
+				{
+					tag: 'noscript',
+					content: '<link rel="stylesheet" href="/styles/non-critical.css">'
+				},
+				// Google Analytics is now handled by the Analytics component
+				// for better performance and conditional loading
 			],
 			customCss: [
-				// Primer primitives with Cyoda branding
+				// Critical CSS - inlined for immediate rendering
+				'./src/styles/critical.css',
+				// Primer primitives with Cyoda branding - optimized loading
 				'./src/styles/primer.css',
-				// Add custom CSS for footer and other styling
+				// Custom styles for components
 				'./src/styles/custom.css',
+				// Non-critical CSS removed from bundle - loaded async from public directory
 			],
 			sidebar: [
 				{

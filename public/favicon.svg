@@ -3,7 +3,7 @@
     <circle cx="512" cy="512" r="512" fill="#EEF3F3"/>
 
   <!-- Outer ring (annulus) using evenodd fill -->
-  <path fill="#4FB8B0" fill-rule="evenodd"
+  <path fill="#0D8484" fill-rule="evenodd"
         d="
            M 512 74
            A 438 438 0 1 1 512 950
@@ -19,5 +19,5 @@
   <rect x="474" y="750" width="76" height="200" fill="#EEF3F3"/>
 
   <!-- Central circle -->
-  <circle cx="512" cy="512" r="120" fill="#4FB8B0"/>
+  <circle cx="512" cy="512" r="120" fill="#0D8484"/>
 </svg>

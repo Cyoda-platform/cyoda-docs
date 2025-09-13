@@ -1,0 +1,115 @@
+---
+// API navigation button that uses settings to determine which renderer to navigate to
+---
+
+<button
+  class="api-button nav-link"
+  data-api-button
+  aria-label="Navigate to API Reference"
+>
+
+  <span class="api-text">API Ref</span>
+</button>
+
+<style>
+  .api-button {
+    background: none;
+    border: 1px solid var(--sl-color-border-accent);
+    color: var(--sl-color-text);
+    text-decoration: none;
+    font-weight: 500;
+    padding: 0 1rem;
+    border-radius: 0.475rem;
+    transition: all;
+    cursor: pointer;
+    font-size: inherit;
+    font-family: inherit;
+    height: 40px;
+    box-sizing: border-box;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .api-button:hover,
+  .api-button:focus {
+    border-width: 2px;
+    padding: 0 calc(1rem - 1px);
+  }
+
+  .api-button[aria-current="page"] {
+    color: var(--sl-color-text-accent);
+    font-weight: 600;
+  }
+
+  .api-text {
+    white-space: nowrap;
+  }
+</style>
+
+<script>
+  import { settingsManager } from '../utils/settings.ts';
+
+  class ApiButton {
+    constructor() {
+      this.settingsManager = settingsManager;
+      this.init();
+    }
+
+    init() {
+      this.setupEventListeners();
+      this.updateActiveState();
+
+      // Listen for settings changes
+      window.addEventListener('cyoda:settings-change', (e) => {
+        if (e.detail.setting === 'apiRenderer') {
+          this.updateActiveState();
+        }
+      });
+    }
+
+    setupEventListeners() {
+      const button = document.querySelector('[data-api-button]');
+      if (!button) return;
+
+      // Handle click navigation
+      button.addEventListener('click', (e) => {
+        e.preventDefault();
+        this.navigateToApi();
+      });
+
+      // Update active state on page load
+      this.updateActiveState();
+    }
+
+    navigateToApi() {
+      const url = this.settingsManager.getApiReferenceUrl();
+      window.location.href = url;
+    }
+
+    updateActiveState() {
+      const button = document.querySelector('[data-api-button]');
+      if (!button) return;
+
+      // Check if we're currently on an API reference page
+      const currentPath = window.location.pathname;
+      const isApiPage = currentPath.includes('/api-reference');
+
+      if (isApiPage) {
+        button.setAttribute('aria-current', 'page');
+      } else {
+        button.removeAttribute('aria-current');
+      }
+    }
+  }
+
+  // Initialize API button when DOM is ready
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', () => new ApiButton());
+  } else {
+    new ApiButton();
+  }
+
+  // Re-initialize on navigation (for SPA-like behavior)
+  document.addEventListener('astro:page-load', () => new ApiButton());
+</script>

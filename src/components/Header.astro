@@ -5,7 +5,8 @@ import LanguageSelect from 'virtual:starlight/components/LanguageSelect';
 import Search from 'virtual:starlight/components/Search';
 import SiteTitle from 'virtual:starlight/components/SiteTitle';
 import SocialIcons from 'virtual:starlight/components/SocialIcons';
-import ThemeSelect from 'virtual:starlight/components/ThemeSelect';
+import Settings from './Settings.astro';
+import ApiButton from './ApiButton.astro';
 
 /**
  * Render the `Search` component if Pagefind is enabled or the default search component has been overridden.
@@ -19,25 +20,7 @@ const shouldRenderSearch =
 		<SiteTitle />
 	</div>
 	<div class="nav-links sl-flex">
-		<a href="/" class="nav-link">Docs</a>
-		<div class="dropdown">
-			<button class="nav-link dropdown-toggle" aria-expanded="false">
-				API Ref
-				<svg class="dropdown-arrow" width="12" height="12" viewBox="0 0 12 12" fill="currentColor">
-					<path d="M6 8.5L2.5 5h7L6 8.5z"/>
-				</svg>
-			</button>
-			<div class="dropdown-menu">
-				<a href="/api-reference-scalar/" class="dropdown-item">
-					<span class="dropdown-label">Scalar</span>
-					<span class="dropdown-desc">Modern, interactive</span>
-				</a>
-				<a href="/api-reference-stoplight/" class="dropdown-item">
-					<span class="dropdown-label">Stoplight Elements</span>
-					<span class="dropdown-desc">Professional, traditional</span>
-				</a>
-			</div>
-		</div>
+		<ApiButton />
 	</div>
 	<div class="sl-flex print:hidden">
 		{shouldRenderSearch && <Search />}
@@ -46,7 +29,7 @@ const shouldRenderSearch =
 		<div class="sl-flex social-icons">
 			<SocialIcons />
 		</div>
-		<ThemeSelect />
+		<Settings />
 		<LanguageSelect />
 	</div>
 </div>
@@ -94,82 +77,7 @@ const shouldRenderSearch =
 			font-weight: 600;
 		}
 
-		/* Dropdown Styles */
-		.dropdown {
-			position: relative;
-			display: inline-block;
-		}
 
-		.dropdown-toggle {
-			display: flex;
-			align-items: center;
-			gap: 0.5rem;
-			background: none;
-			border: none;
-			cursor: pointer;
-			transition: all 0.2s ease;
-		}
-
-		.dropdown-arrow {
-			transition: transform 0.2s ease;
-		}
-
-		.dropdown:hover .dropdown-arrow {
-			transform: rotate(180deg);
-		}
-
-		.dropdown-menu {
-			position: absolute;
-			top: 100%;
-			right: 0;
-			background: var(--sl-color-bg-nav);
-			border: 1px solid var(--sl-color-gray-5);
-			border-radius: 0.5rem;
-			box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
-			min-width: 220px;
-			opacity: 0;
-			visibility: hidden;
-			transform: translateY(-10px);
-			transition: all 0.2s ease;
-			z-index: 1000;
-		}
-
-		.dropdown:hover .dropdown-menu {
-			opacity: 1;
-			visibility: visible;
-			transform: translateY(0);
-		}
-
-		.dropdown-item {
-			display: block;
-			padding: 0.75rem 1rem;
-			color: var(--sl-color-gray-2);
-			text-decoration: none;
-			border-bottom: 1px solid var(--sl-color-gray-6);
-			transition: background-color 0.2s ease;
-		}
-
-		.dropdown-item:last-child {
-			border-bottom: none;
-		}
-
-		.dropdown-item:hover {
-			background: var(--sl-color-gray-6);
-			color: var(--sl-color-white);
-		}
-
-		.dropdown-label {
-			display: block;
-			font-weight: 600;
-			font-size: 0.9rem;
-		}
-
-		.dropdown-desc {
-			display: block;
-			font-size: 0.75rem;
-			color: var(--sl-color-gray-3);
-			margin-top: 0.125rem;
-		}
 
 		.right-group,
 		.social-icons {
