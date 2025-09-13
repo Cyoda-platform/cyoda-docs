@@ -11,6 +11,7 @@
     "generate:llms": "node scripts/generate-llms-txt.js",
     "preview": "astro preview",
     "astro": "astro",
+    "test:ui": "playwright test --ui",
     "perf:audit": "npm run build && npx serve dist -l 3000 & sleep 3 && npx lighthouse http://localhost:3000 --budget-path=performance-budget.json --view && pkill -f 'serve dist'",
     "perf:check": "npm run build && npx lighthouse http://localhost:3000 --budget-path=performance-budget.json --output=json --output-path=lighthouse-report.json"
   },

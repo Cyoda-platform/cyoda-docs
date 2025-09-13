@@ -28,6 +28,21 @@ export default defineConfig({
 
     /* Record video on failure */
     video: 'retain-on-failure',
+
+    /* Simulate real user behavior for cookie consent */
+    userAgent: 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36',
+
+    /* Enable JavaScript */
+    javaScriptEnabled: true,
+
+    /* Set viewport to common desktop size */
+    viewport: { width: 1280, height: 720 },
+
+    /* Accept downloads */
+    acceptDownloads: true,
+
+    /* Ignore HTTPS errors */
+    ignoreHTTPSErrors: true,
   },
 
   /* Configure projects for major browsers */
@@ -66,7 +81,8 @@ export default defineConfig({
     timeout: 120 * 1000, // 2 minutes
     env: {
       ...process.env,
-      GA_MEASUREMENT_ID: 'G-TEST123456'
+      // Use real GA ID to trigger cookie consent - comment out to use test ID
+      // GA_MEASUREMENT_ID: 'G-TEST123456'
     }
   },
 });
