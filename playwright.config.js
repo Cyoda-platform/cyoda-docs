@@ -14,7 +14,7 @@ export default defineConfig({
   /* Opt out of parallel tests on CI. */
   workers: process.env.CI ? 1 : undefined,
   /* Reporter to use. See https://playwright.dev/docs/test-reporters */
-  reporter: 'html',
+  reporter: process.env.CI ? [['github'], ['html']] : 'html',
   /* Shared settings for all the projects below. See https://playwright.dev/docs/api/class-testoptions. */
   use: {
     /* Base URL to use in actions like `await page.goto('/')`. */
@@ -46,7 +46,14 @@ export default defineConfig({
   },
 
   /* Configure projects for major browsers */
-  projects: [
+  projects: process.env.CI ? [
+    // In CI, only test with Chromium for speed and reliability
+    {
+      name: 'chromium',
+      use: { ...devices['Desktop Chrome'] },
+    },
+  ] : [
+    // In local development, test all browsers
     {
       name: 'chromium',
       use: { ...devices['Desktop Chrome'] },
@@ -74,10 +81,17 @@ export default defineConfig({
   ],
 
   /* Run your local dev server before starting the tests */
-  webServer: {
+  webServer: process.env.CI ? {
+    // In CI, serve the built site for faster, more reliable tests
+    command: 'npx serve dist -l 4321',
+    url: 'http://localhost:4321',
+    reuseExistingServer: false,
+    timeout: 60 * 1000, // 1 minute
+  } : {
+    // In local development, use dev server for hot reload
     command: 'npm run dev',
     url: 'http://localhost:4321',
-    reuseExistingServer: !process.env.CI,
+    reuseExistingServer: true,
     timeout: 120 * 1000, // 2 minutes
     env: {
       ...process.env,
