@@ -69,9 +69,7 @@ jobs:
         run: npm ci --omit=dev
 
       - name: Install Playwright browsers for Mermaid rendering
-        run: |
-          npx playwright install --with-deps chromium
-          npx playwright install-deps
+        run: npx playwright install --with-deps chromium
         env:
           PLAYWRIGHT_SKIP_BROWSER_DOWNLOAD: false
           CI: true
