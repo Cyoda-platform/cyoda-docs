@@ -181,11 +181,7 @@ export default defineConfig({
 			pagefind: {
 				forceLanguage: 'en',
 			},
-			// Override components for custom functionality
-			components: {
-				// Override the default head component to include Analytics
-				Head: './src/components/Head.astro',
-			},
+
             social: [
                 {
                     icon: 'github',
@@ -262,6 +258,8 @@ export default defineConfig({
 				},
 			],
 			components: {
+				// Override the default head component to include Analytics
+				Head: './src/components/Head.astro',
 				// Override the default footer component
 				Footer: './src/components/Footer.astro',
 				// Override the default header component to add navigation
