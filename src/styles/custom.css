@@ -40,6 +40,24 @@
   border-bottom: 2px solid var(--cyoda-aqua);
 }
 
+.footer-link-button {
+  background: none;
+  border: none;
+  color: var(--sl-color-text);
+  text-decoration: none;
+  font-size: var(--base-text-size-14, 0.875rem);
+  font-weight: var(--base-text-weight-medium, 500);
+  transition: all 0.2s ease;
+  cursor: pointer;
+  padding: 0;
+  font-family: inherit;
+}
+
+.footer-link-button:hover {
+  text-decoration: underline;
+  border-bottom: 2px solid var(--cyoda-aqua);
+}
+
 .footer-copyright {
   text-align: center;
   color: var(--sl-color-gray-3);
