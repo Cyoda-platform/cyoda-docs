@@ -89,7 +89,10 @@ export default defineConfig({
 					autoClear: {
 						cookies: [
 							{
-								name: /^_ga/,
+								name: '_ga',
+							},
+							{
+								name: '_ga_*',
 							},
 							{
 								name: '_gid',
@@ -99,22 +102,6 @@ export default defineConfig({
 					services: {
 						ga4: {
 							label: 'Google Analytics 4',
-							onAccept: () => {
-								// Initialize Google Analytics when consent is given
-								if (typeof window !== 'undefined') {
-									window.gtag('consent', 'update', {
-										analytics_storage: 'granted'
-									});
-								}
-							},
-							onReject: () => {
-								// Disable Google Analytics when consent is rejected
-								if (typeof window !== 'undefined') {
-									window.gtag('consent', 'update', {
-										analytics_storage: 'denied'
-									});
-								}
-							},
 						},
 					},
 				},

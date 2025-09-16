@@ -8,9 +8,7 @@ const GA_MEASUREMENT_ID = import.meta.env.GA_MEASUREMENT_ID;
   // Google Analytics with conditional loading and consent management
   (function() {
     // Only proceed if GA_MEASUREMENT_ID is available
-    console.log('Initializing analytics with ID:', GA_MEASUREMENT_ID);
-
-      if (!GA_MEASUREMENT_ID) return;
+    if (!GA_MEASUREMENT_ID) return;
 
     // Initialize dataLayer
     window.dataLayer = window.dataLayer || [];
@@ -44,10 +42,9 @@ const GA_MEASUREMENT_ID = import.meta.env.GA_MEASUREMENT_ID;
       window.gtag.loaded = true;
     }
 
-    // Listen for consent changes from cookie consent manager
-    window.addEventListener('cc:onConsent', function(event) {
-      const consent = event.detail;
-      if (consent && consent.analytics) {
+    // Function to handle analytics consent
+    function handleAnalyticsConsent(granted) {
+      if (granted) {
         // User consented to analytics
         gtag('consent', 'update', {
           'analytics_storage': 'granted'
@@ -67,21 +64,32 @@ const GA_MEASUREMENT_ID = import.meta.env.GA_MEASUREMENT_ID;
           'analytics_storage': 'denied'
         });
       }
+    }
+
+    // Make the function globally available for the cookie consent service callbacks
+    window.handleAnalyticsConsent = handleAnalyticsConsent;
+    console.log('🔧 [GA Debug] handleAnalyticsConsent function registered');
+
+    // Listen for vanilla-cookieconsent events
+    document.addEventListener('cc:onConsent', (event) => {
+      console.log('🎉 [GA Debug] cc:onConsent event fired', event.detail);
+      if (window.CookieConsent?.acceptedCategory('analytics')) {
+        console.log('✅ [GA Debug] Analytics consent granted via event');
+        handleAnalyticsConsent(true);
+      } else {
+        console.log('❌ [GA Debug] Analytics consent not granted via event');
+        handleAnalyticsConsent(false);
+      }
     });
 
-    // Also listen for the specific analytics consent event
-    window.addEventListener('cc:onChange', function(event) {
-      const consent = event.detail;
-      if (consent && consent.analytics) {
-        gtag('consent', 'update', {
-          'analytics_storage': 'granted'
-        });
-
-        if (typeof requestIdleCallback === 'function') {
-          requestIdleCallback(loadGoogleAnalytics, { timeout: 2000 });
-        } else {
-          setTimeout(loadGoogleAnalytics, 100);
-        }
+    document.addEventListener('cc:onChange', (event) => {
+      console.log('🔄 [GA Debug] cc:onChange event fired', event.detail);
+      if (window.CookieConsent?.acceptedCategory('analytics')) {
+        console.log('✅ [GA Debug] Analytics consent granted via change event');
+        handleAnalyticsConsent(true);
+      } else {
+        console.log('❌ [GA Debug] Analytics consent revoked via change event');
+        handleAnalyticsConsent(false);
       }
     });
 
@@ -92,20 +100,15 @@ const GA_MEASUREMENT_ID = import.meta.env.GA_MEASUREMENT_ID;
         const ccConsent = localStorage.getItem('cc_cookie');
         if (ccConsent) {
           const consent = JSON.parse(ccConsent);
-          if (consent && consent.categories && consent.categories.analytics) {
-            gtag('consent', 'update', {
-              'analytics_storage': 'granted'
-            });
-
-            if (typeof requestIdleCallback === 'function') {
-              requestIdleCallback(loadGoogleAnalytics, { timeout: 2000 });
-            } else {
-              setTimeout(loadGoogleAnalytics, 100);
-            }
+          if (consent && consent.categories && consent.categories.includes('analytics')) {
+            console.log('✅ [GA Debug] Analytics consent already granted, loading GA');
+            handleAnalyticsConsent(true);
+          } else {
+            console.log('❌ [GA Debug] No analytics consent found');
           }
         }
       } catch (e) {
-        // Ignore localStorage errors
+        console.log('⚠️ [GA Debug] Error reading consent:', e);
       }
     }
   })();
