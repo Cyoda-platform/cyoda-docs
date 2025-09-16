@@ -103,18 +103,25 @@ const GA_MEASUREMENT_ID = import.meta.env.GA_MEASUREMENT_ID;
         const ccConsent = localStorage.getItem('cc_cookie');
         if (ccConsent) {
           const consent = JSON.parse(ccConsent);
-          // When useLocalStorage: true, categories is an object like { analytics: true }
-          if (consent && consent.categories && consent.categories.analytics === true) {
-            console.log('✅ [GA Debug] Analytics consent already granted, loading GA');
-            handleAnalyticsConsent(true);
-            return true;
-          } else {
-            console.log('❌ [GA Debug] No analytics consent found');
+          console.log('🔍 [GA Debug] Found consent data:', consent);
+
+          // vanilla-cookieconsent always uses array format: ["necessary", "analytics"]
+          if (consent && consent.categories && Array.isArray(consent.categories)) {
+            const hasAnalyticsConsent = consent.categories.includes('analytics');
+            console.log('📋 [GA Debug] Analytics consent:', hasAnalyticsConsent);
+
+            if (hasAnalyticsConsent) {
+              console.log('✅ [GA Debug] Analytics consent already granted, loading GA');
+              handleAnalyticsConsent(true);
+              return true;
+            }
           }
         }
       } catch (e) {
         console.log('⚠️ [GA Debug] Error reading consent:', e);
       }
+
+      console.log('❌ [GA Debug] No analytics consent found');
       return false;
     }
 
