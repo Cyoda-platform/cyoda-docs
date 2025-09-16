@@ -22,6 +22,7 @@
   "dependencies": {
     "@astrojs/starlight": "^0.35.2",
     "@jop-software/astro-cookieconsent": "^3.0.1",
+    "@playwright/test": "^1.55.0",
     "@primer/primitives": "^11.1.0",
     "@scalar/api-reference": "^1.35.0",
     "@stoplight/elements": "^9.0.6",
@@ -29,7 +30,6 @@
     "dotenv": "^17.2.2",
     "glob": "^11.0.3",
     "playwright": "^1.55.0",
-    "@playwright/test": "^1.55.0",
     "rehype-mermaid": "^3.0.0",
     "sharp": "^0.34.2"
   }

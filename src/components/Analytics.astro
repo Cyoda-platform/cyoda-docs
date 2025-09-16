@@ -81,29 +81,6 @@ const IS_DEV = import.meta.env.DEV;
     window.handleAnalyticsConsent = handleAnalyticsConsent;
     debugLog('🔧 [GA Debug] handleAnalyticsConsent function registered');
 
-    // Listen for vanilla-cookieconsent events
-    document.addEventListener('cc:onConsent', (event) => {
-      debugLog('🎉 [GA Debug] cc:onConsent event fired', event.detail);
-      if (window.CookieConsent?.acceptedCategory('analytics')) {
-        debugLog('✅ [GA Debug] Analytics consent granted via event');
-        handleAnalyticsConsent(true);
-      } else {
-        debugLog('❌ [GA Debug] Analytics consent not granted via event');
-        handleAnalyticsConsent(false);
-      }
-    });
-
-    document.addEventListener('cc:onChange', (event) => {
-      debugLog('🔄 [GA Debug] cc:onChange event fired', event.detail);
-      if (window.CookieConsent?.acceptedCategory('analytics')) {
-        debugLog('✅ [GA Debug] Analytics consent granted via change event');
-        handleAnalyticsConsent(true);
-      } else {
-        debugLog('❌ [GA Debug] Analytics consent revoked via change event');
-        handleAnalyticsConsent(false);
-      }
-    });
-
     // Check if user has already consented (for page reloads)
     // This integrates with the cookie consent manager's stored preferences in localStorage
     function checkExistingConsent() {
@@ -132,6 +109,9 @@ const IS_DEV = import.meta.env.DEV;
       debugLog('❌ [GA Debug] No analytics consent found');
       return false;
     }
+
+    // Initialize consent checking
+    debugLog('🚀 [GA Debug] Starting consent monitoring...');
 
     // Check for existing consent on page load
     checkExistingConsent();
