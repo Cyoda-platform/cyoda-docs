@@ -64,6 +64,9 @@ export default defineConfig({
 	},
 	integrations: [
 		cookieconsent({
+			cookie: {
+				useLocalStorage: true,
+			},
 			guiOptions: {
 				consentModal: {
 					layout: 'cloud',
