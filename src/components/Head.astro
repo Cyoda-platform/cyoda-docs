@@ -1,9 +1,11 @@
 ---
 // Custom Head component that extends Starlight's default Head
-// Includes optimized Analytics component
+// Includes optimized Analytics component and hash redirect handling
 import StarlightHead from '@astrojs/starlight/components/Head.astro';
 import Analytics from './Analytics.astro';
+import HashRedirect from './HashRedirect.astro';
 ---
 
 <StarlightHead {...Astro.props} />
 <Analytics />
+<HashRedirect />

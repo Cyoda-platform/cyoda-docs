@@ -1,0 +1,66 @@
+---
+// Component to handle legacy hash-based URLs and redirect to proper path-based URLs
+// This handles URLs like /#guides/workflow-config-guide -> /guides/workflow-config-guide/
+---
+
+<script>
+  // Hash redirect handler for legacy URLs
+  function handleHashRedirect() {
+    // Only run on the client side
+    if (typeof window === 'undefined') return;
+    
+    const hash = window.location.hash;
+    
+    // Check if we have a hash that looks like a documentation path
+    if (hash && hash.length > 1) {
+      // Remove the # and any leading/trailing slashes
+      const hashPath = hash.substring(1).replace(/^\/+|\/+$/g, '');
+      
+      // Check if this looks like a documentation path
+      // Match patterns like: guides/workflow-config-guide, getting-started/introduction, etc.
+      const docPathPattern = /^(guides|getting-started|concepts|architecture|platform)\/[a-z0-9-]+$/i;
+      
+      if (docPathPattern.test(hashPath)) {
+        // Construct the proper path-based URL
+        const newPath = `/${hashPath}/`;
+        
+        // Preserve any query parameters
+        const search = window.location.search;
+        const newUrl = newPath + search;
+        
+        // Replace the current URL to avoid adding to browser history
+        window.location.replace(newUrl);
+        return;
+      }
+      
+      // Handle section-only hashes (like #guides, #concepts)
+      const sectionPattern = /^(guides|getting-started|concepts|architecture|platform)$/i;
+      if (sectionPattern.test(hashPath)) {
+        // Redirect to the section's first page or index
+        const sectionRedirects = {
+          'guides': '/guides/cyoda-design-principles/',
+          'getting-started': '/getting-started/introduction/',
+          'concepts': '/concepts/cpl-overview/',
+          'architecture': '/architecture/cyoda-cloud-architecture/',
+          'platform': '/platform/cloud-service-details/'
+        };
+        
+        const redirectPath = sectionRedirects[hashPath.toLowerCase()];
+        if (redirectPath) {
+          const search = window.location.search;
+          window.location.replace(redirectPath + search);
+          return;
+        }
+      }
+    }
+  }
+  
+  // Run immediately when script loads
+  handleHashRedirect();
+  
+  // Also handle hash changes (in case someone navigates with hash URLs)
+  window.addEventListener('hashchange', handleHashRedirect);
+  
+  // Handle popstate events (back/forward navigation)
+  window.addEventListener('popstate', handleHashRedirect);
+</script>
