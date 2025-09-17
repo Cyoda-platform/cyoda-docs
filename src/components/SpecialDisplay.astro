@@ -1,0 +1,66 @@
+---
+/**
+    * Props:
+    * - content: string content to obfuscate, e.g. "hello@cyoda.com" or "123 Main St"
+    * - type: "email" or "text" (default: auto-detect based on @ symbol)
+    * - label: optional text to display instead of the content
+    * - class: optional class for styling
+    */
+const { content, type, label, class: className = "" } = Astro.props;
+if (!content) {
+    throw new Error("SpecialDisplay: 'content' prop is required.");
+}
+
+// Auto-detect type if not specified
+const displayType = type || (content.includes('@') ? 'email' : 'text');
+
+// Encode server-side so the raw content isn't in the HTML.
+const b64 = Buffer.from(content, "utf8").toString("base64");
+
+// Accessible no-JS fallback (readable, not a direct link)
+let fallback;
+if (displayType === 'email') {
+    const [user, domain] = content.split("@");
+    fallback = `${user} [at] ${domain.replaceAll(".", " [dot] ")}`;
+} else {
+    // For text/addresses, just show a generic placeholder
+    fallback = "[Address hidden - enable JavaScript to view]";
+}
+
+// Generate a unique ID for this instance
+const uniqueId = `special-display-${Math.random().toString(36).substr(2, 9)}`;
+---
+<span id={uniqueId} class={`special-display ${className}`} data-b64={b64} data-label={label} data-type={displayType}>
+  <noscript>
+    <span aria-label={displayType === 'email' ? "Contact address (enable JavaScript for a clickable link)" : "Content (enable JavaScript to view)"}>
+      {fallback}
+    </span>
+  </noscript>
+</span>
+
+<script define:vars={{ uniqueId }}>
+    // Minimal, framework-free. Decodes and injects appropriate content.
+    (function () {
+        const span = document.getElementById(uniqueId);
+        if (!span) return;
+        try {
+            const decoded = atob(span.getAttribute("data-b64"));
+            const text = span.getAttribute("data-label") || decoded;
+            const type = span.getAttribute("data-type");
+
+            if (type === 'email') {
+                span.innerHTML = `<a href="mailto:${decoded}" rel="nofollow">${text}</a>`;
+            } else {
+                // For text content, just display it without a link
+                span.innerHTML = text;
+            }
+        } catch (e) {
+            // If decoding fails, leave the <noscript> fallback in place.
+        }
+    })();
+</script>
+
+<style>
+    /* Optional: keep layout stable before JS runs */
+    .special-display { white-space: nowrap; }
+</style>

@@ -1,0 +1,148 @@
+---
+import StarlightPage from '@astrojs/starlight/components/StarlightPage.astro';
+
+const frontmatter = {
+  title: 'Legal',
+  description: 'Legal information and policies for Cyoda Documentation Site',
+  template: 'doc',
+  sidebar: {
+    hidden: true,
+  },
+};
+---
+
+<StarlightPage frontmatter={frontmatter}>
+  <div class="sl-markdown-content">
+
+    <p>This page provides access to all legal information and policies related to the Cyoda Documentation Site.</p>
+
+    <div class="legal-links">
+        
+      <div class="legal-link-card">
+        <h2><a href="/privacy">Privacy Notice</a></h2>
+        <p>Learn how we collect, use, and protect your personal data when you visit our documentation site.</p>
+      </div>
+
+      <div class="legal-link-card">
+        <h2><a href="/terms">Terms of Service</a></h2>
+        <p>The terms and conditions that govern your use of the Cyoda documentation site and related services.</p>
+      </div>
+
+      <div class="legal-link-card">
+        <h2><a href="/cookies">Cookie Policy</a></h2>
+        <p>Information about how we use cookies and similar technologies on our documentation site.</p>
+      </div>
+
+      <div class="legal-link-card">
+        <h2><button type="button" data-cc="show-preferencesModal" class="cookie-preferences-button">Cookie Preferences</button></h2>
+        <p>Manage your cookie preferences and consent settings for analytics and other non-essential cookies.</p>
+      </div>
+    </div>
+
+    <div class="contact-info">
+      <h2>Contact Information</h2>
+      <p>Cyoda Limited<br>
+      Registered in England and Wales<br>
+      Company number: 09755017<br>
+      Registered office: 1 Darell Road, Richmond, London, TW9 4LF<br>
+      VAT number: GB314619905</p>
+    </div>
+  </div>
+</StarlightPage>
+
+<style>
+  .legal-links {
+    display: grid;
+    gap: 1.5rem;
+    margin: 2rem 0;
+    align-items: start;
+  }
+
+  .legal-link-card {
+    border: 1px solid var(--sl-color-gray-5);
+    border-radius: 0.5rem;
+    padding: 1.5rem;
+    background: var(--sl-color-bg-nav);
+    transition: border-color 0.2s ease, box-shadow 0.2s ease;
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+  }
+
+  .legal-link-card:hover {
+    border-color: var(--sl-color-accent);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  }
+
+  .legal-link-card h2 {
+    margin: 0 0 0.5rem 0;
+    font-size: 1.25rem;
+    line-height: 1.4;
+  }
+
+  .legal-link-card h2 a {
+    color: var(--sl-color-text-accent);
+    text-decoration: none;
+  }
+
+  .legal-link-card h2 a:hover {
+    text-decoration: underline;
+  }
+
+  .cookie-preferences-button {
+    background: none;
+    border: none;
+    color: var(--sl-color-text-accent);
+    font-size: inherit;
+    font-weight: inherit;
+    cursor: pointer;
+    padding: 0;
+    text-decoration: none;
+  }
+
+  .cookie-preferences-button:hover {
+    text-decoration: underline;
+  }
+
+  .legal-link-card p {
+    margin: 0;
+    color: var(--sl-color-gray-2);
+    line-height: 1.6;
+    flex-grow: 1;
+  }
+
+  .contact-info {
+    margin-top: 3rem;
+    padding-top: 2rem;
+    border-top: 1px solid var(--sl-color-gray-5);
+  }
+
+  .contact-info h2 {
+    margin-bottom: 1rem;
+  }
+
+  .contact-info ul {
+    list-style: none;
+    padding: 0;
+  }
+
+  .contact-info li {
+    margin-bottom: 0.5rem;
+  }
+
+  .contact-info a {
+    color: var(--sl-color-text-accent);
+    text-decoration: none;
+  }
+
+  .contact-info a:hover {
+    text-decoration: underline;
+  }
+
+  @media (min-width: 768px) {
+    .legal-links {
+      grid-template-columns: repeat(2, 1fr);
+      align-items: stretch;
+    }
+  }
+</style>

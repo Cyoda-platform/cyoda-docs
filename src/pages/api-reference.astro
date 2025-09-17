@@ -39,6 +39,61 @@ const description = 'Interactive API documentation for the Cyoda platform';
         z-index: 100;
       }
 
+      .header-right {
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+      }
+
+      .legal-link {
+        color: #656d76;
+        text-decoration: none;
+        font-weight: 500;
+        padding: 0.5rem 1rem;
+        border-radius: 0.25rem;
+        transition: color 0.2s ease;
+        font-size: 0.875rem;
+        white-space: nowrap;
+      }
+
+      .legal-link:hover,
+      .legal-link:focus {
+        color: #24292f;
+        text-decoration: none;
+      }
+
+      .legal-link:focus-visible {
+        outline: 2px solid #4FB8B0;
+        outline-offset: 2px;
+      }
+
+      .cookie-prefs-button {
+        background: none !important;
+        border: none !important;
+        cursor: pointer;
+        font-family: inherit;
+        font-size: 0.875rem !important;
+        /* Match the legal-link styles exactly */
+        color: #656d76 !important;
+        text-decoration: none;
+        font-weight: 500 !important;
+        padding: 0.5rem 1rem;
+        border-radius: 0.25rem;
+        transition: color 0.2s ease;
+        white-space: nowrap;
+      }
+
+      .cookie-prefs-button:hover,
+      .cookie-prefs-button:focus {
+        color: #24292f !important;
+        text-decoration: none;
+      }
+
+      .cookie-prefs-button:focus-visible {
+        outline: 2px solid #4FB8B0;
+        outline-offset: 2px;
+      }
+
       .site-title {
         display: flex;
         align-items: center;
@@ -145,7 +200,18 @@ const description = 'Interactive API documentation for the Cyoda platform';
         <img src="/favicon.svg" alt="Cyoda Logo" class="site-logo" />
         <span class="site-title-text">Cyoda Documentation</span>
       </a>
-      <ApiSettings />
+      <div class="header-right">
+        <a href="/legal" class="legal-link">Legal</a>
+        <a href="/imprint" class="legal-link">Imprint</a>
+        <button
+          type="button"
+          data-cc="show-preferencesModal"
+          class="legal-link cookie-prefs-button"
+        >
+          Cookie Prefs
+        </button>
+        <ApiSettings />
+      </div>
     </header>
 
     <main class="iframe-container">
