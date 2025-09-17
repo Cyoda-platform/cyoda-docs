@@ -6,16 +6,16 @@ import { test, expect } from '@playwright/test';
  */
 
 test.describe('Cookie Consent Integration Tests', () => {
-  
+
   test('should verify cookie consent library files are accessible', async ({ page }) => {
     // Test that the cookie consent CSS loads
     const cssResponse = await page.goto('http://localhost:4321/node_modules/vanilla-cookieconsent/dist/cookieconsent.css');
     expect(cssResponse?.status()).toBe(200);
-    
+
     // Test that the JS files exist (even if not loaded by the integration)
     const esmResponse = await page.goto('http://localhost:4321/node_modules/vanilla-cookieconsent/dist/cookieconsent.esm.js');
     expect(esmResponse?.status()).toBe(200);
-    
+
     const umdResponse = await page.goto('http://localhost:4321/node_modules/vanilla-cookieconsent/dist/cookieconsent.umd.js');
     expect(umdResponse?.status()).toBe(200);
   });
@@ -28,15 +28,23 @@ test.describe('Cookie Consent Integration Tests', () => {
       return {
         dataLayerExists: typeof window.dataLayer !== 'undefined',
         dataLayerLength: window.dataLayer ? window.dataLayer.length : 0,
-        hasDefaultConsent: window.dataLayer ? 
-          window.dataLayer.some(entry => 
-            Array.isArray(entry) && 
-            entry[0] === 'consent' && 
-            entry[1] === 'default' && 
-            entry[2]?.analytics_storage === 'denied'
+        hasDefaultConsent: window.dataLayer ?
+          window.dataLayer.some(entry =>
+            // Check for both array format and object format
+            (Array.isArray(entry) &&
+             entry[0] === 'consent' &&
+             entry[1] === 'default' &&
+             entry[2]?.analytics_storage === 'denied') ||
+            // Check for object format that gtag might use
+            (typeof entry === 'object' &&
+             entry['0'] === 'consent' &&
+             entry['1'] === 'default' &&
+             entry['2']?.analytics_storage === 'denied')
           ) : false,
         gtagExists: typeof window.gtag !== 'undefined',
-        handleAnalyticsConsentExists: typeof window.handleAnalyticsConsent !== 'undefined'
+        handleAnalyticsConsentExists: typeof window.handleAnalyticsConsent !== 'undefined',
+        // Debug: include actual dataLayer content for troubleshooting
+        dataLayerContent: window.dataLayer ? window.dataLayer.slice(0, 3) : []
       };
     });
 
@@ -50,30 +58,47 @@ test.describe('Cookie Consent Integration Tests', () => {
     await page.goto('/', { waitUntil: 'networkidle' });
     await page.waitForTimeout(3000);
 
-    // Check if cookie consent CSS is loaded
-    const cssLoaded = await page.evaluate(() => {
-      const links = Array.from(document.querySelectorAll('link[rel="stylesheet"]'));
-      return links.some(link => link.href && link.href.includes('cookieconsent.css'));
+    // Check if cookie consent CSS is inlined (new behavior after refactoring)
+    const cssInlined = await page.evaluate(() => {
+      const styles = Array.from(document.querySelectorAll('style'));
+      return styles.some(style =>
+        style.textContent &&
+        style.textContent.includes('#cc-main') &&
+        style.textContent.includes('--cc-font-family')
+      );
     });
 
-    expect(cssLoaded, 'Cookie consent CSS should be loaded').toBe(true);
+    expect(cssInlined, 'Cookie consent CSS should be inlined in the page').toBe(true);
 
     // Document the current state for debugging
     const integrationStatus = await page.evaluate(() => {
+      // Check if cookie consent CSS is inlined (new behavior after refactoring)
+      const styles = Array.from(document.querySelectorAll('style'));
+      const cssInlined = styles.some(style =>
+        style.textContent &&
+        style.textContent.includes('#cc-main') &&
+        style.textContent.includes('--cc-font-family')
+      );
+
       return {
         cookieConsentLibraryLoaded: typeof window.CookieConsent !== 'undefined',
         ccElementsCount: document.querySelectorAll('[id*="cc"], [class*="cc"]').length,
-        scriptsWithCookieConsent: Array.from(document.querySelectorAll('script')).filter(s => 
+        scriptsWithCookieConsent: Array.from(document.querySelectorAll('script')).filter(s =>
           s.src && s.src.includes('cookieconsent')
-        ).length
+        ).length,
+        hasInlinedCookieConsentCSS: cssInlined
       };
     });
 
     console.log('Cookie consent integration status:', JSON.stringify(integrationStatus, null, 2));
-    
-    // This test documents the current state - we expect the library NOT to be loaded currently
-    expect(integrationStatus.cookieConsentLibraryLoaded, 
-      'Cookie consent library should be loaded (currently failing due to integration issue)'
+
+    // After refactoring, the CSS is inlined and the library is not loaded by default
+    expect(integrationStatus.cookieConsentLibraryLoaded,
+      'Cookie consent library should not be loaded by default (new behavior after refactoring)'
     ).toBe(false);
+
+    expect(integrationStatus.hasInlinedCookieConsentCSS,
+      'Cookie consent CSS should be inlined in the page'
+    ).toBe(true);
   });
 });
