@@ -260,7 +260,7 @@ export default defineConfig({
 				{
 					label: 'Cloud Info',
 					collapsed: true,
-					autogenerate: { directory: 'platform' }
+					autogenerate: { directory: 'cloud' }
 				},
 			],
 			components: {

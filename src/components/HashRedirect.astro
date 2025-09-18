@@ -34,7 +34,7 @@
       }
       
       // Handle section-only hashes (like #guides, #concepts)
-      const sectionPattern = /^(guides|getting-started|concepts|architecture|platform)$/i;
+      const sectionPattern = /^(guides|getting-started|concepts|architecture|platform|cloud)$/i;
       if (sectionPattern.test(hashPath)) {
         // Redirect to the section's first page or index
         const sectionRedirects = {
@@ -42,7 +42,8 @@
           'getting-started': '/getting-started/introduction/',
           'concepts': '/concepts/cpl-overview/',
           'architecture': '/architecture/cyoda-cloud-architecture/',
-          'platform': '/platform/cloud-service-details/'
+          'platform': '/cloud/service-details/',
+          'cloud': '/cloud/service-details/'
         };
         
         const redirectPath = sectionRedirects[hashPath.toLowerCase()];

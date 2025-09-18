@@ -37,7 +37,7 @@ Before using Cyoda Cloud, you must:
 
 ### Free Tier Limitations
 
-See [Entitlements](/platform/entitlements/#subscription-tiers-overview)
+See [Entitlements](/cloud/entitlements/#subscription-tiers-overview)
 
 ## Environment Setup and Provisioning
 

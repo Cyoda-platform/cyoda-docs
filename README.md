@@ -68,10 +68,10 @@ The documentation is automatically deployed to GitHub Pages and available at:
 ### Architecture Documentation
 - **[Cloud Architecture](dist/resources/architecture/cyoda-cloud-architecture.md)**: Physical infrastructure and deployment topology
 
-### Platform Information
-- **[Cloud Status](dist/resources/platform/cyoda-cloud-status.md)**: Current service status and known issues
-- **[Service Details](dist/resources/platform/cloud-service-details.md)**: Comprehensive service information and limitations
-- **[Subscription Tiers](dist/resources/platform/entitlements.md)**: Available subscription tiers and entitlements
+### Cloud Information
+- **[Cloud Status](dist/resources/cloud/status.md)**: Current service status and known issues
+- **[Service Details](dist/resources/cloud/service-details.md)**: Service information and limitations
+- **[Subscription Tiers](dist/resources/cloud/entitlements.md)**: Available subscription tiers and entitlements
 
 
 ## Development

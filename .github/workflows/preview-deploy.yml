@@ -122,7 +122,7 @@ jobs:
           echo "- Homepage: ${{ env.SURGE_URL }}"
           echo "- API Reference: ${{ env.SURGE_URL }}/api-docs.html"
           echo "- Documentation: ${{ env.SURGE_URL }}/docs/"
-          echo "- Cloud Status: ${{ env.SURGE_URL }}/docs/platform/cyoda-cloud-status/"
+          echo "- Cloud Status: ${{ env.SURGE_URL }}/docs/cloud/status/"
 
       - name: Output preview info
         run: |
