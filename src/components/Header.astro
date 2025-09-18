@@ -7,6 +7,7 @@ import SiteTitle from 'virtual:starlight/components/SiteTitle';
 import SocialIcons from 'virtual:starlight/components/SocialIcons';
 import Settings from './Settings.astro';
 import ApiButton from './ApiButton.astro';
+import HeaderCopyPageButton from './HeaderCopyPageButton.astro';
 
 /**
  * Render the `Search` component if Pagefind is enabled or the default search component has been overridden.
@@ -22,7 +23,8 @@ const shouldRenderSearch =
 	<div class="nav-links sl-flex">
 		<ApiButton />
 	</div>
-	<div class="sl-flex print:hidden">
+	<div class="sl-flex print:hidden search-area">
+		<HeaderCopyPageButton />
 		{shouldRenderSearch && <Search />}
 	</div>
 	<div class="sl-hidden md:sl-flex print:hidden right-group">
@@ -78,6 +80,11 @@ const shouldRenderSearch =
 		}
 
 
+
+		.search-area {
+			gap: 0.5rem;
+			align-items: center;
+		}
 
 		.right-group,
 		.social-icons {

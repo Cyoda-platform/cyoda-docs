@@ -1,0 +1,388 @@
+---
+// Header version of the copy page button for main navigation
+---
+
+<button
+  class="copy-page-button"
+  data-copy-page-button
+  aria-label="Copy page options"
+  aria-expanded="false"
+  aria-haspopup="true"
+>
+  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+    <path d="M8 5H6a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2v-1M8 5a2 2 0 002 2h2a2 2 0 002-2M8 5a2 2 0 012-2h2a2 2 0 012 2m0 0h2a2 2 0 012 2v3m2 4H10m0 0l3-3m-3 3l3 3" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+  </svg>
+</button>
+
+<div class="copy-page-menu" data-copy-page-menu hidden>
+  <div class="copy-page-menu-item" data-copy-page-action="markdown">
+    View Markdown
+  </div>
+</div>
+
+<style>
+  .copy-page-button {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 2.5rem;
+    height: 2.5rem;
+    padding: 0;
+    background: transparent;
+    border: none;
+    border-radius: 0.5rem;
+    color: var(--sl-color-gray-3);
+    cursor: pointer;
+    transition: all 0.2s ease;
+    position: relative;
+  }
+
+  .copy-page-button:hover,
+  .copy-page-button:focus {
+    color: var(--sl-color-accent);
+    background: var(--sl-color-gray-6);
+  }
+
+  .copy-page-button[aria-expanded="true"] {
+    color: var(--sl-color-accent);
+    background: var(--sl-color-gray-6);
+  }
+
+  .copy-page-menu {
+    position: absolute;
+    top: calc(100% + 8px);
+    right: 0;
+    background: var(--sl-color-bg-nav);
+    border: 1px solid var(--sl-color-gray-5);
+    border-radius: 8px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    z-index: 1000;
+    min-width: 140px;
+    overflow: hidden;
+  }
+
+  .copy-page-menu-item {
+    padding: 12px 16px;
+    cursor: pointer;
+    font-size: 14px;
+    color: var(--sl-color-text);
+    transition: background-color 0.2s ease;
+    border: none;
+    background: none;
+    width: 100%;
+    text-align: left;
+    white-space: nowrap;
+  }
+
+  .copy-page-menu-item:hover {
+    background: var(--sl-color-gray-6);
+    color: var(--sl-color-white);
+  }
+
+  /* Hide on mobile to avoid clutter */
+  @media (max-width: 49.9rem) {
+    .copy-page-button {
+      display: none;
+    }
+  }
+</style>
+
+<script>
+  class HeaderCopyPageButton {
+    constructor() {
+      this.button = document.querySelector('[data-copy-page-button]');
+      this.menu = document.querySelector('[data-copy-page-menu]');
+      this.uniqueId = Math.random().toString(36).substr(2, 9);
+      this.turndownService = null;
+
+      if (this.button && this.menu) {
+        this.loadTurndown().then(() => {
+          this.init();
+        });
+      }
+    }
+
+    async loadTurndown() {
+      try {
+        // Load Turndown from CDN
+        const TurndownModule = await import('https://unpkg.com/turndown@7.2.1/dist/turndown.js');
+        const TurndownService = TurndownModule.default;
+
+        // Load GFM plugin
+        const gfmModule = await import('https://unpkg.com/turndown-plugin-gfm@1.0.2/dist/turndown-plugin-gfm.js');
+
+        // Create and configure Turndown service
+        this.turndownService = new TurndownService({
+          headingStyle: 'atx',
+          hr: '---',
+          bulletListMarker: '-',
+          codeBlockStyle: 'fenced',
+          fence: '```',
+          emDelimiter: '*',
+          strongDelimiter: '**',
+          linkStyle: 'inlined',
+          linkReferenceStyle: 'full'
+        });
+
+        // Add GitHub Flavored Markdown support
+        if (gfmModule.gfm) {
+          this.turndownService.use(gfmModule.gfm);
+        }
+
+        // Add custom rules
+        this.addCustomRules();
+
+        console.log('Turndown service loaded successfully');
+      } catch (error) {
+        console.error('Failed to load Turndown:', error);
+        // Fallback to basic conversion if Turndown fails to load
+      }
+    }
+
+    addCustomRules() {
+      if (!this.turndownService) return;
+
+      // Custom rule for SpecialDisplay components
+      this.turndownService.addRule('specialDisplay', {
+        filter: function (node) {
+          return node.nodeName === 'SPECIALDISPLAY' ||
+                 (node.nodeName === 'DIV' && node.getAttribute && node.getAttribute('class') === 'special-display');
+        },
+        replacement: function (content, node) {
+          const b64Content = node.getAttribute('data-b64');
+          if (b64Content) {
+            try {
+              return atob(b64Content);
+            } catch (e) {
+              return node.textContent || content;
+            }
+          }
+          return node.textContent || content;
+        }
+      });
+
+      // Custom rule to handle buttons and interactive elements
+      this.turndownService.addRule('buttons', {
+        filter: ['button', 'noscript'],
+        replacement: function (content, node) {
+          if (node.nodeName === 'BUTTON') {
+            return node.textContent || '';
+          }
+          if (node.nodeName === 'NOSCRIPT') {
+            return '';
+          }
+          return content;
+        }
+      });
+    }
+
+    init() {
+      this.setupEventListeners();
+    }
+
+    setupEventListeners() {
+      // Toggle menu on button click
+      this.button.addEventListener('click', (e) => {
+        e.stopPropagation();
+        this.toggleMenu();
+      });
+
+      // Handle menu item clicks
+      this.menu.addEventListener('click', (e) => {
+        const action = e.target.dataset.copyPageAction;
+        if (action === 'markdown') {
+          this.handleMarkdownAction();
+        }
+        this.closeMenu();
+      });
+
+      // Close menu when clicking outside
+      document.addEventListener('click', (e) => {
+        if (!this.button.contains(e.target) && !this.menu.contains(e.target)) {
+          this.closeMenu();
+        }
+      });
+
+      // Close menu on escape key
+      document.addEventListener('keydown', (e) => {
+        if (e.key === 'Escape') {
+          this.closeMenu();
+        }
+      });
+    }
+
+    toggleMenu() {
+      const isOpen = this.menu.hidden === false;
+      if (isOpen) {
+        this.closeMenu();
+      } else {
+        this.openMenu();
+      }
+    }
+
+    openMenu() {
+      this.menu.hidden = false;
+      this.button.setAttribute('aria-expanded', 'true');
+    }
+
+    closeMenu() {
+      this.menu.hidden = true;
+      this.button.setAttribute('aria-expanded', 'false');
+    }
+
+    isLegalPage() {
+      const path = window.location.pathname;
+      return path.includes('/cookies') || 
+             path.includes('/privacy') || 
+             path.includes('/terms') || 
+             path.includes('/imprint');
+    }
+
+    handleMarkdownAction() {
+      if (this.isLegalPage()) {
+        this.generateMarkdownFromPage();
+      } else {
+        this.openStaticMarkdown();
+      }
+    }
+
+    generateMarkdownFromPage() {
+      // Get the main content area
+      const contentElement = document.querySelector('.sl-markdown-content');
+      if (!contentElement) {
+        console.error('Could not find content element');
+        return;
+      }
+
+      // Clone the content to avoid modifying the original
+      const clonedContent = contentElement.cloneNode(true);
+
+      // Remove any copy page buttons from the cloned content
+      const copyButtons = clonedContent.querySelectorAll('[data-copy-page-button], .copy-page-container');
+      copyButtons.forEach(button => button.remove());
+
+      // Convert SpecialDisplay components to plain text
+      const specialDisplays = clonedContent.querySelectorAll('.special-display');
+      specialDisplays.forEach(display => {
+        const b64Content = display.getAttribute('data-b64');
+        if (b64Content) {
+          try {
+            const decoded = atob(b64Content);
+            display.textContent = decoded;
+          } catch (e) {
+            // If decoding fails, keep existing text
+          }
+        }
+      });
+
+      // Convert HTML to markdown using Turndown or fallback
+      let markdown;
+      if (this.turndownService) {
+        markdown = this.turndownService.turndown(clonedContent.innerHTML);
+      } else {
+        // Fallback to basic conversion if Turndown isn't available
+        markdown = this.htmlToMarkdownFallback(clonedContent.innerHTML);
+      }
+
+      // Get page title for the markdown
+      const pageTitle = document.title.replace(' | Cyoda Documentation', '');
+      markdown = `# ${pageTitle}\n\n${markdown}`;
+
+      // Clean up markdown
+      markdown = markdown.replace(/\n\n\n+/g, '\n\n').trim();
+
+      // Open markdown in a new tab
+      const blob = new Blob([markdown], { type: 'text/plain; charset=utf-8' });
+      const url = URL.createObjectURL(blob);
+      const newTab = window.open(url, '_blank');
+
+      // Clean up the URL after a short delay to allow the tab to load
+      setTimeout(() => {
+        URL.revokeObjectURL(url);
+      }, 1000);
+    }
+
+    openStaticMarkdown() {
+      // For documentation pages, open the static markdown file
+      const path = window.location.pathname.replace(/\/$/, '');
+      const markdownPath = `/markdown${path}.md`;
+      window.open(markdownPath, '_blank');
+    }
+
+    htmlToMarkdownFallback(html) {
+      // Create a temporary div to work with the HTML
+      const tempDiv = document.createElement('div');
+      tempDiv.innerHTML = html;
+
+      // Handle SpecialDisplay components - decode base64 content
+      const specialDisplays = tempDiv.querySelectorAll('[data-special-display]');
+      specialDisplays.forEach(el => {
+        const content = el.getAttribute('data-special-display');
+        if (content) {
+          try {
+            const decoded = atob(content);
+            el.textContent = decoded;
+          } catch (e) {
+            console.warn('Failed to decode special display content:', e);
+          }
+        }
+      });
+
+      // Convert HTML elements to markdown
+      let markdown = tempDiv.innerHTML;
+
+      // Convert headings
+      markdown = markdown.replace(/<h([1-6])[^>]*>(.*?)<\/h[1-6]>/gi, (match, level, content) => {
+        const cleanContent = content.replace(/<[^>]*>/g, '').trim();
+        return '\n' + '#'.repeat(parseInt(level)) + ' ' + cleanContent + '\n';
+      });
+
+      // Convert paragraphs
+      markdown = markdown.replace(/<p[^>]*>(.*?)<\/p>/gi, '$1\n\n');
+
+      // Convert lists
+      markdown = markdown.replace(/<ul[^>]*>(.*?)<\/ul>/gis, (match, content) => {
+        const items = content.replace(/<li[^>]*>(.*?)<\/li>/gi, '- $1\n');
+        return '\n' + items + '\n';
+      });
+
+      markdown = markdown.replace(/<ol[^>]*>(.*?)<\/ol>/gis, (match, content) => {
+        let counter = 1;
+        const items = content.replace(/<li[^>]*>(.*?)<\/li>/gi, () => `${counter++}. $1\n`);
+        return '\n' + items + '\n';
+      });
+
+      // Convert links
+      markdown = markdown.replace(/<a[^>]*href="([^"]*)"[^>]*>(.*?)<\/a>/gi, '[$2]($1)');
+
+      // Convert emphasis
+      markdown = markdown.replace(/<strong[^>]*>(.*?)<\/strong>/gi, '**$1**');
+      markdown = markdown.replace(/<em[^>]*>(.*?)<\/em>/gi, '*$1*');
+      markdown = markdown.replace(/<code[^>]*>(.*?)<\/code>/gi, '`$1`');
+
+      // Remove remaining HTML tags
+      markdown = markdown.replace(/<[^>]*>/g, '');
+
+      // Clean up whitespace
+      markdown = markdown.replace(/\n\s*\n\s*\n/g, '\n\n');
+      markdown = markdown.replace(/^\s+|\s+$/g, '');
+
+      // Decode HTML entities
+      const textarea = document.createElement('textarea');
+      textarea.innerHTML = markdown;
+      markdown = textarea.value;
+
+      return markdown;
+    }
+  }
+
+  // Initialize when DOM is ready
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', () => new HeaderCopyPageButton());
+  } else {
+    new HeaderCopyPageButton();
+  }
+
+  // Re-initialize on navigation (for SPA-like behavior)
+  document.addEventListener('astro:page-load', () => new HeaderCopyPageButton());
+</script>

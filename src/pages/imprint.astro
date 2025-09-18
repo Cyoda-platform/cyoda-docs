@@ -24,55 +24,21 @@ const lastModified = stats.mtime.toLocaleDateString('en-US', {
 
 <StarlightPage frontmatter={frontmatter}>
   <div class="sl-markdown-content">
-    <div class="company-info">
-      <p><strong>Cyoda Limited</strong><br>
-          Company number: 09755017<br>
-          Registered in: England and Wales<br>
-          Registered office: <SpecialDisplay content="1 Darell Road, Richmond, London, TW9 4LF" type="text" /><br>
-          VAT number: GB314619905<br>
-          Contact: <SpecialDisplay content="info@cyoda.com" type="email" />
-      </p>
+        <p><strong>Cyoda Limited</strong><br>
+            Company number: 09755017<br>
+            Registered in: England and Wales<br>
+            Registered office: <SpecialDisplay content="1 Darell Road, Richmond, London, TW9 4LF" type="text" /><br>
+            VAT number: GB314619905<br>
+            Contact: <SpecialDisplay content="info@cyoda.com" type="email" />
+        </p>
 
       <p>Company record: <a href="https://find-and-update.company-information.service.gov.uk/company/09755017" target="_blank" rel="noopener noreferrer">https://find-and-update.company-information.service.gov.uk/company/09755017</a></p>
 
-    </div>
 
     <p><em>Last updated: {lastModified}</em></p>
-  </div>
 </StarlightPage>
 
 <style>
-  .company-info {
-    background: var(--sl-color-bg-nav);
-    border: 1px solid var(--sl-color-gray-5);
-    border-radius: 0.5rem;
-    padding: 2rem;
-    margin: 2rem 0;
-  }
-
-  .company-info p {
-    margin: 0 0 1rem 0;
-    line-height: 1.6;
-  }
-
-  .company-info p:last-child {
-    margin-bottom: 0;
-  }
-
-  .company-info strong {
-    color: var(--sl-color-text);
-    font-size: 1.125rem;
-  }
-
-  .company-info a {
-    color: var(--sl-color-text-accent);
-    text-decoration: none;
-    word-break: break-all;
-  }
-
-  .company-info a:hover {
-    text-decoration: underline;
-  }
 
   /* Responsive adjustments */
   @media (max-width: 768px) {

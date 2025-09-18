@@ -10,12 +10,12 @@ function getMarkdownUrl(htmlPath: string): string {
   // Remove leading/trailing slashes and convert to markdown path
   let cleanPath = htmlPath.replace(/^\/+|\/+$/g, '');
 
-  // Handle root case
+  // Handle root case for docs
   if (!cleanPath) {
     return '/markdown/index.md';
   }
 
-  // Convert path segments to markdown file path
+  // Convert path segments to static markdown file path for docs
   const segments = cleanPath.split('/');
 
   // If it ends with a directory name, it's likely an index page
@@ -26,7 +26,15 @@ function getMarkdownUrl(htmlPath: string): string {
   }
 }
 
+// Check if this is a legal page
+function isLegalPage(htmlPath: string): boolean {
+  const cleanPath = htmlPath.replace(/^\/+|\/+$/g, '');
+  const legalPages = ['cookies', 'privacy', 'terms', 'imprint'];
+  return legalPages.includes(cleanPath);
+}
+
 const markdownUrl = getMarkdownUrl(pathname);
+const isLegal = isLegalPage(pathname);
 ---
 
 <div class="copy-page-container">
@@ -35,12 +43,19 @@ const markdownUrl = getMarkdownUrl(pathname);
       <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
         <path d="M8 5H6a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2v-1M8 5a2 2 0 002 2h2a2 2 0 002-2M8 5a2 2 0 012-2h2a2 2 0 012 2m0 0h2a2 2 0 012 2v3m2 4H10m0 0l3-3m-3 3l3 3" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
       </svg>
+      <span class="copy-page-label">Copy page</span>
     </button>
 
     <div class="copy-page-menu" id={`copyPageMenu-${uniqueId}`} role="menu">
-      <a href={markdownUrl} target="_blank" class="copy-page-option" role="menuitem" data-astro-prefetch="false">
-        View Markdown
-      </a>
+      {isLegal ? (
+        <button class="copy-page-option dynamic-markdown" role="menuitem" data-page-type="legal">
+          View as Markdown
+        </button>
+      ) : (
+        <a href={markdownUrl} target="_blank" class="copy-page-option" role="menuitem" data-astro-prefetch="false">
+          View Markdown
+        </a>
+      )}
     </div>
   </div>
 </div>
@@ -58,21 +73,25 @@ const markdownUrl = getMarkdownUrl(pathname);
   .copy-page-button {
     display: flex;
     align-items: center;
-    justify-content: center;
-    width: 24px;
-    height: 24px;
-    padding: 0;
+    gap: 6px;
+    padding: 4px 8px;
     background: transparent;
     color: var(--sl-color-gray-3);
     border: none;
     border-radius: 4px;
     cursor: pointer;
     transition: all 0.2s ease;
+    font-size: 12px;
+    white-space: nowrap;
   }
 
   .copy-page-button:hover {
     color: var(--sl-color-white);
     background: var(--sl-color-gray-6);
+  }
+
+  .copy-page-button:hover .copy-page-label {
+    opacity: 1;
   }
 
   .copy-page-button:active {
@@ -81,6 +100,13 @@ const markdownUrl = getMarkdownUrl(pathname);
 
   .copy-icon {
     flex-shrink: 0;
+  }
+
+  .copy-page-label {
+    flex-shrink: 0;
+    font-size: 11px;
+    opacity: 0.8;
+    font-weight: 400;
   }
 
   .dropdown-arrow {
@@ -117,13 +143,18 @@ const markdownUrl = getMarkdownUrl(pathname);
 
   .copy-page-option {
     display: block;
+    width: 100%;
     padding: 8px 12px;
     text-decoration: none;
     color: var(--sl-color-gray-2);
+    border: none;
     border-radius: 4px;
+    background: transparent;
     transition: background-color 0.2s ease;
     font-size: 14px;
     white-space: nowrap;
+    cursor: pointer;
+    text-align: left;
   }
 
   .copy-page-option:hover {
@@ -145,6 +176,213 @@ const markdownUrl = getMarkdownUrl(pathname);
 </style>
 
 <script define:vars={{ uniqueId }}>
+  // Load Turndown for professional HTML-to-markdown conversion
+  let turndownService = null;
+
+  async function loadTurndown() {
+    if (turndownService) return turndownService;
+
+    try {
+      const TurndownModule = await import('https://unpkg.com/turndown@7.2.1/dist/turndown.js');
+      const TurndownService = TurndownModule.default;
+
+      const gfmModule = await import('https://unpkg.com/turndown-plugin-gfm@1.0.2/dist/turndown-plugin-gfm.js');
+
+      turndownService = new TurndownService({
+        headingStyle: 'atx',
+        hr: '---',
+        bulletListMarker: '-',
+        codeBlockStyle: 'fenced',
+        fence: '```',
+        emDelimiter: '*',
+        strongDelimiter: '**',
+        linkStyle: 'inlined',
+        linkReferenceStyle: 'full'
+      });
+
+      if (gfmModule.gfm) {
+        turndownService.use(gfmModule.gfm);
+      }
+
+      // Custom rule for SpecialDisplay components
+      turndownService.addRule('specialDisplay', {
+        filter: function (node) {
+          return node.nodeName === 'SPECIALDISPLAY' ||
+                 (node.nodeName === 'DIV' && node.getAttribute && node.getAttribute('class') === 'special-display');
+        },
+        replacement: function (content, node) {
+          const b64Content = node.getAttribute('data-b64');
+          if (b64Content) {
+            try {
+              return atob(b64Content);
+            } catch (e) {
+              return node.textContent || content;
+            }
+          }
+          return node.textContent || content;
+        }
+      });
+
+      // Custom rule to handle buttons and interactive elements
+      turndownService.addRule('buttons', {
+        filter: ['button', 'noscript'],
+        replacement: function (content, node) {
+          if (node.nodeName === 'BUTTON') {
+            return node.textContent || '';
+          }
+          if (node.nodeName === 'NOSCRIPT') {
+            return '';
+          }
+          return content;
+        }
+      });
+
+      return turndownService;
+    } catch (error) {
+      console.error('Failed to load Turndown:', error);
+      return null;
+    }
+  }
+
+  // Convert HTML content to markdown and open it in a new tab
+  async function generateAndDownloadMarkdown() {
+    try {
+      // Get the main content area
+      const contentArea = document.querySelector('.sl-markdown-content');
+      if (!contentArea) {
+        console.error('Could not find content area');
+        return;
+      }
+
+      // Clone the content to avoid modifying the original
+      const clonedContent = contentArea.cloneNode(true);
+
+      // Remove the CopyPageButton from the cloned content
+      const copyButtons = clonedContent.querySelectorAll('.copy-page-container');
+      copyButtons.forEach(button => button.remove());
+
+      // Convert SpecialDisplay components to plain text
+      const specialDisplays = clonedContent.querySelectorAll('.special-display');
+      specialDisplays.forEach(display => {
+        const b64Content = display.getAttribute('data-b64');
+        if (b64Content) {
+          try {
+            const decoded = atob(b64Content);
+            display.textContent = decoded;
+          } catch (e) {
+            // If decoding fails, keep existing text
+          }
+        }
+      });
+
+      // Load Turndown and convert HTML to markdown
+      const service = await loadTurndown();
+      let markdown;
+
+      if (service) {
+        markdown = service.turndown(clonedContent.innerHTML);
+      } else {
+        // Fallback to basic conversion if Turndown fails
+        markdown = convertHtmlToMarkdown(clonedContent.innerHTML);
+      }
+
+      // Get page title for the markdown
+      const pageTitle = document.title.replace(' | Cyoda Documentation', '');
+      markdown = `# ${pageTitle}\n\n${markdown}`;
+
+      // Clean up markdown
+      markdown = markdown.replace(/\n\n\n+/g, '\n\n').trim();
+
+      // Open markdown in a new tab
+      const blob = new Blob([markdown], { type: 'text/plain; charset=utf-8' });
+      const url = URL.createObjectURL(blob);
+      const newTab = window.open(url, '_blank');
+
+      // Clean up the URL after a short delay to allow the tab to load
+      setTimeout(() => {
+        URL.revokeObjectURL(url);
+      }, 1000);
+
+    } catch (error) {
+      console.error('Error generating markdown:', error);
+      alert('Sorry, there was an error generating the markdown file.');
+    }
+  }
+
+  // Simple HTML to Markdown converter
+  function convertHtmlToMarkdown(html) {
+    // Create a temporary div to work with
+    const temp = document.createElement('div');
+    temp.innerHTML = html;
+
+    // Convert headings
+    for (let i = 1; i <= 6; i++) {
+      const headings = temp.querySelectorAll(`h${i}`);
+      headings.forEach(h => {
+        const level = '#'.repeat(i);
+        h.outerHTML = `\n\n${level} ${h.textContent}\n\n`;
+      });
+    }
+
+    // Convert paragraphs
+    const paragraphs = temp.querySelectorAll('p');
+    paragraphs.forEach(p => {
+      p.outerHTML = `\n\n${p.textContent}\n\n`;
+    });
+
+    // Convert lists
+    const lists = temp.querySelectorAll('ul, ol');
+    lists.forEach(list => {
+      const items = list.querySelectorAll('li');
+      let listText = '\n\n';
+      items.forEach(item => {
+        const marker = list.tagName === 'UL' ? '-' : '1.';
+        listText += `${marker} ${item.textContent}\n`;
+      });
+      listText += '\n';
+      list.outerHTML = listText;
+    });
+
+    // Convert links
+    const links = temp.querySelectorAll('a');
+    links.forEach(link => {
+      const href = link.getAttribute('href');
+      const text = link.textContent;
+      if (href && href !== text) {
+        link.outerHTML = `[${text}](${href})`;
+      } else {
+        link.outerHTML = text;
+      }
+    });
+
+    // Convert strong/bold
+    const strong = temp.querySelectorAll('strong, b');
+    strong.forEach(s => {
+      s.outerHTML = `**${s.textContent}**`;
+    });
+
+    // Convert emphasis/italic
+    const em = temp.querySelectorAll('em, i');
+    em.forEach(e => {
+      e.outerHTML = `*${e.textContent}*`;
+    });
+
+    // Convert code
+    const code = temp.querySelectorAll('code');
+    code.forEach(c => {
+      c.outerHTML = `\`${c.textContent}\``;
+    });
+
+    // Remove remaining HTML tags and get text
+    let markdown = temp.textContent || temp.innerText || '';
+
+    // Clean up whitespace
+    markdown = markdown.replace(/\n\n\n+/g, '\n\n');
+    markdown = markdown.replace(/^\s+|\s+$/g, '');
+
+    return markdown;
+  }
+
   // Handle dropdown functionality for this specific instance
   function initCopyPageButton() {
     // Find all copy page buttons and initialize each one
@@ -210,9 +448,18 @@ const markdownUrl = getMarkdownUrl(pathname);
         }
       });
 
-      // Close dropdown when clicking any menu item
-      const menuItems = menu.querySelectorAll('[role="menuitem"]');
-      menuItems.forEach(item => {
+      // Handle dynamic markdown generation for legal pages
+      const dynamicMarkdownButtons = menu.querySelectorAll('.dynamic-markdown');
+      dynamicMarkdownButtons.forEach(button => {
+        button.addEventListener('click', () => {
+          generateAndDownloadMarkdown();
+          closeDropdown();
+        });
+      });
+
+      // Close dropdown when clicking static menu items
+      const staticMenuItems = menu.querySelectorAll('a[role="menuitem"]');
+      staticMenuItems.forEach(item => {
         item.addEventListener('click', () => {
           closeDropdown();
         });

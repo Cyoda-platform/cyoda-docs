@@ -1,14 +1,9 @@
 ---
 import type { Props } from '@astrojs/starlight/props';
 import Default from '@astrojs/starlight/components/TableOfContents.astro';
-import CopyPageButton from './CopyPageButton.astro';
 ---
 
 <div class="toc-wrapper">
-  <div class="toc-header">
-    <h2>On this page</h2>
-    <CopyPageButton />
-  </div>
   <div class="default-toc">
     <Default {...Astro.props} />
   </div>
@@ -19,35 +14,5 @@ import CopyPageButton from './CopyPageButton.astro';
     /* Inherit all default styles */
   }
 
-  .toc-header {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    margin-bottom: 1rem;
-    gap: 0.5rem;
-  }
-
-  .toc-header h2 {
-    margin: 0;
-    font-size: var(--sl-text-h5);
-    font-weight: 600;
-    color: var(--sl-color-white);
-    line-height: var(--sl-line-height-headings);
-  }
-
-  /* Hide the default TOC heading if it appears */
-  .default-toc :global(h2) {
-    display: none !important;
-  }
-
-  /* Hide any navigation headings */
-  .default-toc :global(nav h2) {
-    display: none !important;
-  }
-
-  /* Hide any headings with specific classes */
-  .default-toc :global(.sl-toc h2),
-  .default-toc :global([data-sl-toc] h2) {
-    display: none !important;
-  }
+  /* Restore default TOC styling */
 </style>

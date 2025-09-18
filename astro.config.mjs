@@ -274,8 +274,6 @@ export default defineConfig({
 				SiteTitle: './src/components/SiteTitle.astro',
 				// Override the table of contents to add copy page button
 				TableOfContents: './src/components/TableOfContents.astro',
-				// Override the mobile table of contents to add copy page button
-				MobileTableOfContents: './src/components/MobileTableOfContents.astro',
 			},
 		}),
 	],
