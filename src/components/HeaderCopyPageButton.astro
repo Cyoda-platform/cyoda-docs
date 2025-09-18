@@ -3,14 +3,15 @@
 ---
 
 <button
-  class="copy-page-button"
+  class="copy-page-button sl-flex"
   data-copy-page-button
   aria-label="Copy page options"
   aria-expanded="false"
   aria-haspopup="true"
+  title="Copy Page for Sharing"
 >
-  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-    <path d="M8 5H6a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2v-1M8 5a2 2 0 002 2h2a2 2 0 002-2M8 5a2 2 0 012-2h2a2 2 0 012 2m0 0h2a2 2 0 012 2v3m2 4H10m0 0l3-3m-3 3l3 3" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+  <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
+    <path d="M14,2H6A2,2 0 0,0 4,4V20A2,2 0 0,0 6,22H18A2,2 0 0,0 20,20V8L14,2M18,20H6V4H13V9H18V20Z"/>
   </svg>
 </button>
 
@@ -25,13 +26,14 @@
     display: flex;
     align-items: center;
     justify-content: center;
-    width: 2.5rem;
-    height: 2.5rem;
-    padding: 0;
+    width: 32px;
+    height: 32px;
+    padding: 8px;
+    margin: -8px;
     background: transparent;
     border: none;
-    border-radius: 0.5rem;
-    color: var(--sl-color-gray-3);
+    border-radius: 0;
+    color: var(--sl-color-accent);
     cursor: pointer;
     transition: all 0.2s ease;
     position: relative;
@@ -39,13 +41,18 @@
 
   .copy-page-button:hover,
   .copy-page-button:focus {
-    color: var(--sl-color-accent);
-    background: var(--sl-color-gray-6);
+    color: var(--sl-color-white);
+    background: rgba(79, 184, 176, 0.2);
+    border-radius: 6px;
+    transform: translateY(-1px);
+    box-shadow: 0 2px 4px rgba(79, 184, 176, 0.2);
   }
 
   .copy-page-button[aria-expanded="true"] {
-    color: var(--sl-color-accent);
-    background: var(--sl-color-gray-6);
+    color: var(--sl-color-white);
+    background: var(--sl-color-accent);
+    border-radius: 6px;
+    box-shadow: 0 2px 4px rgba(79, 184, 176, 0.2);
   }
 
   .copy-page-menu {
@@ -77,13 +84,6 @@
   .copy-page-menu-item:hover {
     background: var(--sl-color-gray-6);
     color: var(--sl-color-white);
-  }
-
-  /* Hide on mobile to avoid clutter */
-  @media (max-width: 49.9rem) {
-    .copy-page-button {
-      display: none;
-    }
   }
 </style>
 

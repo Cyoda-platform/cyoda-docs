@@ -94,3 +94,26 @@
 [data-page-slug="api/reference"] .content-panel {
   max-width: none !important;
 }
+
+/* Hide Starlight's mobile theme selector in navigation sidebar */
+@media (max-width: 50rem) {
+  /* Hide the theme selector using more specific selectors */
+  starlight-theme-select,
+  .sl-theme-select,
+  [data-starlight-theme-select],
+  combobox[aria-label="Select theme"],
+  select[aria-label="Select theme"] {
+    display: none !important;
+  }
+
+  /* Hide any element containing "Select theme" text */
+  *:has(> [aria-label="Select theme"]) {
+    display: none !important;
+  }
+
+  /* Fallback: hide elements with theme-related content */
+  *:has(> combobox),
+  *:has(> select) {
+    display: none !important;
+  }
+}

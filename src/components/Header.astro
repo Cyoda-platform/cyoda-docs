@@ -24,13 +24,13 @@ const shouldRenderSearch =
 		<ApiButton />
 	</div>
 	<div class="sl-flex print:hidden search-area">
-		<HeaderCopyPageButton />
 		{shouldRenderSearch && <Search />}
 	</div>
-	<div class="sl-hidden md:sl-flex print:hidden right-group">
-		<div class="sl-flex social-icons">
+	<div class="sl-flex print:hidden right-group">
+		<div class="sl-hidden md:sl-flex social-icons">
 			<SocialIcons />
 		</div>
+		<HeaderCopyPageButton />
 		<Settings />
 		<LanguageSelect />
 	</div>
@@ -95,6 +95,16 @@ const shouldRenderSearch =
 			content: '';
 			height: 2rem;
 			border-inline-end: 1px solid var(--sl-color-gray-5);
+		}
+
+		/* Enhanced social icon hover effects */
+		.social-icons a:hover,
+		.social-icons a:focus {
+			color: var(--sl-color-white) !important;
+			background: rgba(79, 184, 176, 0.2) !important;
+			border-radius: 6px !important;
+			transform: translateY(-1px);
+			box-shadow: 0 2px 4px rgba(79, 184, 176, 0.2);
 		}
 
 		@media (min-width: 50rem) {
