@@ -95,6 +95,176 @@
         ]
       }
     },
+    "/audit/entity/{entityId}": {
+      "get": {
+        "tags": [
+          "Entity, Audit"
+        ],
+        "summary": "Search audit events for entity",
+        "description": "Retrieves audit events for a specific entity with cursor-based pagination.\nResults are ordered by event utc time (newest first).\nMaximum search period is 180 days. Default period is 10 days when one of the boundaries is not defined.\n",
+        "operationId": "searchEntityAuditEvents",
+        "parameters": [
+          {
+            "name": "entityId",
+            "in": "path",
+            "description": "Identifier of the entity to retrieve audit events for",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          },
+          {
+            "name": "eventType",
+            "in": "query",
+            "description": "Filter by specific audit event types. If not specified, defaults to all event types except System. Note: Including System events may increase latency and load on the system. Use System events filtering with caution. ",
+            "required": false,
+            "schema": {
+              "type": "array",
+              "items": {
+                "type": "string",
+                "enum": [
+                  "StateMachine",
+                  "EntityChange",
+                  "System"
+                ]
+              }
+            }
+          },
+          {
+            "name": "severity",
+            "in": "query",
+            "description": "Filter by event severity level",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "enum": [
+                "ERROR",
+                "INFO",
+                "WARN",
+                "DEBUG"
+              ]
+            }
+          },
+          {
+            "name": "fromUtcTime",
+            "in": "query",
+            "description": "Filter events from this timestamp (inclusive)",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "format": "date-time"
+            }
+          },
+          {
+            "name": "toUtcTime",
+            "in": "query",
+            "description": "Filter events until this timestamp (exclusive)",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "format": "date-time"
+            }
+          },
+          {
+            "name": "transactionId",
+            "in": "query",
+            "description": "Filter by transaction identifier",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "cursor",
+            "in": "query",
+            "description": "Cursor for pagination. Use the `nextCursor` value from the previous response to fetch the next page of results. Omit for the first page. ",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "limit",
+            "in": "query",
+            "description": "Maximum number of audit events to return per page",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "maximum": 1000,
+              "minimum": 1
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Audit events retrieved successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/EntityAuditEventsResponseDto"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Error response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponseDto"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Error response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponseDto"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Error response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponseDto"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Error response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponseDto"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Error response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponseDto"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ]
+      }
+    },
     "/clients": {
       "get": {
         "tags": [
@@ -537,6 +707,215 @@
                     "count": 23452345
                   }
                 ]
+              }
+            }
+          }
+        }
+      }
+    },
+    "/entity/stats/states/{entityName}/{modelVersion}": {
+      "get": {
+        "tags": [
+          "Entity Management"
+        ],
+        "summary": "Retrieve entity statistics by state for a specific model",
+        "description": "Returns statistics for entities of a specific model name and version, grouped by state.",
+        "operationId": "getEntityStatisticsByStateForModel",
+        "parameters": [
+          {
+            "name": "entityName",
+            "in": "path",
+            "description": "Name of the entity model",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "maxLength": 1024,
+              "minLength": 1
+            }
+          },
+          {
+            "name": "modelVersion",
+            "in": "path",
+            "description": "Version number of the entity model",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            },
+            "example": 1
+          },
+          {
+            "name": "pointInTime",
+            "in": "query",
+            "description": "The point-in-time for statistics in ISO 8601 format (e.g., '2035-01-01T12:00:00Z'). Defaults to current consistency time if not provided",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "format": "date-time"
+            }
+          },
+          {
+            "name": "states",
+            "in": "query",
+            "description": "Optional list of states for which to calculate statistics. If not provided, statistics will be calculated for all current workflow states",
+            "required": false,
+            "schema": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              },
+              "uniqueItems": true
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Statistics by state retrieved successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "$ref": "#/components/schemas/ModelStateStatsDto"
+                },
+                "example": [
+                  {
+                    "modelName": "nobel-prize",
+                    "modelVersion": 1,
+                    "state": "AWARDED",
+                    "count": 976
+                  },
+                  {
+                    "modelName": "nobel-prize",
+                    "modelVersion": 1,
+                    "state": "PENDING",
+                    "count": 6
+                  },
+                  {
+                    "modelName": "nobel-prize",
+                    "modelVersion": 1,
+                    "state": "REVOKED",
+                    "count": 0
+                  },
+                  {
+                    "modelName": "nobel-prize",
+                    "modelVersion": 1,
+                    "state": "DECLINED",
+                    "count": 5
+                  }
+                ]
+              }
+            }
+          },
+          "404": {
+            "description": "Entity model not found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetail"
+                },
+                "examples": {
+                  "Model Not Found": {
+                    "description": "Model Not Found",
+                    "value": {
+                      "type": "about:blank",
+                      "title": "Not Found",
+                      "status": 404,
+                      "detail": "cannot find model entityName=submarine, version=1",
+                      "instance": "/api/entity/submarine/1",
+                      "properties": {
+                        "entityName": "submarine",
+                        "entityVersion": 1
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/entity/stats/{entityName}/{modelVersion}": {
+      "get": {
+        "tags": [
+          "Entity Management"
+        ],
+        "summary": "Retrieve entity statistics for a specific model",
+        "description": "Returns statistics for entities of a specific model name and version.",
+        "operationId": "getEntityStatisticsForModel",
+        "parameters": [
+          {
+            "name": "entityName",
+            "in": "path",
+            "description": "Name of the entity model",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "maxLength": 1024,
+              "minLength": 1
+            }
+          },
+          {
+            "name": "modelVersion",
+            "in": "path",
+            "description": "Version number of the entity model",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            },
+            "example": 1
+          },
+          {
+            "name": "pointInTime",
+            "in": "query",
+            "description": "The point-in-time for statistics in ISO 8601 format (e.g., '2035-01-01T12:00:00Z'). Defaults to current consistency time if not provided",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "format": "date-time"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Statistics retrieved successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ModelStatsDto"
+                },
+                "example": {
+                  "modelName": "nobel-prize",
+                  "modelVersion": 1,
+                  "count": 960
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Entity model not found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetail"
+                },
+                "examples": {
+                  "Model Not Found": {
+                    "description": "Model Not Found",
+                    "value": {
+                      "type": "about:blank",
+                      "title": "Not Found",
+                      "status": 404,
+                      "detail": "cannot find model entityName=submarine, version=1",
+                      "instance": "/api/entity/submarine/1",
+                      "properties": {
+                        "entityName": "submarine",
+                        "entityVersion": 1
+                      }
+                    }
+                  }
+                }
               }
             }
           }
@@ -6513,6 +6892,284 @@
           "clientId",
           "creationDate",
           "lastUpdateDate"
+        ]
+      },
+      "AuditActorInfoDto": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "description": "Identifier of the actor"
+          },
+          "legalId": {
+            "type": "string",
+            "description": "Legal entity identifier of the actor"
+          },
+          "name": {
+            "type": "string",
+            "description": "Name of the actor"
+          }
+        },
+        "required": [
+          "id",
+          "legalId"
+        ]
+      },
+      "AuditEventDto": {
+        "type": "object",
+        "discriminator": {
+          "propertyName": "auditEventType"
+        },
+        "properties": {
+          "severity": {
+            "type": "string",
+            "description": "Severity level of the event",
+            "enum": [
+              "ERROR",
+              "INFO",
+              "WARN",
+              "DEBUG"
+            ]
+          },
+          "details": {
+            "type": "string",
+            "description": "Details of the event"
+          },
+          "entityId": {
+            "type": "string",
+            "description": "Identifier of the entity related to this event"
+          },
+          "system": {
+            "type": "boolean",
+            "description": "Flag indicating whether this is a system-level event"
+          },
+          "entityType": {
+            "type": "string",
+            "description": "Type of the entity related to this event (model.version)"
+          },
+          "utcTime": {
+            "type": "string",
+            "format": "date-time",
+            "description": "UTC time when the event occurred"
+          },
+          "microsTime": {
+            "type": "integer",
+            "format": "int64",
+            "description": "time in microseconds when the event occurred"
+          },
+          "actor": {
+            "$ref": "#/components/schemas/AuditActorInfoDto",
+            "description": "Actor related to this event"
+          },
+          "consistencyTime": {
+            "type": "string",
+            "format": "date-time",
+            "description": "Cyoda consistency time"
+          },
+          "transactionId": {
+            "type": "string",
+            "description": "Transaction identifier related to this event"
+          },
+          "auditEventType": {
+            "type": "string",
+            "description": "Type of the audit event, used as discriminator for inherited types",
+            "enum": [
+              "StateMachine",
+              "EntityChange",
+              "System"
+            ]
+          }
+        },
+        "required": [
+          "auditEventType",
+          "microsTime",
+          "severity",
+          "utcTime"
+        ]
+      },
+      "CursorPaginationInfoDto": {
+        "type": "object",
+        "properties": {
+          "hasNext": {
+            "type": "boolean",
+            "description": "Indicates whether there are more results available"
+          },
+          "nextCursor": {
+            "type": "string",
+            "description": "Cursor to use for fetching the next page of results. Can be omit when hasNext is false. "
+          }
+        },
+        "required": [
+          "hasNext"
+        ]
+      },
+      "EntityAuditEventsResponseDto": {
+        "type": "object",
+        "properties": {
+          "pagination": {
+            "$ref": "#/components/schemas/CursorPaginationInfoDto"
+          },
+          "items": {
+            "type": "array",
+            "description": "Audit events for the entity",
+            "items": {
+              "oneOf": [
+                {
+                  "$ref": "#/components/schemas/EntityChangeEventDto"
+                },
+                {
+                  "$ref": "#/components/schemas/StateMachineEventDto"
+                },
+                {
+                  "$ref": "#/components/schemas/SystemEventDto"
+                }
+              ]
+            }
+          }
+        },
+        "required": [
+          "pagination"
+        ]
+      },
+      "EntityChangeEventDto": {
+        "allOf": [
+          {
+            "$ref": "#/components/schemas/AuditEventDto"
+          },
+          {
+            "type": "object",
+            "properties": {
+              "changeType": {
+                "type": "string",
+                "description": "Type of change that occurred",
+                "enum": [
+                  "CREATED",
+                  "UPDATED",
+                  "DELETED"
+                ]
+              },
+              "changes": {
+                "$ref": "#/components/schemas/EntityChangesDto",
+                "description": "Changes made to the entity"
+              }
+            }
+          }
+        ],
+        "required": [
+          "auditEventType",
+          "changeType",
+          "microsTime",
+          "severity",
+          "utcTime"
+        ]
+      },
+      "EntityChangesDto": {
+        "type": "object",
+        "properties": {
+          "before": {
+            "$ref": "#/components/schemas/JsonNode",
+            "description": "Entity before changes"
+          },
+          "after": {
+            "$ref": "#/components/schemas/JsonNode",
+            "description": "Entity after changes"
+          }
+        }
+      },
+      "StateMachineEventDto": {
+        "allOf": [
+          {
+            "$ref": "#/components/schemas/AuditEventDto"
+          },
+          {
+            "type": "object",
+            "properties": {
+              "state": {
+                "type": "string",
+                "description": "State of the entity where the event occurred within the state machine"
+              },
+              "eventType": {
+                "type": "string",
+                "description": "Type of the state machine event"
+              },
+              "workflowName": {
+                "type": "string",
+                "description": "Name of the related workflow, if any"
+              },
+              "transitionName": {
+                "type": "string",
+                "description": "Name of the related transition, if any"
+              },
+              "processorName": {
+                "type": "string",
+                "description": "Name of the related processor, if any"
+              },
+              "criteriaName": {
+                "type": "string",
+                "description": "Name of the related criteria, if any"
+              },
+              "targetState": {
+                "type": "string",
+                "description": "Name of the target state, if any"
+              },
+              "resultType": {
+                "type": "string",
+                "description": "Result of the state machine execution, if any"
+              }
+            }
+          }
+        ],
+        "required": [
+          "auditEventType",
+          "eventType",
+          "microsTime",
+          "severity",
+          "state",
+          "utcTime"
+        ]
+      },
+      "SystemEventDto": {
+        "allOf": [
+          {
+            "$ref": "#/components/schemas/AuditEventDto"
+          },
+          {
+            "type": "object",
+            "properties": {
+              "errorTime": {
+                "type": "string",
+                "format": "date-time",
+                "description": "Time when an error occurred, if applicable"
+              },
+              "doneTime": {
+                "type": "string",
+                "format": "date-time",
+                "description": "Time when the operation completed, if applicable"
+              },
+              "queueName": {
+                "type": "string",
+                "description": "Name of the queue involved in the operation, if applicable"
+              },
+              "shardId": {
+                "type": "string",
+                "description": "Identifier of the shard involved in the operation, if applicable"
+              },
+              "status": {
+                "type": "string",
+                "description": "Status of the system operation, if applicable"
+              },
+              "data": {
+                "$ref": "#/components/schemas/JsonNode",
+                "description": "Object containing specific event data with technical information"
+              }
+            }
+          }
+        ],
+        "required": [
+          "auditEventType",
+          "microsTime",
+          "severity",
+          "utcTime"
         ]
       },
       "LegalEntityInfoDto": {
