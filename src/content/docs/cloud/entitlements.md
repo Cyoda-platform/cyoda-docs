@@ -17,7 +17,7 @@ Access to Cyoda Cloud is subscription-tier-based. This document provides details
 - **Current Account Information**: `GET /account` - Retrieve information about the current user's account, including current subscription
 - **All Available Subscriptions**: `GET /account/subscriptions` - Retrieve all subscriptions available for the current user's legal entity
 
-For complete API documentation, refer to the OpenAPI specification.
+For complete API documentation, refer to the [OpenAPI specification](/api-reference/).
 
 ## Subscription Tiers Overview
 

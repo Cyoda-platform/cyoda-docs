@@ -2,6 +2,7 @@ import { defineConfig } from 'astro/config';
 import starlight from '@astrojs/starlight';
 import rehypeMermaid from 'rehype-mermaid';
 import cookieconsent from '@jop-software/astro-cookieconsent';
+import react from '@astrojs/react';
 import dotenv from 'dotenv';
 
 // Load environment variables from .env file
@@ -63,6 +64,7 @@ export default defineConfig({
 		]
 	},
 	integrations: [
+		react(),
 		cookieconsent({
 			cookie: {
 				useLocalStorage: true,
@@ -261,6 +263,11 @@ export default defineConfig({
 					label: 'Cloud Info',
 					collapsed: true,
 					autogenerate: { directory: 'cloud' }
+				},
+				{
+					label: 'JSON Schemas',
+					collapsed: true,
+					autogenerate: { directory: 'schemas' }
 				},
 			],
 			components: {
