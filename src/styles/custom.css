@@ -117,3 +117,132 @@
     display: none !important;
   }
 }
+
+/* JSON Schema Viewer Styling */
+.json-schema-viewer-wrapper {
+  margin: var(--base-size-24, 1.5rem) 0;
+  border: 1px solid var(--sl-color-gray-5);
+  border-radius: var(--base-border-radius-medium, 6px);
+  overflow: hidden;
+  background-color: var(--sl-color-bg);
+  padding: var(--base-size-16, 1rem);
+}
+
+.json-schema-viewer-wrapper .schema-header h3 {
+  margin: 0 0 var(--base-size-8, 0.5rem) 0;
+  color: var(--cyoda-aqua);
+  font-size: var(--base-text-size-20, 1.25rem);
+}
+
+.json-schema-viewer-wrapper .schema-description {
+  margin: 0 0 var(--base-size-16, 1rem) 0;
+  color: var(--sl-color-text-accent);
+  font-style: italic;
+}
+
+.json-schema-viewer-wrapper .schema-property {
+  margin: var(--base-size-8, 0.5rem) 0;
+  padding: var(--base-size-8, 0.5rem);
+  border-left: 2px solid var(--sl-color-gray-5);
+}
+
+.json-schema-viewer-wrapper .property-header {
+  display: flex;
+  align-items: center;
+  gap: var(--base-size-8, 0.5rem);
+  margin-bottom: var(--base-size-4, 0.25rem);
+}
+
+.json-schema-viewer-wrapper .expand-button {
+  background: none;
+  border: none;
+  color: var(--sl-color-text);
+  cursor: pointer;
+  padding: 0;
+  font-size: var(--base-text-size-12, 0.75rem);
+  width: 16px;
+  height: 16px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.json-schema-viewer-wrapper .expand-button:hover {
+  color: var(--cyoda-aqua);
+}
+
+.json-schema-viewer-wrapper .property-name {
+  color: var(--cyoda-aqua);
+  font-weight: var(--base-text-weight-semibold, 600);
+  font-family: var(--sl-font-mono);
+}
+
+.json-schema-viewer-wrapper .property-type {
+  color: var(--sl-color-text-accent);
+  font-family: var(--sl-font-mono);
+  font-size: var(--base-text-size-14, 0.875rem);
+  background-color: var(--sl-color-gray-6);
+  padding: 2px 8px;
+  border-radius: var(--base-border-radius-small, 3px);
+}
+
+.json-schema-viewer-wrapper .property-ref-link {
+  color: var(--cyoda-aqua);
+  text-decoration: none;
+  font-weight: var(--base-text-weight-semibold, 600);
+  transition: all 0.2s ease;
+}
+
+.json-schema-viewer-wrapper .property-ref-link:hover {
+  text-decoration: underline;
+  color: var(--sl-color-text-accent);
+}
+
+.json-schema-viewer-wrapper .required-badge {
+  background-color: var(--cyoda-aqua-light);
+  color: var(--cyoda-aqua-dark);
+  padding: 2px 8px;
+  border-radius: var(--base-border-radius-small, 3px);
+  font-size: var(--base-text-size-12, 0.75rem);
+  font-weight: var(--base-text-weight-semibold, 600);
+}
+
+.json-schema-viewer-wrapper .property-description {
+  color: var(--sl-color-text);
+  line-height: 1.6;
+  margin: var(--base-size-4, 0.25rem) 0;
+  font-size: var(--base-text-size-14, 0.875rem);
+}
+
+.json-schema-viewer-wrapper .property-enum {
+  color: var(--sl-color-text-accent);
+  font-size: var(--base-text-size-14, 0.875rem);
+  margin: var(--base-size-4, 0.25rem) 0;
+}
+
+.json-schema-viewer-wrapper .nested-properties,
+.json-schema-viewer-wrapper .array-items {
+  margin-top: var(--base-size-8, 0.5rem);
+}
+
+.json-schema-viewer-wrapper .property-label {
+  font-weight: var(--base-text-weight-medium, 500);
+  color: var(--sl-color-text-accent);
+  margin-bottom: var(--base-size-4, 0.25rem);
+}
+
+.json-schema-viewer-wrapper .schema-simple {
+  padding: var(--base-size-16, 1rem);
+}
+
+.json-schema-viewer-wrapper .property-type-info {
+  margin-bottom: var(--base-size-8, 0.5rem);
+  font-size: var(--base-text-size-16, 1rem);
+}
+
+.json-schema-viewer-wrapper code {
+  background-color: var(--sl-color-gray-6);
+  padding: 2px 6px;
+  border-radius: var(--base-border-radius-small, 3px);
+  font-family: var(--sl-font-mono);
+}

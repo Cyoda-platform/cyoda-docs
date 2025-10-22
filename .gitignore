@@ -6,6 +6,9 @@ dist/
 # generated types
 .astro/
 
+# auto-generated schema documentation pages (all MDX files in schemas/)
+src/content/docs/schemas/**/*.mdx
+
 # dependencies
 node_modules/
 
