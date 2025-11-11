@@ -1121,6 +1121,122 @@
         }
       }
     },
+    "/entity/{entityId}/changes": {
+      "get": {
+        "tags": [
+          "Entity Management"
+        ],
+        "summary": "Get Entity Changes Metadata",
+        "description": "\nRetrieves the change history metadata for a specific entity.\n\nReturns a stream of metadata records describing each change made to the entity, including:\n- Transaction ID that made the change\n- Timestamp when the change occurred\n- User who made the change\n- Type of change (CREATE, UPDATE, DELETE)\n- Number of fields changed\n\nCommon use cases:\n- Audit trail review\n- Change tracking\n- Compliance reporting\n- Debugging entity state changes\n\nNote:\n- Changes are returned in chronological order\n- The pointInTime parameter allows viewing the change history as it existed at a specific time\n        ",
+        "operationId": "getEntityChangesMetadata",
+        "parameters": [
+          {
+            "name": "entityId",
+            "in": "path",
+            "description": "The unique identifier (UUID) of the entity to get change history for",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            },
+            "example": "1d1e1b10-1155-11f0-bcd5-ae468cd3ed16"
+          },
+          {
+            "name": "pointInTime",
+            "in": "query",
+            "description": "The point-in-time for loading the entity changes, in ISO 8601 format (e.g., '2035-01-01T12:00:00Z'). Defaults to the current consistency time of the system if not provided.",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "format": "date-time"
+            },
+            "example": "2035-01-01T12:00:00Z"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successfully retrieved entity changes metadata",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "$ref": "#/components/schemas/EntityChangeMeta"
+                },
+                "examples": {
+                  "Entity Change History": {
+                    "description": "Entity Change History",
+                    "value": [
+                      {
+                        "transactionId": "733e7180-c055-11ef-a357-ae468cd3ed16",
+                        "timeOfChange": "2024-12-15T10:30:00Z",
+                        "user": "admin@cyoda.com",
+                        "changeType": "CREATE",
+                        "fieldsChangedCount": 5
+                      },
+                      {
+                        "transactionId": "8a4f2b90-c055-11ef-a357-ae468cd3ed16",
+                        "timeOfChange": "2024-12-16T14:22:30Z",
+                        "user": "editor@cyoda.com",
+                        "changeType": "UPDATE",
+                        "fieldsChangedCount": 2
+                      },
+                      {
+                        "transactionId": "9c5d3ca0-c055-11ef-a357-ae468cd3ed16",
+                        "timeOfChange": "2024-12-17T09:15:45Z",
+                        "user": "admin@cyoda.com",
+                        "changeType": "UPDATE",
+                        "fieldsChangedCount": 1
+                      }
+                    ]
+                  }
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Entity not found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetail"
+                },
+                "example": {
+                  "type": "about:blank",
+                  "title": "Not Found",
+                  "status": 404,
+                  "detail": "entity id=2ed54d80-f3c2-11ee-9e63-ae468cd3ed16 not found",
+                  "instance": "/api/entity/2ed54d80-f3c2-11ee-9e63-ae468cd3ed16",
+                  "properties": {
+                    "entityId": "2ed54d80-f3c2-11ee-9e63-ae468cd3ed16"
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid UUID format",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetail"
+                },
+                "example": {
+                  "type": "about:blank",
+                  "title": "Bad Request",
+                  "status": 400,
+                  "detail": "Invalid value 'not-a-uuid' for parameter 'entityId'",
+                  "instance": "/api/entity/2ed54d80-f3c2-11ee-9e63-ae468cd3ed16",
+                  "properties": {
+                    "parameter": "entityId",
+                    "invalidValue": "not-a-uuid"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/entity/{entityName}/{modelVersion}": {
       "get": {
         "tags": [
@@ -1166,14 +1282,14 @@
           {
             "name": "pageNumber",
             "in": "query",
-            "description": "Page number to retrieve, starting from 1. Must be greater than 0.",
+            "description": "Page number to retrieve, starting from 0. Must be greater than or equal to 0.",
             "required": false,
             "schema": {
               "type": "integer",
               "format": "int32",
-              "default": 1
+              "default": 0
             },
-            "example": 1
+            "example": 0
           },
           {
             "name": "pointInTime",
@@ -2435,12 +2551,39 @@
                 "type": "string"
               },
               "examples": {
-                "Nobel Prize Announcement": {
-                  "description": "Nobel Prize Announcement",
+                "Nobel Prize Announcement (with payload and meta-data)": {
+                  "description": "Nobel Prize Announcement (with payload and meta-data)",
                   "value": {
-                    "eventType": "nobel.prize.announced",
-                    "timestamp": "2024-10-09T12:00:00Z",
-                    "data": {
+                    "meta-data": {
+                      "eventType": "nobel.prize.announced",
+                      "timestamp": "2024-10-09T12:00:00Z"
+                    },
+                    "payload": {
+                      "category": "physics",
+                      "year": "2024",
+                      "laureates": [
+                        {
+                          "firstname": "John",
+                          "surname": "Hopfield",
+                          "id": "1037",
+                          "motivation": "for foundational discoveries and inventions that enable machine learning with artificial neural networks",
+                          "share": "2"
+                        },
+                        {
+                          "firstname": "Geoffrey",
+                          "surname": "Hinton",
+                          "id": "1038",
+                          "motivation": "for foundational discoveries and inventions that enable machine learning with artificial neural networks",
+                          "share": "2"
+                        }
+                      ]
+                    }
+                  }
+                },
+                "Nobel Prize Announcement (with payload but without meta-data)": {
+                  "description": "Nobel Prize Announcement (with payload but without meta-data)",
+                  "value": {
+                    "payload": {
                       "category": "physics",
                       "year": "2024",
                       "laureates": [
@@ -6804,6 +6947,39 @@
           }
         }
       },
+      "EntityChangeMeta": {
+        "type": "object",
+        "properties": {
+          "transactionId": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "timeOfChange": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "user": {
+            "type": "string"
+          },
+          "changeType": {
+            "type": "string",
+            "enum": [
+              "CREATE",
+              "UPDATE",
+              "DELETE"
+            ]
+          },
+          "fieldsChangedCount": {
+            "type": "integer",
+            "format": "int32"
+          }
+        },
+        "required": [
+          "changeType",
+          "timeOfChange",
+          "user"
+        ]
+      },
       "ModelStatsDto": {
         "type": "object",
         "properties": {
@@ -6931,17 +7107,27 @@
               "DEBUG"
             ]
           },
-          "details": {
+          "auditEventType": {
             "type": "string",
-            "description": "Details of the event"
+            "description": "Type of the audit event, used as discriminator for inherited types",
+            "enum": [
+              "StateMachine",
+              "EntityChange",
+              "System"
+            ]
+          },
+          "consistencyTime": {
+            "type": "string",
+            "format": "date-time",
+            "description": "Cyoda consistency time"
+          },
+          "transactionId": {
+            "type": "string",
+            "description": "Transaction identifier related to this event"
           },
           "entityId": {
             "type": "string",
             "description": "Identifier of the entity related to this event"
-          },
-          "system": {
-            "type": "boolean",
-            "description": "Flag indicating whether this is a system-level event"
           },
           "entityType": {
             "type": "string",
@@ -6961,23 +7147,13 @@
             "$ref": "#/components/schemas/AuditActorInfoDto",
             "description": "Actor related to this event"
           },
-          "consistencyTime": {
+          "details": {
             "type": "string",
-            "format": "date-time",
-            "description": "Cyoda consistency time"
+            "description": "Details of the event"
           },
-          "transactionId": {
-            "type": "string",
-            "description": "Transaction identifier related to this event"
-          },
-          "auditEventType": {
-            "type": "string",
-            "description": "Type of the audit event, used as discriminator for inherited types",
-            "enum": [
-              "StateMachine",
-              "EntityChange",
-              "System"
-            ]
+          "system": {
+            "type": "boolean",
+            "description": "Flag indicating whether this is a system-level event"
           }
         },
         "required": [
