@@ -3060,7 +3060,7 @@
           "200": {
             "description": "Confirmation of successful deletion",
             "content": {
-              "application/json": {
+              "text/plain": {
                 "schema": {
                   "type": "string"
                 },
@@ -3148,7 +3148,7 @@
           "200": {
             "description": "Change level successfully updated",
             "content": {
-              "application/json": {
+              "text/plain": {
                 "schema": {
                   "type": "string"
                 },
@@ -3220,7 +3220,7 @@
           "200": {
             "description": "Model successfully locked",
             "content": {
-              "application/json": {
+              "text/plain": {
                 "schema": {
                   "type": "string"
                 },
@@ -3292,7 +3292,7 @@
           "200": {
             "description": "Model successfully unlocked",
             "content": {
-              "application/json": {
+              "text/plain": {
                 "schema": {
                   "type": "string"
                 },
@@ -7109,6 +7109,22 @@
               "DEBUG"
             ]
           },
+          "details": {
+            "type": "string",
+            "description": "Details of the event"
+          },
+          "entityType": {
+            "type": "string",
+            "description": "Type of the entity related to this event (model.version)"
+          },
+          "system": {
+            "type": "boolean",
+            "description": "Flag indicating whether this is a system-level event"
+          },
+          "entityId": {
+            "type": "string",
+            "description": "Identifier of the entity related to this event"
+          },
           "utcTime": {
             "type": "string",
             "format": "date-time",
@@ -7123,21 +7139,14 @@
             "$ref": "#/components/schemas/AuditActorInfoDto",
             "description": "Actor related to this event"
           },
-          "details": {
+          "transactionId": {
             "type": "string",
-            "description": "Details of the event"
+            "description": "Transaction identifier related to this event"
           },
-          "system": {
-            "type": "boolean",
-            "description": "Flag indicating whether this is a system-level event"
-          },
-          "entityId": {
+          "consistencyTime": {
             "type": "string",
-            "description": "Identifier of the entity related to this event"
-          },
-          "entityType": {
-            "type": "string",
-            "description": "Type of the entity related to this event (model.version)"
+            "format": "date-time",
+            "description": "Cyoda consistency time"
           },
           "auditEventType": {
             "type": "string",
@@ -7147,15 +7156,6 @@
               "EntityChange",
               "System"
             ]
-          },
-          "consistencyTime": {
-            "type": "string",
-            "format": "date-time",
-            "description": "Cyoda consistency time"
-          },
-          "transactionId": {
-            "type": "string",
-            "description": "Transaction identifier related to this event"
           }
         },
         "required": [
