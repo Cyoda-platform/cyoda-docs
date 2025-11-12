@@ -2621,12 +2621,14 @@
                 "examples": {
                   "Transaction Response": {
                     "description": "Transaction Response",
-                    "value": {
-                      "entityIds": [
-                        "8824c480-c166-11ee-bf9f-ae468cd3ed16"
-                      ],
-                      "success": true
-                    }
+                    "value": [
+                      {
+                        "entityIds": [
+                          "8824c480-c166-11ee-bf9f-ae468cd3ed16"
+                        ],
+                        "success": true
+                      }
+                    ]
                   }
                 }
               }
@@ -7107,32 +7109,6 @@
               "DEBUG"
             ]
           },
-          "auditEventType": {
-            "type": "string",
-            "description": "Type of the audit event, used as discriminator for inherited types",
-            "enum": [
-              "StateMachine",
-              "EntityChange",
-              "System"
-            ]
-          },
-          "consistencyTime": {
-            "type": "string",
-            "format": "date-time",
-            "description": "Cyoda consistency time"
-          },
-          "transactionId": {
-            "type": "string",
-            "description": "Transaction identifier related to this event"
-          },
-          "entityId": {
-            "type": "string",
-            "description": "Identifier of the entity related to this event"
-          },
-          "entityType": {
-            "type": "string",
-            "description": "Type of the entity related to this event (model.version)"
-          },
           "utcTime": {
             "type": "string",
             "format": "date-time",
@@ -7154,6 +7130,32 @@
           "system": {
             "type": "boolean",
             "description": "Flag indicating whether this is a system-level event"
+          },
+          "entityId": {
+            "type": "string",
+            "description": "Identifier of the entity related to this event"
+          },
+          "entityType": {
+            "type": "string",
+            "description": "Type of the entity related to this event (model.version)"
+          },
+          "auditEventType": {
+            "type": "string",
+            "description": "Type of the audit event, used as discriminator for inherited types",
+            "enum": [
+              "StateMachine",
+              "EntityChange",
+              "System"
+            ]
+          },
+          "consistencyTime": {
+            "type": "string",
+            "format": "date-time",
+            "description": "Cyoda consistency time"
+          },
+          "transactionId": {
+            "type": "string",
+            "description": "Transaction identifier related to this event"
           }
         },
         "required": [
