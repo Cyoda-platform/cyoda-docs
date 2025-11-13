@@ -3060,14 +3060,22 @@
           "200": {
             "description": "Confirmation of successful deletion",
             "content": {
-              "text/plain": {
+              "application/json": {
                 "schema": {
-                  "type": "string"
+                  "$ref": "#/components/schemas/EntityModelActionResultDto"
                 },
                 "examples": {
                   "success": {
                     "description": "success",
-                    "value": "model nobel-prize:1 deleted"
+                    "value": {
+                      "success": true,
+                      "modelKey": {
+                        "name": "nobel-prize",
+                        "version": 1
+                      },
+                      "message": "model nobel-prize:1 deleted",
+                      "modelId": "cee334fa-c0ac-11f0-ba79-ae468cd3ed16"
+                    }
                   }
                 }
               }
@@ -3148,14 +3156,22 @@
           "200": {
             "description": "Change level successfully updated",
             "content": {
-              "text/plain": {
+              "application/json": {
                 "schema": {
-                  "type": "string"
+                  "$ref": "#/components/schemas/EntityModelActionResultDto"
                 },
                 "examples": {
                   "success": {
                     "description": "success",
-                    "value": "model nobel-prize:1 now at change level ARRAY_ELEMENTS"
+                    "value": {
+                      "success": true,
+                      "modelKey": {
+                        "name": "nobel-prize",
+                        "version": 1
+                      },
+                      "message": "model nobel-prize:1 now at change level TYPE",
+                      "modelId": "cee334fa-c0ac-11f0-ba79-ae468cd3ed16"
+                    }
                   }
                 }
               }
@@ -3220,14 +3236,22 @@
           "200": {
             "description": "Model successfully locked",
             "content": {
-              "text/plain": {
+              "application/json": {
                 "schema": {
-                  "type": "string"
+                  "$ref": "#/components/schemas/EntityModelActionResultDto"
                 },
                 "examples": {
                   "success": {
                     "description": "success",
-                    "value": "Model nobel-prize:1 locked"
+                    "value": {
+                      "success": true,
+                      "modelKey": {
+                        "name": "nobel-prize",
+                        "version": 1
+                      },
+                      "message": "Model nobel-prize:1 locked",
+                      "modelId": "cee334fa-c0ac-11f0-ba79-ae468cd3ed16"
+                    }
                   }
                 }
               }
@@ -3292,14 +3316,22 @@
           "200": {
             "description": "Model successfully unlocked",
             "content": {
-              "text/plain": {
+              "application/json": {
                 "schema": {
-                  "type": "string"
+                  "$ref": "#/components/schemas/EntityModelActionResultDto"
                 },
                 "examples": {
                   "success": {
                     "description": "success",
-                    "value": "Model nobel-prize:1 unlocked"
+                    "value": {
+                      "success": true,
+                      "modelKey": {
+                        "name": "nobel-prize",
+                        "version": 1
+                      },
+                      "message": "Model nobel-prize:1 unlocked",
+                      "modelId": "cee334fa-c0ac-11f0-ba79-ae468cd3ed16"
+                    }
                   }
                 }
               }
@@ -6277,6 +6309,46 @@
           "isCancelled"
         ]
       },
+      "EntityModelActionResultDto": {
+        "type": "object",
+        "properties": {
+          "success": {
+            "type": "boolean"
+          },
+          "modelKey": {
+            "$ref": "#/components/schemas/EntityModelKey"
+          },
+          "message": {
+            "type": "string"
+          },
+          "modelId": {
+            "type": "string",
+            "format": "uuid"
+          }
+        },
+        "required": [
+          "message",
+          "modelId",
+          "modelKey",
+          "success"
+        ]
+      },
+      "EntityModelKey": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string"
+          },
+          "version": {
+            "type": "integer",
+            "format": "int32"
+          }
+        },
+        "required": [
+          "name",
+          "version"
+        ]
+      },
       "EntityTransactionResponse": {
         "type": "object",
         "properties": {
@@ -7109,21 +7181,31 @@
               "DEBUG"
             ]
           },
-          "details": {
+          "auditEventType": {
             "type": "string",
-            "description": "Details of the event"
+            "description": "Type of the audit event, used as discriminator for inherited types",
+            "enum": [
+              "StateMachine",
+              "EntityChange",
+              "System"
+            ]
           },
-          "entityType": {
+          "consistencyTime": {
             "type": "string",
-            "description": "Type of the entity related to this event (model.version)"
+            "format": "date-time",
+            "description": "Cyoda consistency time"
           },
-          "system": {
-            "type": "boolean",
-            "description": "Flag indicating whether this is a system-level event"
+          "transactionId": {
+            "type": "string",
+            "description": "Transaction identifier related to this event"
           },
           "entityId": {
             "type": "string",
             "description": "Identifier of the entity related to this event"
+          },
+          "entityType": {
+            "type": "string",
+            "description": "Type of the entity related to this event (model.version)"
           },
           "utcTime": {
             "type": "string",
@@ -7139,23 +7221,13 @@
             "$ref": "#/components/schemas/AuditActorInfoDto",
             "description": "Actor related to this event"
           },
-          "transactionId": {
+          "details": {
             "type": "string",
-            "description": "Transaction identifier related to this event"
+            "description": "Details of the event"
           },
-          "consistencyTime": {
-            "type": "string",
-            "format": "date-time",
-            "description": "Cyoda consistency time"
-          },
-          "auditEventType": {
-            "type": "string",
-            "description": "Type of the audit event, used as discriminator for inherited types",
-            "enum": [
-              "StateMachine",
-              "EntityChange",
-              "System"
-            ]
+          "system": {
+            "type": "boolean",
+            "description": "Flag indicating whether this is a system-level event"
           }
         },
         "required": [
@@ -7565,22 +7637,6 @@
         "required": [
           "deleteResult",
           "entityModelClassId"
-        ]
-      },
-      "EntityModelKey": {
-        "type": "object",
-        "properties": {
-          "name": {
-            "type": "string"
-          },
-          "version": {
-            "type": "integer",
-            "format": "int32"
-          }
-        },
-        "required": [
-          "name",
-          "version"
         ]
       },
       "SingleDeleteResult": {
