@@ -104,12 +104,8 @@
 
     async loadTurndown() {
       try {
-        // Load Turndown from CDN
-        const TurndownModule = await import('https://unpkg.com/turndown@7.2.1/dist/turndown.js');
-        const TurndownService = TurndownModule.default;
-
-        // Load GFM plugin
-        const gfmModule = await import('https://unpkg.com/turndown-plugin-gfm@1.0.2/dist/turndown-plugin-gfm.js');
+        // Use jsdelivr CDN which is more reliable for ES modules
+        const TurndownService = (await import('https://cdn.jsdelivr.net/npm/turndown@7.2.0/+esm')).default;
 
         // Create and configure Turndown service
         this.turndownService = new TurndownService({
@@ -124,9 +120,14 @@
           linkReferenceStyle: 'full'
         });
 
-        // Add GitHub Flavored Markdown support
-        if (gfmModule.gfm) {
-          this.turndownService.use(gfmModule.gfm);
+        // Try to load GFM plugin (optional)
+        try {
+          const gfmModule = await import('https://cdn.jsdelivr.net/npm/turndown-plugin-gfm@1.0.2/+esm');
+          if (gfmModule.gfm) {
+            this.turndownService.use(gfmModule.gfm);
+          }
+        } catch (gfmError) {
+          console.warn('GFM plugin not loaded, continuing without it:', gfmError);
         }
 
         // Add custom rules

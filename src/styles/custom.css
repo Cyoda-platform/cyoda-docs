@@ -2,6 +2,28 @@
 /* This file contains component-specific styles that complement the Primer-based branding */
 /* Performance optimizations moved to critical.css for better loading */
 
+/* Prevent layout shift from lazy-loaded images */
+.sl-markdown-content img {
+  /* Ensure images maintain aspect ratio and don't cause layout shifts */
+  display: block;
+  max-width: 100%;
+  height: auto;
+  /* Add a subtle background while loading */
+  background-color: var(--sl-color-gray-6);
+  /* Smooth transition when image loads */
+  transition: background-color 0.3s ease;
+}
+
+.sl-markdown-content img[loading="lazy"] {
+  /* Reserve minimum height for lazy-loaded images to prevent layout shift */
+  min-height: 200px;
+}
+
+.sl-markdown-content img[src] {
+  /* Remove background once image is loaded */
+  background-color: transparent;
+}
+
 /* Footer styling */
 .footer {
   border-top: 1px solid var(--cyoda-aqua-medium);
