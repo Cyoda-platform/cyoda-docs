@@ -63,9 +63,9 @@ You need a technical user to access your Cyoda Cloud API outside of the UI (Cyod
 ### Creation Process
 
 1. **Login Requirement**: You must be logged into the AI Assistant
-2. **Request Technical User**: Prompt the AI Assistant with your environment name and request to create a technical user
+2. **Request Technical User**: Prompt the AI Assistant with your environment name and request to create a new technical user
    ```
-   Example prompt: "Please create a technical user for my environment [your-environment-url]"
+   Example prompt: "add new machine user"
    ```
 3. **Receive Credentials**: The AI Assistant will provide:
     - **Client ID**: Unique identifier for your technical user

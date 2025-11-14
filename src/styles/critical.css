@@ -8,7 +8,7 @@
   --cyoda-aqua-rgb: 79, 184, 176;
   --cyoda-aqua-light: rgba(79, 184, 176, 0.1);
   --cyoda-aqua-medium: rgba(79, 184, 176, 0.2);
-  
+
   /* Essential Starlight mappings */
   --sl-color-accent: var(--cyoda-aqua);
   --sl-color-accent-low: var(--cyoda-aqua-light);
@@ -28,8 +28,12 @@
 }
 
 /* Critical performance optimizations */
+/* Removed content-visibility: auto from images to prevent flickering with lazy loading */
 img {
-  content-visibility: auto;
+  /* Reserve space for images to prevent layout shift */
+  display: block;
+  max-width: 100%;
+  height: auto;
 }
 
 /* Essential font loading optimization */

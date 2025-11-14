@@ -9,11 +9,12 @@ import { Image } from 'astro:assets';
 import { Aside } from '@astrojs/starlight/components';
 import aiAssistantConsent from '../../../assets/env-provisioning-flow/01-ai-assistant-consent.webp';
 import aiAssistantGreet from '../../../assets/env-provisioning-flow/02-ai-assistant-greet.webp';
-import deployEnvPrompt from '../../../assets/env-provisioning-flow/03-deploy-env-prompt.webp';
-import envDeployedConfirmation from '../../../assets/env-provisioning-flow/04-env-deployed-confirmation.webp';
-import createTechnicalUser from '../../../assets/env-provisioning-flow/05-create-technical-user.webp';
-import loginCyodaUI from '../../../assets/env-provisioning-flow/06-login-cyoda-ui.webp';
-import loggedIn from '../../../assets/env-provisioning-flow/07-logged-in.webp';
+import whatIsMyEnvironment from '../../../assets/env-provisioning-flow/03-get-env-url.webp';
+import deployEnvPrompt from '../../../assets/env-provisioning-flow/04-deploy-env-prompt.webp';
+import envDeployedConfirmation from '../../../assets/env-provisioning-flow/05-env-deployed-confirmation.webp';
+import createTechnicalUser from '../../../assets/env-provisioning-flow/06-create-technical-user.webp';
+import loginCyodaUI from '../../../assets/env-provisioning-flow/07-login-cyoda-ui.webp';
+import loggedIn from '../../../assets/env-provisioning-flow/08-logged-in.webp';
 
 Getting your first Cyoda Cloud Free Tier environment is very straightforward. Simply follow the steps below.
 
@@ -21,9 +22,10 @@ Getting your first Cyoda Cloud Free Tier environment is very straightforward. Si
 
 <Aside type="note" title="Provisioning your first Cyoda Cloud Environment">
 1. Create an account on [https://ai.cyoda.net](https://ai.cyoda.net)
-2. Deploy an environment by prompting the AI Assistant with: `Please deploy my Cyoda environment`
-3. Create a technical user by prompting the AI Assistant with: `Please create a technical user for my environment`
-4. Access your environment via the Cyoda UI or APIs
+2. Find out your environment by prompting the AI Assistant with: `What is my environment URL?`
+3. Deploy your environment by prompting the AI Assistant with: `Deploy my Cyoda environment`
+4. Create a technical user by prompting the AI Assistant with: `Add machine user`
+5. Access your environment via the Cyoda UI or APIs
 </Aside>
 
 ## Create an Account
@@ -40,24 +42,30 @@ Getting your first Cyoda Cloud Free Tier environment is very straightforward. Si
 3. **Complete Registration**: Follow the Auth0 authentication flow to complete your account setup
 4. **Free Tier Access**: Upon successful registration, you'll be automatically enrolled in the Free Tier subscription
 
-## Deploy an Environment
+## Know your Environment
 
-Prompt the AI Assistant with: `Please deploy my Cyoda environment`. Wait a bit. Then confirm the deployment if requested.
+Prompt the AI Assistant with: `What is my environment URL?`. Wait a bit.
 
-<Image src={deployEnvPrompt} alt="Deploy Env Prompt" width={800} height={600} loading="lazy" />
+<Image src={whatIsMyEnvironment} alt="What is my environment URL Prompt" width={800} height={600} loading="lazy" />
 
 
-**Save your Environment URL**: The AI Assistant will provide you with your environment URL. Write it down, you'll need it to access your environment.
+## Deploy your Environment
 
-Wait for the deployment to complete.
+Prompt the AI Assistant with: `Deploy my environment`.
+
+Wait for the deployment to complete. It usually takes about 5 minutes.
+
+<Image src={deployEnvPrompt} alt="Deploy Environment Prompt" width={800} height={600} loading="lazy" />
 
 <Image src={envDeployedConfirmation} alt="Environment Deployed Confirmation" width={800} height={600} loading="lazy" />
 
 ## Create a Technical User
 
-**Create a technical user (M2M client)**: Prompt the AI Assistant with: "Please create a technical user for my environment". You will see a button to launch the query against your env to create a new user. Write down the client ID and secret - you'll need them to access your environment.
+**Create a technical user (M2M client)**: Prompt the AI Assistant with: "Add machine user".
+You will see a button to launch the query against your env to create a new user.
+Write down the client ID and secret - you'll need them to access your environment.
 
-<Image src={createTechnicalUser} alt="Create Technical User Prompt" width={800} height={600} loading="lazy" />
+<Image src={createTechnicalUser} alt="Add Machine User Prompt" width={800} height={600} loading="lazy" />
 
 
 ## Access the Environment
