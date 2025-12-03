@@ -40,6 +40,10 @@
       "description": "Endpoints for monitoring CQL query execution performance and statistics"
     },
     {
+      "name": "Stream Data",
+      "description": "Endpoints for streaming data operations, configuration management, and query planning"
+    },
+    {
       "name": "SQL-Schema",
       "description": "Operations for managing SQL schemas and tables"
     }
@@ -2322,82 +2326,69 @@
         }
       }
     },
-    "/message/get/{messageId}": {
-      "get": {
+    "/message": {
+      "delete": {
         "tags": [
           "Edge message"
         ],
-        "summary": "Retrieve an edge message by ID",
-        "description": "Fetches a stored edge message using its unique identifier, including all message metadata and payload",
-        "operationId": "getMessage",
+        "summary": "Delete multiple edge messages by IDs",
+        "description": "Deletes multiple stored edge messages using their unique identifiers, including the associated payload blobs. Messages are deleted in batches according to the specified transaction size.",
+        "operationId": "deleteMessages",
         "parameters": [
           {
-            "name": "messageId",
-            "in": "path",
-            "description": "Unique identifier of the message to retrieve",
-            "required": true,
+            "name": "transactionSize",
+            "in": "query",
+            "description": "Number of messages to delete per transaction batch",
+            "required": false,
             "schema": {
-              "type": "string",
-              "format": "uuid-v1",
-              "description": "Must be a version 1 (time-based) UUID"
-            },
-            "example": "825ba31c-0b5b-11f0-91f5-667325248341"
+              "type": "integer",
+              "format": "int32",
+              "default": 1000
+            }
           }
         ],
-        "responses": {
-          "200": {
-            "description": "Message successfully retrieved",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/EdgeMessageDto"
-                },
-                "examples": {
-                  "Nobel Prize Message": {
-                    "description": "Nobel Prize Message",
-                    "value": {
-                      "header": {
-                        "subject": "nobel.prize.events",
-                        "contentType": "application/json",
-                        "contentLength": 1024,
-                        "contentEncoding": "UTF-8",
-                        "messageId": "msg-nobel-2024-physics",
-                        "userId": "nobel-committee",
-                        "recipient": "scientific-community",
-                        "replyTo": "announcements@nobelprize.org",
-                        "correlationId": "nobel-2024-physics-announcement"
-                      },
-                      "metaData": {
-                        "values": {},
-                        "indexedValues": {}
-                      },
-                      "content": "{\n  \"eventType\" : \"nobel.prize.announced\",\n  \"timestamp\" : \"2024-10-09T12:00:00Z\",\n  \"data\" : {\n    \"category\" : \"physics\",\n    \"year\" : \"2024\",\n    \"laureates\" : [ {\n      \"firstname\" : \"John\",\n      \"surname\" : \"Hopfield\",\n      \"id\" : \"1037\",\n      \"motivation\" : \"for foundational discoveries and inventions that enable machine learning with artificial neural networks\",\n      \"share\" : \"2\"\n    }, {\n      \"firstname\" : \"Geoffrey\",\n      \"surname\" : \"Hinton\",\n      \"id\" : \"1038\",\n      \"motivation\" : \"for foundational discoveries and inventions that enable machine learning with artificial neural networks\",\n      \"share\" : \"2\"\n    } ]\n  }\n}"
-                    }
-                  }
+        "requestBody": {
+          "description": "List of message IDs to delete. All IDs must be version 1 (time-based) UUIDs.",
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "string",
+                "format": "uuid"
+              },
+              "examples": {
+                "Message IDs": {
+                  "description": "Message IDs",
+                  "value": [
+                    "8824c480-c166-11ee-9cc7-ae468cd3ed16",
+                    "31134900-d9cb-11ee-9cc7-ae468cd3ed16"
+                  ]
                 }
               }
             }
           },
-          "404": {
-            "description": "Message not found",
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Messages successfully deleted",
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/ErrorResponse"
+                  "type": "string"
                 },
                 "examples": {
-                  "Message Not Found": {
-                    "description": "Message Not Found",
-                    "value": {
-                      "type": "about:blank",
-                      "title": "Not Found",
-                      "status": 404,
-                      "detail": "message id=8824c480-c166-11ee-bf9f-ae468cd3ed16 not found",
-                      "instance": "/api/message/get/8824c480-c166-11ee-bf9f-ae468cd3ed16",
-                      "properties": {
-                        "messageId": "8824c480-c166-11ee-bf9f-ae468cd3ed16"
+                  "Delete Collection Response": {
+                    "description": "Delete Collection Response",
+                    "value": [
+                      {
+                        "transactionId": "8824c480-c166-11ee-9cc7-ae468cd3ed16",
+                        "entityIds": [
+                          "8824c480-c166-11ee-9cc7-ae468cd3ed16",
+                          "31134900-d9cb-11ee-9cc7-ae468cd3ed16"
+                        ],
+                        "success": true
                       }
-                    }
+                    ]
                   }
                 }
               }
@@ -2408,7 +2399,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/ErrorResponse"
+                  "$ref": "#/components/schemas/ProblemDetail"
                 },
                 "examples": {
                   "Not a Time UUID": {
@@ -2418,7 +2409,7 @@
                       "title": "Bad Request",
                       "status": 400,
                       "detail": "UUID 123e4567-e89b-12d3-a456-426614174000 is not a time-based UUID (version 1)",
-                      "instance": "/api/message/get/123e4567-e89b-12d3-a456-426614174000",
+                      "instance": "/api/message/123e4567-e89b-12d3-a456-426614174000",
                       "properties": {
                         "uuid": "123e4567-e89b-12d3-a456-426614174000"
                       }
@@ -2679,6 +2670,211 @@
                       "status": 413,
                       "detail": "Request payload size exceeds maximum allowed limit of 10MB",
                       "instance": "/api/message/new/nobel.prize.events"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/message/{messageId}": {
+      "get": {
+        "tags": [
+          "Edge message"
+        ],
+        "summary": "Retrieve an edge message by ID",
+        "description": "Fetches a stored edge message using its unique identifier, including all message metadata and payload",
+        "operationId": "getMessage",
+        "parameters": [
+          {
+            "name": "messageId",
+            "in": "path",
+            "description": "Unique identifier of the message to retrieve",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid-v1",
+              "description": "Must be a version 1 (time-based) UUID"
+            },
+            "example": "825ba31c-0b5b-11f0-91f5-667325248341"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Message successfully retrieved",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/EdgeMessageDto"
+                },
+                "examples": {
+                  "Nobel Prize Message": {
+                    "description": "Nobel Prize Message",
+                    "value": {
+                      "header": {
+                        "subject": "nobel.prize.events",
+                        "contentType": "application/json",
+                        "contentLength": 1024,
+                        "contentEncoding": "UTF-8",
+                        "messageId": "msg-nobel-2024-physics",
+                        "userId": "nobel-committee",
+                        "recipient": "scientific-community",
+                        "replyTo": "announcements@nobelprize.org",
+                        "correlationId": "nobel-2024-physics-announcement"
+                      },
+                      "metaData": {
+                        "values": {},
+                        "indexedValues": {}
+                      },
+                      "content": "{\n  \"eventType\" : \"nobel.prize.announced\",\n  \"timestamp\" : \"2024-10-09T12:00:00Z\",\n  \"data\" : {\n    \"category\" : \"physics\",\n    \"year\" : \"2024\",\n    \"laureates\" : [ {\n      \"firstname\" : \"John\",\n      \"surname\" : \"Hopfield\",\n      \"id\" : \"1037\",\n      \"motivation\" : \"for foundational discoveries and inventions that enable machine learning with artificial neural networks\",\n      \"share\" : \"2\"\n    }, {\n      \"firstname\" : \"Geoffrey\",\n      \"surname\" : \"Hinton\",\n      \"id\" : \"1038\",\n      \"motivation\" : \"for foundational discoveries and inventions that enable machine learning with artificial neural networks\",\n      \"share\" : \"2\"\n    } ]\n  }\n}"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Message not found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                },
+                "examples": {
+                  "Message Not Found": {
+                    "description": "Message Not Found",
+                    "value": {
+                      "type": "about:blank",
+                      "title": "Not Found",
+                      "status": 404,
+                      "detail": "message id=8824c480-c166-11ee-bf9f-ae468cd3ed16 not found",
+                      "instance": "/api/message/8824c480-c166-11ee-bf9f-ae468cd3ed16",
+                      "properties": {
+                        "messageId": "8824c480-c166-11ee-bf9f-ae468cd3ed16"
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid UUID format or not a time-based UUID",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                },
+                "examples": {
+                  "Not a Time UUID": {
+                    "description": "Not a Time UUID",
+                    "value": {
+                      "type": "about:blank",
+                      "title": "Bad Request",
+                      "status": 400,
+                      "detail": "UUID 123e4567-e89b-12d3-a456-426614174000 is not a time-based UUID (version 1)",
+                      "instance": "/api/message/123e4567-e89b-12d3-a456-426614174000",
+                      "properties": {
+                        "uuid": "123e4567-e89b-12d3-a456-426614174000"
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "delete": {
+        "tags": [
+          "Edge message"
+        ],
+        "summary": "Delete a single edge message by ID",
+        "description": "Deletes a stored edge message using its unique identifier, including the associated payload blob",
+        "operationId": "deleteMessage",
+        "parameters": [
+          {
+            "name": "messageId",
+            "in": "path",
+            "description": "Unique identifier of the message to delete",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid-v1",
+              "description": "Must be a version 1 (time-based) UUID"
+            },
+            "example": "825ba31c-0b5b-11f0-91f5-667325248341"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Message successfully deleted",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/EntityTransactionResponse"
+                },
+                "examples": {
+                  "Delete Response": {
+                    "description": "Delete Response",
+                    "value": {
+                      "transactionId": "8824c480-c166-11ee-9cc7-ae468cd3ed16",
+                      "entityIds": [
+                        "8824c480-c166-11ee-9cc7-ae468cd3ed16"
+                      ],
+                      "success": true
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Message not found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetail"
+                },
+                "examples": {
+                  "Message Not Found": {
+                    "description": "Message Not Found",
+                    "value": {
+                      "type": "about:blank",
+                      "title": "Not Found",
+                      "status": 404,
+                      "detail": "message id=8824c480-c166-11ee-bf9f-ae468cd3ed16 not found",
+                      "instance": "/api/message/8824c480-c166-11ee-bf9f-ae468cd3ed16",
+                      "properties": {
+                        "messageId": "8824c480-c166-11ee-bf9f-ae468cd3ed16"
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid UUID format or not a time-based UUID",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetail"
+                },
+                "examples": {
+                  "Not a Time UUID": {
+                    "description": "Not a Time UUID",
+                    "value": {
+                      "type": "about:blank",
+                      "title": "Bad Request",
+                      "status": 400,
+                      "detail": "UUID 123e4567-e89b-12d3-a456-426614174000 is not a time-based UUID (version 1)",
+                      "instance": "/api/message/123e4567-e89b-12d3-a456-426614174000",
+                      "properties": {
+                        "uuid": "123e4567-e89b-12d3-a456-426614174000"
+                      }
                     }
                   }
                 }
@@ -3635,6 +3831,645 @@
         ]
       }
     },
+    "/platform-api/stream-data/config": {
+      "get": {
+        "tags": [
+          "Stream Data"
+        ],
+        "summary": "Get a stream data configuration by ID",
+        "description": "Retrieves a specific stream data configuration by its UUID.",
+        "operationId": "getStreamDataConfig",
+        "parameters": [
+          {
+            "name": "configId",
+            "in": "query",
+            "description": "UUID of the configuration to retrieve",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "responses": {
+          "404": {
+            "description": "Configuration not found"
+          },
+          "409": {
+            "description": "Conflict",
+            "content": {
+              "application/hal+json": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "200": {
+            "description": "The requested stream data configuration",
+            "content": {
+              "application/hal+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/StreamDataConfigDef"
+                }
+              }
+            }
+          }
+        }
+      },
+      "put": {
+        "tags": [
+          "Stream Data"
+        ],
+        "summary": "Update an existing stream data configuration",
+        "description": "Updates an existing stream data configuration definition.",
+        "operationId": "updateStreamDataConfig",
+        "requestBody": {
+          "description": "Stream data configuration with updated values",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/StreamDataConfigDef"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "404": {
+            "description": "Not Found",
+            "content": {
+              "application/hal+json": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "Conflict",
+            "content": {
+              "application/hal+json": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "200": {
+            "description": "Configuration updated successfully"
+          }
+        }
+      },
+      "post": {
+        "tags": [
+          "Stream Data"
+        ],
+        "summary": "Save a new stream data configuration",
+        "description": "Creates and persists a new stream data configuration definition.",
+        "operationId": "saveStreamDataConfig",
+        "requestBody": {
+          "description": "Stream data configuration to save",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/StreamDataConfigDef"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "404": {
+            "description": "Not Found",
+            "content": {
+              "application/hal+json": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "Conflict",
+            "content": {
+              "application/hal+json": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "200": {
+            "description": "UUID of the created configuration",
+            "content": {
+              "application/hal+json": {
+                "schema": {
+                  "type": "string",
+                  "format": "uuid"
+                }
+              }
+            }
+          }
+        }
+      },
+      "delete": {
+        "tags": [
+          "Stream Data"
+        ],
+        "summary": "Delete a stream data configuration",
+        "description": "Deletes a stream data configuration by its UUID.",
+        "operationId": "deleteStreamDataConfig",
+        "parameters": [
+          {
+            "name": "configId",
+            "in": "query",
+            "description": "UUID of the configuration to delete",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "responses": {
+          "404": {
+            "description": "Not Found",
+            "content": {
+              "application/hal+json": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "Conflict",
+            "content": {
+              "application/hal+json": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "200": {
+            "description": "Configuration deleted successfully"
+          }
+        }
+      }
+    },
+    "/platform-api/stream-data/config/list": {
+      "get": {
+        "tags": [
+          "Stream Data"
+        ],
+        "summary": "List all stream data configurations",
+        "description": "Returns all available stream data configurations.",
+        "operationId": "getAllConfigs",
+        "responses": {
+          "404": {
+            "description": "Not Found",
+            "content": {
+              "application/hal+json": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "Conflict",
+            "content": {
+              "application/hal+json": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "200": {
+            "description": "List of all stream data configurations",
+            "content": {
+              "application/hal+json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/StreamDataConfigDef"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/platform-api/stream-data/delete": {
+      "delete": {
+        "tags": [
+          "Stream Data"
+        ],
+        "summary": "Delete stream data",
+        "description": "Deletes entities matching the stream data request criteria.",
+        "operationId": "delete",
+        "requestBody": {
+          "description": "Stream data request defining the entities to delete",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/StreamDataRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "404": {
+            "description": "Not Found",
+            "content": {
+              "application/hal+json": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "Conflict",
+            "content": {
+              "application/hal+json": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "200": {
+            "description": "Deletion result with counts and any errors",
+            "content": {
+              "application/hal+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/StreamDataDeleteResult"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/platform-api/stream-data/export-all": {
+      "get": {
+        "tags": [
+          "Stream Data"
+        ],
+        "summary": "Export all stream data configurations",
+        "description": "Exports all stream data configurations as a container for backup or transfer.",
+        "operationId": "exportAll_1",
+        "responses": {
+          "404": {
+            "description": "Not Found",
+            "content": {
+              "application/hal+json": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "Conflict",
+            "content": {
+              "application/hal+json": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "200": {
+            "description": "Container with all stream data configurations",
+            "content": {
+              "application/hal+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/StreamDataConfigDefContainer"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/platform-api/stream-data/export-by-class": {
+      "get": {
+        "tags": [
+          "Stream Data"
+        ],
+        "summary": "Export stream data configurations by entity class",
+        "description": "Exports all stream data configurations associated with a specific entity class.",
+        "operationId": "exportAll",
+        "parameters": [
+          {
+            "name": "entityClass",
+            "in": "query",
+            "description": "Fully qualified class name of the entity",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "example": "com.example.MyEntity"
+          }
+        ],
+        "responses": {
+          "404": {
+            "description": "Entity class not found"
+          },
+          "409": {
+            "description": "Conflict",
+            "content": {
+              "application/hal+json": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "200": {
+            "description": "Container with stream data configurations for the entity class",
+            "content": {
+              "application/hal+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/StreamDataConfigDefContainer"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/platform-api/stream-data/export-by-ids": {
+      "get": {
+        "tags": [
+          "Stream Data"
+        ],
+        "summary": "Export stream data configurations by IDs",
+        "description": "Exports specific stream data configurations identified by their UUIDs.",
+        "operationId": "exportByIds",
+        "parameters": [
+          {
+            "name": "includeIds",
+            "in": "query",
+            "description": "List of configuration UUIDs to export",
+            "required": true,
+            "schema": {
+              "type": "array",
+              "items": {
+                "type": "string",
+                "format": "uuid"
+              }
+            }
+          }
+        ],
+        "responses": {
+          "404": {
+            "description": "Not Found",
+            "content": {
+              "application/hal+json": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "Conflict",
+            "content": {
+              "application/hal+json": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "200": {
+            "description": "Container with the requested stream data configurations",
+            "content": {
+              "application/hal+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/StreamDataConfigDefContainer"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/platform-api/stream-data/get": {
+      "post": {
+        "tags": [
+          "Stream Data"
+        ],
+        "summary": "Fetch stream data",
+        "description": "Retrieves paginated stream data based on the provided request definition, including conditions, columns, and pagination parameters.",
+        "operationId": "getStreamData",
+        "requestBody": {
+          "description": "Stream data request containing definition, pagination, and point-in-time parameters",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/StreamDataRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "404": {
+            "description": "Not Found",
+            "content": {
+              "application/hal+json": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "Conflict",
+            "content": {
+              "application/hal+json": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "200": {
+            "description": "Stream data fetch result containing rows and pagination info",
+            "content": {
+              "application/hal+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/StreamDataFetchResult"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/platform-api/stream-data/import": {
+      "post": {
+        "tags": [
+          "Stream Data"
+        ],
+        "summary": "Import stream data configurations",
+        "description": "Imports stream data configurations from a container. Can optionally fail if configurations already exist.",
+        "operationId": "importContainer",
+        "parameters": [
+          {
+            "name": "failOnExists",
+            "in": "query",
+            "description": "If true, fail when a configuration already exists; if false, skip existing configurations",
+            "required": false,
+            "schema": {
+              "type": "boolean",
+              "default": false
+            }
+          }
+        ],
+        "requestBody": {
+          "description": "Container with stream data configurations to import",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/StreamDataConfigDefContainer"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "404": {
+            "description": "Not Found",
+            "content": {
+              "application/hal+json": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "Configuration already exists (when failOnExists is true)"
+          },
+          "200": {
+            "description": "Configurations imported successfully"
+          }
+        }
+      }
+    },
+    "/platform-api/stream-data/index/list": {
+      "get": {
+        "tags": [
+          "Stream Data"
+        ],
+        "summary": "List index configurations for an entity class",
+        "description": "Returns all index configurations available for the specified entity class.",
+        "operationId": "getIndexs",
+        "parameters": [
+          {
+            "name": "entityClass",
+            "in": "query",
+            "description": "Fully qualified class name of the entity",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "example": "com.example.MyEntity"
+          }
+        ],
+        "responses": {
+          "404": {
+            "description": "Entity class not found"
+          },
+          "409": {
+            "description": "Conflict",
+            "content": {
+              "application/hal+json": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "200": {
+            "description": "List of index configurations",
+            "content": {
+              "application/hal+json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/IndexConfigurationDto"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/platform-api/stream-data/query-plan": {
+      "post": {
+        "tags": [
+          "Stream Data"
+        ],
+        "summary": "Get query execution plan",
+        "description": "Returns the original and optimized query execution plan for the given entity class, condition, and alias definitions.",
+        "operationId": "getQueryPlan",
+        "requestBody": {
+          "description": "Query plan request containing entity class, condition, and alias definitions",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/QueryPlanRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "404": {
+            "description": "Not Found",
+            "content": {
+              "application/hal+json": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "Conflict",
+            "content": {
+              "application/hal+json": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "200": {
+            "description": "Query plan with original and optimized versions",
+            "content": {
+              "application/hal+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/QueryPlanDTO"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/platform-common/cql-exec-stats/all-tables": {
       "get": {
         "tags": [
@@ -3712,7 +4547,7 @@
           {
             "name": "table",
             "in": "path",
-            "description": "Name of the Cassandra table",
+            "description": "Name of the Cassandra table, case sensitive, including quotes if needed",
             "required": true,
             "schema": {
               "type": "string"
@@ -6447,6 +7282,142 @@
           "isCancelled"
         ]
       },
+      "AbstractCondition": {
+        "type": "object",
+        "properties": {
+          "simple": {
+            "type": "boolean"
+          }
+        }
+      },
+      "AliasMapperParameters": {
+        "type": "object"
+      },
+      "ReportAliasDef": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string"
+          },
+          "aliasPaths": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/ReportAliasPathDef"
+            }
+          }
+        }
+      },
+      "ReportAliasPathDef": {
+        "type": "object",
+        "properties": {
+          "colDef": {
+            "$ref": "#/components/schemas/ReportColDef"
+          },
+          "mapperParameters": {
+            "$ref": "#/components/schemas/AliasMapperParameters"
+          }
+        }
+      },
+      "ReportColDef": {
+        "type": "object",
+        "properties": {
+          "fullPath": {
+            "type": "string"
+          },
+          "parts": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/ReportColPartDef"
+            }
+          },
+          "rootEntityClass": {
+            "type": "string"
+          }
+        }
+      },
+      "ReportColPartDef": {
+        "type": "object",
+        "properties": {
+          "rootClass": {
+            "type": "string"
+          },
+          "path": {
+            "type": "string"
+          }
+        }
+      },
+      "ReportColumn": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string"
+          },
+          "type": {
+            "type": "string",
+            "enum": [
+              "SIMPLE_COLUMN",
+              "ALIAS"
+            ]
+          }
+        }
+      },
+      "StreamDataConfigDef": {
+        "type": "object",
+        "properties": {
+          "streamDataDef": {
+            "$ref": "#/components/schemas/StreamDataDef"
+          },
+          "name": {
+            "type": "string"
+          },
+          "description": {
+            "type": "string"
+          },
+          "createDate": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "owner": {
+            "type": "string"
+          },
+          "id": {
+            "type": "string",
+            "format": "uuid"
+          }
+        }
+      },
+      "StreamDataDef": {
+        "type": "object",
+        "properties": {
+          "rangeCondition": {
+            "$ref": "#/components/schemas/AbstractCondition"
+          },
+          "rangeOrder": {
+            "type": "string"
+          },
+          "condition": {
+            "$ref": "#/components/schemas/AbstractCondition"
+          },
+          "columns": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/ReportColumn"
+            }
+          },
+          "colDefs": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/ReportColDef"
+            }
+          },
+          "aliasDefs": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/ReportAliasDef"
+            }
+          }
+        }
+      },
       "EntityModelActionResultDto": {
         "type": "object",
         "properties": {
@@ -6639,6 +7610,133 @@
       "JsonNode": {
         "type": "object"
       },
+      "QueryPlanDTO": {
+        "type": "object",
+        "properties": {
+          "original": {
+            "$ref": "#/components/schemas/QueryPlanKeysNodeDTO"
+          },
+          "optimized": {
+            "$ref": "#/components/schemas/QueryPlanKeysNodeDTO"
+          }
+        }
+      },
+      "QueryPlanKeysNodeDTO": {
+        "type": "object",
+        "properties": {
+          "type": {
+            "type": "string",
+            "enum": [
+              "EMPTY",
+              "SINGLE",
+              "ALL",
+              "SIMPLE",
+              "COMPOSITE",
+              "CONSTRAINT"
+            ]
+          }
+        }
+      },
+      "QueryPlanRequest": {
+        "type": "object",
+        "properties": {
+          "condition": {
+            "$ref": "#/components/schemas/AbstractCondition"
+          },
+          "aliasDefs": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/ReportAliasDef"
+            }
+          }
+        }
+      },
+      "StreamDataConfigDefContainer": {
+        "type": "object",
+        "properties": {
+          "data": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/StreamDataConfigDef"
+            }
+          }
+        }
+      },
+      "ReportRowContainer": {
+        "type": "object",
+        "properties": {
+          "key": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "unitId": {
+            "type": "object"
+          },
+          "sortValues": {
+            "type": "array",
+            "items": {
+              "type": "object"
+            }
+          },
+          "columnsValues": {
+            "type": "object",
+            "additionalProperties": {
+              "type": "object"
+            }
+          }
+        }
+      },
+      "StreamDataFetchResult": {
+        "type": "object",
+        "properties": {
+          "pointTime": {
+            "type": "integer",
+            "format": "int64"
+          },
+          "offset": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "pageSize": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "lastRowIndexPosition": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "rows": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/ReportRowContainer"
+            }
+          }
+        }
+      },
+      "StreamDataRequest": {
+        "type": "object",
+        "properties": {
+          "sdDef": {
+            "$ref": "#/components/schemas/StreamDataDef"
+          },
+          "pointTime": {
+            "type": "integer",
+            "format": "int64"
+          },
+          "offset": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "length": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "fromPosIndex": {
+            "type": "integer",
+            "format": "int32"
+          }
+        }
+      },
       "TokenResponseDto": {
         "type": "object",
         "properties": {
@@ -6767,15 +7865,21 @@
       },
       "TableTimeStatsDTO": {
         "type": "object",
+        "description": "Detailed execution statistics for a Cassandra table, including timing distributions and operation breakdowns",
         "properties": {
           "table": {
-            "type": "string"
+            "type": "string",
+            "description": "Name of the Cassandra table",
+            "example": "ENTITY_DATA"
           },
           "tableStats": {
-            "$ref": "#/components/schemas/TimeStatDataDTO"
+            "$ref": "#/components/schemas/TimeStatDataDTO",
+            "description": "Detailed timing statistics for all operations on this table"
           },
           "operationStats": {
             "type": "array",
+            "description": "Per-operation timing statistics breakdown (SELECT, INSERT, UPDATE, DELETE, etc.)",
+            "example": "{\"SELECT\": {...}, \"INSERT\": {...}}",
             "items": {
               "$ref": "#/components/schemas/TableOperationStatsDTO"
             }
@@ -6784,37 +7888,53 @@
       },
       "TimeStatDataDTO": {
         "type": "object",
+        "description": "Timing statistics data with automatic unit selection for optimal readability",
         "properties": {
           "numCalls": {
             "type": "integer",
-            "format": "int64"
+            "format": "int64",
+            "description": "Number of timing measurements recorded"
           },
           "total": {
             "type": "integer",
-            "format": "int64"
+            "format": "int64",
+            "description": "Total cumulative execution time across all operations, converted to seconds for readability"
           },
           "last": {
             "type": "integer",
-            "format": "int64"
+            "format": "int64",
+            "description": "Most recent execution time in nanoseconds"
           },
           "min": {
             "type": "integer",
-            "format": "int64"
+            "format": "int64",
+            "description": "Minimum execution time in nanoseconds"
           },
           "max": {
             "type": "integer",
-            "format": "int64"
+            "format": "int64",
+            "description": "Maximum execution time in nanoseconds"
           },
           "avg": {
             "type": "integer",
-            "format": "int64"
+            "format": "int64",
+            "description": "Average execution time in nanoseconds"
           },
           "measure": {
             "type": "integer",
-            "format": "int64"
+            "format": "int64",
+            "description": "Suggested conversion factor from nanoseconds to the recommended display unit. Divide nanosecond values by this to get values in the suggested unit.",
+            "example": 1000000
           },
           "measureDesc": {
-            "type": "string"
+            "type": "string",
+            "description": "Suggested unit abbreviation for displaying timing values based on magnitude analysis",
+            "enum": [
+              "ns",
+              "us",
+              "ms"
+            ],
+            "example": "ms"
           },
           "from0To100Micros": {
             "type": "integer",
@@ -6860,6 +7980,93 @@
             "format": "int64"
           }
         }
+      },
+      "IndexConfigurationDto": {
+        "type": "object",
+        "properties": {
+          "indexId": {
+            "type": "string"
+          },
+          "indexName": {
+            "type": "string"
+          },
+          "rangeField": {
+            "$ref": "#/components/schemas/LeafColInfo"
+          },
+          "noneRangeFields": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/LeafColInfo"
+            }
+          },
+          "createDate": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "readyForQuerying": {
+            "type": "boolean"
+          },
+          "returnsList": {
+            "type": "boolean"
+          },
+          "persisted": {
+            "type": "boolean"
+          },
+          "id": {
+            "type": "object",
+            "writeOnly": true
+          },
+          "decision": {
+            "type": "string",
+            "enum": [
+              "NO_ACCESS",
+              "FULL_ACCESS",
+              "PARTIAL_ACCESS",
+              "NOT_FOUND"
+            ]
+          }
+        },
+        "required": [
+          "decision"
+        ]
+      },
+      "LeafColInfo": {
+        "type": "object",
+        "properties": {
+          "columnName": {
+            "type": "string"
+          },
+          "columnPath": {
+            "type": "string"
+          },
+          "type": {
+            "type": "string",
+            "enum": [
+              "LEAF",
+              "LIST",
+              "MAP",
+              "SET",
+              "EMBEDDED",
+              "DYNAMIC_OBJECT"
+            ]
+          },
+          "id": {
+            "type": "object",
+            "writeOnly": true
+          },
+          "decision": {
+            "type": "string",
+            "enum": [
+              "NO_ACCESS",
+              "FULL_ACCESS",
+              "PARTIAL_ACCESS",
+              "NOT_FOUND"
+            ]
+          }
+        },
+        "required": [
+          "decision"
+        ]
       },
       "WorkflowExportResponseDto": {
         "type": "object",
@@ -7432,6 +8639,28 @@
               "DEBUG"
             ]
           },
+          "auditEventType": {
+            "type": "string",
+            "description": "Type of the audit event, used as discriminator for inherited types",
+            "enum": [
+              "StateMachine",
+              "EntityChange",
+              "System"
+            ]
+          },
+          "consistencyTime": {
+            "type": "string",
+            "format": "date-time",
+            "description": "Cyoda consistency time"
+          },
+          "transactionId": {
+            "type": "string",
+            "description": "Transaction identifier related to this event"
+          },
+          "entityType": {
+            "type": "string",
+            "description": "Type of the entity related to this event (model.version)"
+          },
           "utcTime": {
             "type": "string",
             "format": "date-time",
@@ -7454,31 +8683,9 @@
             "type": "boolean",
             "description": "Flag indicating whether this is a system-level event"
           },
-          "entityType": {
-            "type": "string",
-            "description": "Type of the entity related to this event (model.version)"
-          },
           "entityId": {
             "type": "string",
             "description": "Identifier of the entity related to this event"
-          },
-          "auditEventType": {
-            "type": "string",
-            "description": "Type of the audit event, used as discriminator for inherited types",
-            "enum": [
-              "StateMachine",
-              "EntityChange",
-              "System"
-            ]
-          },
-          "consistencyTime": {
-            "type": "string",
-            "format": "date-time",
-            "description": "Cyoda consistency time"
-          },
-          "transactionId": {
-            "type": "string",
-            "description": "Transaction identifier related to this event"
           }
         },
         "required": [
