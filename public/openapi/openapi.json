@@ -3751,6 +3751,943 @@
         ]
       }
     },
+    "/oauth/keys/keypair": {
+      "post": {
+        "tags": [
+          "OAuth, Keys"
+        ],
+        "summary": "Issue new JWT signing key-pair",
+        "description": "Generates and stores a new asymmetric key-pair (public/private) for signing and validating OAuth 2.0 JWT\naccess tokens.\n",
+        "operationId": "issueJwtKeyPair",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/IssueJwtKeyPairRequestDto"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "JWT key-pair issued successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/JwtKeyPairResponseDto"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Error response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponseDto"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Error response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponseDto"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Error response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponseDto"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Error response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponseDto"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ]
+      }
+    },
+    "/oauth/keys/keypair/current": {
+      "get": {
+        "tags": [
+          "OAuth, Keys"
+        ],
+        "summary": "Get current active JWT signing key-pair",
+        "description": "Retrieves information about the currently active JWT signing key-pair for the specified audience.\n",
+        "operationId": "getCurrentJwtKeyPair",
+        "parameters": [
+          {
+            "name": "audience",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "enum": [
+                "human",
+                "client"
+              ]
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Current key-pair information retrieved successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/JwtKeyPairResponseDto"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Error response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponseDto"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Error response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponseDto"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Error response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponseDto"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Error response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponseDto"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Error response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponseDto"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ]
+      }
+    },
+    "/oauth/keys/keypair/{keyId}": {
+      "delete": {
+        "tags": [
+          "OAuth, Keys"
+        ],
+        "summary": "Delete JWT signing key-pair",
+        "description": "Deletes a JWT signing key-pair. The key will first be invalidated (if not already)\nand then removed from storage.\n",
+        "operationId": "deleteJwtKeyPair",
+        "parameters": [
+          {
+            "name": "keyId",
+            "in": "path",
+            "description": "The unique identifier (kid) of the key-pair to delete",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "JWT key-pair deleted successfully",
+            "content": {}
+          },
+          "401": {
+            "description": "Error response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponseDto"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Error response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponseDto"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Error response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponseDto"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Error response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponseDto"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ]
+      }
+    },
+    "/oauth/keys/keypair/{keyId}/invalidate": {
+      "post": {
+        "tags": [
+          "OAuth, Keys"
+        ],
+        "summary": "Invalidate JWT signing key-pair",
+        "description": "Invalidates a specific JWT signing key-pair.\nAfter invalidation, the key will no longer be used for signing new tokens,\nand existing tokens signed with this key pair would not be accepted.\n",
+        "operationId": "invalidateJwtKeyPair",
+        "parameters": [
+          {
+            "name": "keyId",
+            "in": "path",
+            "description": "The unique identifier (kid) of the key-pair to invalidate",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/InvalidateJwtKeyPairRequestDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "JWT key-pair invalidated successfully",
+            "content": {}
+          },
+          "401": {
+            "description": "Error response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponseDto"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Error response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponseDto"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Error response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponseDto"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Error response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponseDto"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ]
+      }
+    },
+    "/oauth/keys/keypair/{keyId}/reactivate": {
+      "post": {
+        "tags": [
+          "OAuth, Keys"
+        ],
+        "summary": "Reactivate JWT signing key-pair",
+        "description": "Reactivates a previously invalidated JWT signing key-pair.\nThis allows the key to be used for signing and validating tokens again.\nThis operation is idempotent - if the key-pair is already active, it returns the current state.\n",
+        "operationId": "reactivateJwtKeyPair",
+        "parameters": [
+          {
+            "name": "keyId",
+            "in": "path",
+            "description": "The unique identifier (kid) of the key-pair to reactivate",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "JWT key-pair reactivated successfully or already active",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/JwtKeyPairResponseDto"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Error response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponseDto"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Error response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponseDto"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Error response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponseDto"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Error response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponseDto"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ]
+      }
+    },
+    "/oauth/oidc/providers": {
+      "get": {
+        "tags": [
+          "OAuth, OIDC Providers"
+        ],
+        "summary": "List all registered OIDC providers",
+        "description": "Retrieves a list of all registered OIDC providers, including both active and inactive providers.\n",
+        "operationId": "listOidcProviders",
+        "parameters": [
+          {
+            "name": "activeOnly",
+            "in": "query",
+            "description": "If true, returns only active providers",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "List of OIDC providers retrieved successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/OidcProviderResponseDto"
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Error response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponseDto"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Error response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponseDto"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Error response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponseDto"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ]
+      },
+      "post": {
+        "tags": [
+          "OAuth, OIDC Providers"
+        ],
+        "summary": "Register a new trusted OIDC provider",
+        "description": "Registers a new external OIDC provider for JWT validation. The provider's public keys will be\ndiscovered from the well-known configuration endpoint and used to validate JWT tokens.\n",
+        "operationId": "registerOidcProvider",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/RegisterOidcProviderRequestDto"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "OIDC provider registered successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/OidcProviderResponseDto"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Error response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponseDto"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Error response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponseDto"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Error response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponseDto"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "Provider with this well-known configuration URI already exists",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponseDto"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Error response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponseDto"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ]
+      }
+    },
+    "/oauth/oidc/providers/reload": {
+      "post": {
+        "tags": [
+          "OAuth, OIDC Providers"
+        ],
+        "summary": "Force to reload all OIDC providers and synchronize keys with remote JWKS",
+        "description": "Reloads all active OIDC provider configurations from the database and synchronizes\ncached keys with the remote JWKS endpoints.\n\nKey synchronization: For each provider, this operation fetches the current keys from\nthe remote JWKS endpoint and invalidates any locally cached keys that no longer exist\nin the remote JWKS. This is useful for security when OIDC providers have rotated or\nrevoked keys.\n\nThis operation is useful when you want to ensure all nodes have the latest OIDC provider\nconfigurations and that any revoked keys are no longer trusted.\n",
+        "operationId": "reloadOidcProviders",
+        "responses": {
+          "200": {
+            "description": "OIDC providers reloaded successfully",
+            "content": {}
+          },
+          "401": {
+            "description": "Error response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponseDto"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Error response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponseDto"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Error response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponseDto"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ]
+      }
+    },
+    "/oauth/oidc/providers/{id}": {
+      "delete": {
+        "tags": [
+          "OAuth, OIDC Providers"
+        ],
+        "summary": "Delete OIDC provider",
+        "description": "Deletes an OIDC provider and all its associated JWK keys.\nThe provider will first be invalidated (if not already) and then removed from storage.\n",
+        "operationId": "deleteOidcProvider",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "description": "The ID of the OIDC provider to delete",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OIDC provider deleted successfully",
+            "content": {}
+          },
+          "401": {
+            "description": "Error response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponseDto"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Error response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponseDto"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Error response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponseDto"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Error response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponseDto"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ]
+      },
+      "patch": {
+        "tags": [
+          "OAuth, OIDC Providers"
+        ],
+        "summary": "Update OIDC provider",
+        "description": "Updates configuration for an OIDC provider.\n\nNote: Updating the issuers list immediately deletes all cached keys for this provider.\nThis ensures that JWTs from issuers that are no longer trusted cannot be validated using\npreviously cached keys. The keys will be re-fetched from the remote JWKS endpoint with the\nnew issuer configuration when they are next needed for JWT validation.\n",
+        "operationId": "updateOidcProvider",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "description": "The ID of the OIDC provider",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpdateOidcProviderRequestDto"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "OIDC provider issuers updated successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/OidcProviderResponseDto"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Error response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponseDto"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Error response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponseDto"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Error response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponseDto"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Error response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponseDto"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Error response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponseDto"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ]
+      }
+    },
+    "/oauth/oidc/providers/{id}/invalidate": {
+      "post": {
+        "tags": [
+          "OAuth, OIDC Providers"
+        ],
+        "summary": "Invalidate OIDC provider",
+        "description": "Invalidates an OIDC provider, marking it as inactive and invalidating all loaded public keys\nassociated with this provider. The provider configuration is retained but will no longer be\nused for JWT validation.\n",
+        "operationId": "invalidateOidcProvider",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "description": "The ID of the OIDC provider to invalidate",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OIDC provider invalidated successfully",
+            "content": {}
+          },
+          "401": {
+            "description": "Error response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponseDto"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Error response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponseDto"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Error response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponseDto"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Error response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponseDto"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ]
+      }
+    },
+    "/oauth/oidc/providers/{id}/reactivate": {
+      "post": {
+        "tags": [
+          "OAuth, OIDC Providers"
+        ],
+        "summary": "Reactivate OIDC provider",
+        "description": "Reactivates a previously invalidated OIDC provider. The provider will be marked as active\nand can be used for JWT validation again.\nThis operation is idempotent - if the provider is already active, it returns the current state.\n",
+        "operationId": "reactivateOidcProvider",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "description": "The ID of the OIDC provider to reactivate",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ReactivateOidcProviderRequestDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "OIDC provider reactivated successfully or already active",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/OidcProviderResponseDto"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Error response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponseDto"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Error response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponseDto"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Error response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponseDto"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Error response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponseDto"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ]
+      }
+    },
     "/oauth/token": {
       "post": {
         "tags": [
@@ -7779,6 +8716,197 @@
           "token_type"
         ]
       },
+      "OidcProviderResponseDto": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid",
+            "description": "ID for this OIDC provider entity",
+            "example": "f47ac10b-58cc-4372-a567-0e02b2c3d479"
+          },
+          "wellKnownConfigUri": {
+            "type": "string",
+            "format": "uri",
+            "description": "URI to the OIDC provider's well-known configuration endpoint",
+            "example": "https://oidc-domain.local/.well-known/openid-configuration"
+          },
+          "active": {
+            "type": "boolean",
+            "description": "Whether this OIDC provider is currently active and used for JWT validation",
+            "example": true
+          },
+          "createdAt": {
+            "type": "string",
+            "format": "date-time",
+            "description": "When this OIDC provider was registered",
+            "example": "2025-11-01T10:00:00.000Z"
+          },
+          "issuers": {
+            "type": "array",
+            "description": "List of allowed issuer URIs from this OIDC provider. When present and non-empty, JWT validation requires the 'iss' claim to match one of these values. ",
+            "example": "[https://oidc-domain.local/]",
+            "items": {
+              "type": "string"
+            }
+          }
+        },
+        "required": [
+          "active",
+          "createdAt",
+          "id",
+          "wellKnownConfigUri"
+        ]
+      },
+      "RegisterOidcProviderRequestDto": {
+        "type": "object",
+        "properties": {
+          "wellKnownConfigUri": {
+            "type": "string",
+            "format": "uri",
+            "description": "URI to the OIDC provider's well-known configuration endpoint",
+            "example": "https://oidc-domain.local/.well-known/openid-configuration"
+          },
+          "issuers": {
+            "type": "array",
+            "description": "Optional but highly recommended list of allowed issuer URIs from this OIDC provider. When present, JWT validation will require the 'iss' claim to match one of these values. When set to null or empty array, the 'iss' claim validation is skipped. ",
+            "example": "[https://oidc-domain.local/]",
+            "items": {
+              "type": "string"
+            },
+            "maxItems": 2147483647,
+            "minItems": 1
+          }
+        },
+        "required": [
+          "wellKnownConfigUri"
+        ]
+      },
+      "ReactivateOidcProviderRequestDto": {
+        "type": "object",
+        "properties": {
+          "reactivateKeys": {
+            "type": "boolean",
+            "description": "If true, also reactivates all related JWK keys that were invalidated with this provider",
+            "example": true
+          }
+        }
+      },
+      "JwtKeyPairResponseDto": {
+        "type": "object",
+        "properties": {
+          "keyId": {
+            "type": "string",
+            "description": "Unique identifier for this key-pair (UUID). Included in JWT header as 'kid' claim.",
+            "example": "f47ac10b-58cc-4372-a567-0e02b2c3d479"
+          },
+          "algorithm": {
+            "type": "string",
+            "enum": [
+              "RS256",
+              "RS384",
+              "RS512",
+              "ES256",
+              "ES384",
+              "ES512",
+              "PS256",
+              "PS384",
+              "PS512",
+              "EdDSA"
+            ]
+          },
+          "publicKey": {
+            "type": "string",
+            "description": "Base64-encoded public key in X.509 SubjectPublicKeyInfo format.",
+            "example": "MIIBIjANBgkqhkiG9w0BAQEFAAOCA......8fmTaKiufydbNF/iRF4dQ=="
+          },
+          "validFrom": {
+            "type": "string",
+            "format": "date-time",
+            "description": "When this key-pair becomes valid",
+            "example": "2025-10-15T10:00:00.000Z"
+          },
+          "validTo": {
+            "type": "string",
+            "format": "date-time",
+            "description": "When this key-pair expires",
+            "example": "2026-10-15T10:00:00.000Z"
+          }
+        },
+        "required": [
+          "algorithm",
+          "keyId",
+          "publicKey",
+          "validFrom"
+        ]
+      },
+      "IssueJwtKeyPairRequestDto": {
+        "type": "object",
+        "properties": {
+          "audience": {
+            "type": "string",
+            "enum": [
+              "human",
+              "client"
+            ]
+          },
+          "algorithm": {
+            "type": "string",
+            "enum": [
+              "RS256",
+              "RS384",
+              "RS512",
+              "ES256",
+              "ES384",
+              "ES512",
+              "PS256",
+              "PS384",
+              "PS512",
+              "EdDSA"
+            ]
+          },
+          "validFrom": {
+            "type": "string",
+            "format": "date-time",
+            "description": "When the key-pair becomes valid. Defaults to current date-time if not specified.",
+            "example": "2025-10-15T10:00:00.000Z"
+          },
+          "validTo": {
+            "type": "string",
+            "format": "date-time",
+            "description": "When the key-pair expires. Defaults to validFrom + <configured validity, default is 365 days> if not specified.",
+            "example": "2026-10-15T10:00:00.000Z"
+          },
+          "invalidateCurrent": {
+            "type": "boolean",
+            "description": "If true, invalidates the currently active key-pair for this audience.",
+            "example": false
+          },
+          "invalidateGracePeriodSec": {
+            "type": "integer",
+            "format": "int64",
+            "description": "Number of seconds to keep the old key valid after invalidation. Only applicable when invalidateCurrent is true.",
+            "example": 36000,
+            "minimum": 0
+          }
+        },
+        "required": [
+          "algorithm",
+          "audience"
+        ]
+      },
+      "InvalidateJwtKeyPairRequestDto": {
+        "type": "object",
+        "properties": {
+          "gracePeriodSec": {
+            "type": "integer",
+            "format": "int64",
+            "description": "Number of seconds to keep the key valid after invalidation. Default is 0 (immediate invalidation).",
+            "example": 3600,
+            "minimum": 0
+          }
+        }
+      },
       "WorkflowImportRequestDto": {
         "type": "object",
         "description": "Workflow configurations to import",
@@ -7803,6 +8931,21 @@
         "required": [
           "workflows"
         ]
+      },
+      "UpdateOidcProviderRequestDto": {
+        "type": "object",
+        "properties": {
+          "issuers": {
+            "type": "array",
+            "description": "Optional but highly recommended list of allowed issuer URIs from this OIDC provider. When present, JWT validation will require the 'iss' claim to match one of these values. When set to null or empty array, the 'iss' claim validation is skipped. ",
+            "example": "[https://oidc-domain.local/, https://oidc-domain.local/tenant1]",
+            "items": {
+              "type": "string"
+            },
+            "maxItems": 2147483647,
+            "minItems": 1
+          }
+        }
       },
       "SnapshotStatusDto": {
         "type": "object",

@@ -62,8 +62,11 @@ The documentation is automatically deployed to GitHub Pages and available at:
 
 ### Developer Guides
 - **[Authentication & Authorization](dist/resources/guides/authentication-authorization.md)**: OAuth 2.0 implementation and security
+- **[JWT Signing Keys](dist/resources/guides/iam-jwt-keys-and-oidc.md)**: Managing JWT signing keys for technical users and custom installations
+- **[OIDC Providers & JWT Claims](dist/resources/guides/iam-oidc-and-jwt-claims.md)**: Configuring external identity providers and required claims
 - **[Cyoda Platform Library](dist/resources/guides/cpl-overview.md)**: Cyoda Platform Library architecture and capabilities
 - **[Entity Database](dist/resources/guides/cyoda-entity-database.md)**: Entity modeling and database concepts
+
 
 ### Architecture Documentation
 - **[Cloud Architecture](dist/resources/architecture/cyoda-cloud-architecture.md)**: Physical infrastructure and deployment topology

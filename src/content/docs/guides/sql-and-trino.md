@@ -3,7 +3,7 @@
 title: "SQL and Trino"
 description: Learn how entities are mapped to SQL schemas and how to query with SQL
 sidebar:
-  order: 6
+  order: 8
 ---
 
 ## Overview

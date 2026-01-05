@@ -2,7 +2,7 @@
 title: "Authentication & Authorization"
 description: OAuth 2.0-based authentication system for Cyoda Cloud
 sidebar:
-  order: 4
+  order: 5
 ---
 
 ## Overview
@@ -88,10 +88,16 @@ Cyoda Cloud implements the standard OAuth 2.0 Client Credentials Grant (RFC 6749
 
 ### JWT Tokens
 
-- **Algorithm**: RS256 (RSA Signature with SHA-256)
-- **Expiration**: 5 minutes
-- **Issuer**: Cyoda Ltd.
-- **Claims**: Include user ID, roles, and legal entity information
+Cyoda Cloud issues short-lived JWT access tokens.
+
+- **Algorithms**: Asymmetric signature algorithms only: `RS256`, `RS384`, `RS512`, `ES256`, `ES384`, `ES512`, `PS256`, `PS384`, `PS512`, `EdDSA`
+- **Expiration**: Typically around a few minutes for access tokens (configurable)
+- **Issuer**: Cyoda Cloud (or a trusted OIDC provider configured in a custom setups)
+- **Key material**: Signing keys managed by Cyoda can be rotated via the JWT signing keys mechanism. For more details, see [JWT Signing Keys](/guides/iam-jwt-keys-and-oidc/).
+- **Claims**: Include user identifier, roles and legal entity (tenant) information.
+
+> **Note**
+> When you integrate a custom OIDC provider, its tokens must contain additional claims required by Cyoda Cloud (for example `sub`, `caas_org_id`, `user_roles`). See [OIDC Providers & JWT Claims](/guides/iam-oidc-and-jwt-claims/) for details.
 
 ### Tenant Isolation
 
