@@ -1,0 +1,81 @@
+---
+// Main API Reference page - redirects to the appropriate renderer based on user settings
+// This page handles the base /api-reference/ URL and redirects to either:
+// - /api-reference/scalar/ (default)
+// - /api-reference/stoplight/
+const title = 'API Reference';
+const description = 'Interactive API documentation for the Cyoda platform';
+---
+
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>{title} | Cyoda Documentation</title>
+    <meta name="description" content={description} />
+    <link rel="icon" href="/favicon.svg" sizes="any" />
+    <style>
+      body {
+        margin: 0;
+        padding: 0;
+        font-family: system-ui, sans-serif;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        min-height: 100vh;
+        background: #f6f8fa;
+      }
+      .loading {
+        text-align: center;
+        color: #656d76;
+      }
+      .spinner {
+        width: 40px;
+        height: 40px;
+        border: 3px solid #e1e5e9;
+        border-top: 3px solid #4FB8B0;
+        border-radius: 50%;
+        animation: spin 1s linear infinite;
+        margin: 0 auto 1rem;
+      }
+      @keyframes spin {
+        0% { transform: rotate(0deg); }
+        100% { transform: rotate(360deg); }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="loading">
+      <div class="spinner"></div>
+      <p>Loading API Reference...</p>
+    </div>
+
+    <script is:inline>
+      // Get the user's preferred API renderer from localStorage
+      function getApiRenderer() {
+        if (typeof localStorage === 'undefined') return 'scalar';
+        return localStorage.getItem('cyoda-api-renderer') || 'scalar';
+      }
+      
+      // Redirect to the appropriate renderer
+      function redirectToRenderer() {
+        const renderer = getApiRenderer();
+        const basePath = '/api-reference/';
+        
+        switch (renderer) {
+          case 'stoplight':
+            window.location.replace(basePath + 'stoplight/');
+            break;
+          case 'scalar':
+          default:
+            window.location.replace(basePath + 'scalar/');
+            break;
+        }
+      }
+      
+      // Redirect immediately
+      redirectToRenderer();
+    </script>
+  </body>
+</html>
+

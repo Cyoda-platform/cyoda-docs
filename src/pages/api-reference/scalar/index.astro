@@ -1,0 +1,166 @@
+---
+// API Reference page using Scalar with hash-based routing
+// URL format: /api-reference/scalar/#tag/TagName/METHOD-path
+import ApiSettings from '../../../components/ApiSettings.astro';
+
+const title = 'API Reference';
+const description = 'Interactive API documentation for the Cyoda platform';
+---
+
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>{title} | Cyoda Documentation</title>
+    <meta name="description" content={description} />
+    <link rel="icon" href="/favicon.svg" sizes="any" />
+    <style>
+      @import '../../../styles/primer.css';
+
+      body {
+        margin: 0;
+        padding: 0;
+        font-family: system-ui, -apple-system, sans-serif;
+        background: #ffffff;
+        color: #24292f;
+      }
+
+      .header {
+        background: hsl(224, 19%, 97%);
+        border-bottom: 1px solid #e1e4e8;
+        padding: 1rem 2rem;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        position: sticky;
+        top: 0;
+        z-index: 100;
+      }
+
+      .header-right {
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+      }
+
+      .legal-link {
+        color: #656d76;
+        text-decoration: none;
+        font-weight: 500;
+        padding: 0.5rem 1rem;
+        border-radius: 0.25rem;
+        transition: color 0.2s ease;
+        font-size: 0.875rem;
+        white-space: nowrap;
+      }
+
+      .legal-link:hover,
+      .legal-link:focus {
+        color: #24292f;
+        text-decoration: none;
+      }
+
+      .cookie-prefs-button {
+        background: none !important;
+        border: none !important;
+        cursor: pointer;
+        font-family: inherit;
+        font-size: 0.875rem !important;
+        color: #656d76 !important;
+        text-decoration: none;
+        font-weight: 500 !important;
+        padding: 0.5rem 1rem;
+        border-radius: 0.25rem;
+        transition: color 0.2s ease;
+        white-space: nowrap;
+      }
+
+      .cookie-prefs-button:hover,
+      .cookie-prefs-button:focus {
+        color: #24292f !important;
+        text-decoration: none;
+      }
+
+      .site-title {
+        display: flex;
+        align-items: center;
+        gap: 0.75rem;
+        text-decoration: none;
+        color: #4FB8B0;
+        font-weight: 600;
+        font-size: 1.25rem;
+        transition: opacity 0.2s ease;
+        margin: 0;
+      }
+
+      .site-title:hover {
+        opacity: 0.8;
+      }
+
+      .site-logo {
+        flex-shrink: 0;
+        border-radius: 4px;
+        width: 32px;
+        height: 32px;
+      }
+
+      .main-content {
+        width: 100%;
+        height: calc(100vh - 80px);
+      }
+
+      @media (max-width: 50rem) {
+        .site-title {
+          font-size: 1.125rem;
+          gap: 0.5rem;
+        }
+        .site-logo {
+          width: 28px;
+          height: 28px;
+        }
+        .header {
+          padding: 0.75rem 1rem;
+        }
+        .header-right {
+          gap: 0.5rem;
+        }
+        .legal-link {
+          padding: 0.25rem 0.5rem;
+          font-size: 0.75rem;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <header class="header">
+      <a href="/" class="site-title">
+        <img src="/favicon.svg" alt="Cyoda Logo" class="site-logo" />
+        <span class="site-title-text">Cyoda Documentation</span>
+      </a>
+      <div class="header-right">
+        <a href="/legal" class="legal-link">Legal</a>
+        <a href="/imprint" class="legal-link">Imprint</a>
+        <button
+          type="button"
+          data-cc="show-preferencesModal"
+          class="legal-link cookie-prefs-button"
+        >
+          Cookie Prefs
+        </button>
+        <ApiSettings />
+      </div>
+    </header>
+
+    <main class="main-content">
+      <script
+        id="api-reference"
+        data-url="/openapi/openapi.json"
+        data-configuration='{"theme": "default"}'
+      ></script>
+    </main>
+
+    <!-- Use CDN for Scalar API Reference -->
+    <script is:inline src="https://cdn.jsdelivr.net/npm/@scalar/api-reference@latest"></script>
+  </body>
+</html>
+
