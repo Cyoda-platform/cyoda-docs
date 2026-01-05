@@ -110,7 +110,8 @@ export class SettingsManager {
    * Get API reference URL based on current renderer setting
    */
   getApiReferenceUrl(): string {
-    return '/api-reference/';
+    const renderer = this.getApiRenderer();
+    return `/api-reference/${renderer}/`;
   }
 
   /**
