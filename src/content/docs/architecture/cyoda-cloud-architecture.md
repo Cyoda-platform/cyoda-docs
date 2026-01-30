@@ -1,174 +1,137 @@
 ---
 title: "Cloud Architecture"
-description: Physical architecture for Cyoda Cloud deployment
+description: Physical architecture for Cyoda Cloud
 ---
+This document describes the logical and physical architecture of Cyoda Cloud, with a focus on how client compute integrates with the platform. It is intended for software developers, solution architects, DevOps/SRE engineers, and autonomous agents that need a clear, implementation-oriented understanding of the system.
 
-This document describes the current physical architecture for Cyoda Cloud's soft launch deployment, supporting **free tier** subscribers. The architecture provides a multi-tenant platform running on bare metal infrastructure in Hetzner datacenters, with isolated client environments and shared backend services.
+Where relevant, the accompanying diagrams illustrate alternative deployment and connectivity models rather than a single fixed topology.
 
-This diagram shows the core components and data flow. Many operational elements are not depicted, including tunnel gateways, internal network/VPN infrastructure, Prometheus/Grafana monitoring, log aggregators, authentication services, AI Assistant app, Cloud Manager app, additional load balancers, and other supporting services.
+# TL;DR
 
-## Cluster-Level Architecture
-```mermaid
-flowchart LR
-    %% STYLES
-    classDef cyoda fill:#F5FAF9,stroke:#4FB8B0,stroke-width:3px
-    classDef client fill:#F5F7F9,stroke:#FD9E29,stroke-width:3px
-    classDef external fill:#F5F7F9,stroke:#5A18AC,stroke-width:2px,stroke-dasharray: 5 3
-    classDef loadBalancer fill:#F5F0F9,stroke:#6BB45A,stroke-width:2px
-    classDef namespace fill:#F5F7F9,stroke:#4FB8B0,stroke-width:2px
-    classDef bareMetal fill:#F9F7F9,stroke:#3a8a84,stroke-width:2px
+Cyoda models entities via configuration and provides persistence, transactional workflow orchestration and processing, and distributed querying via API and SQL in a write-only, horizontally distributed architecture. This enables building scalable event-driven systems with ease, with client-specific logic executed as independent compute.
 
-    %% HETZNER DATACENTER FRAME
-    subgraph HETZNER["Hetzner Datacenter"]
-        direction TB
-        
-        %% Bare Metal Cassandra
-        CASS["Cassandra Cluster\n(3 Nodes)\n(Bare Metal)\n\nPer-Client Keyspaces\nRF=3, CL=QUORUM\nBatched Prepared Statements"]:::bareMetal
-        
-        %% KUBERNETES FRAME
-        subgraph K8S["Kubernetes Cluster (on Bare Metal)"]
-            direction TB
-            ZK["Zookeeper Cluster"]:::cyoda
-            
-            %% CLIENT ENVIRONMENT NAMESPACE
-            subgraph NS["Client Environment [namespace]"]
-                direction TB
-                
-                %% NGINX EXTERNAL FRAME
-                subgraph NGINX["nginx-external"]
-                    LB_HTTP["nginx-ingress\n(HTTP API)"]:::loadBalancer
-                    LB_GRPC["nginx-ingress\n(gRPC)"]:::loadBalancer
-                    LB_JDBC["nginx-ingress\n(JDBC)"]:::loadBalancer
-                    LB_UI["nginx-ingress\n(UI)"]:::loadBalancer
-                end
-                class NGINX loadBalancer
-                
-                CPM["CPM Cluster"]:::namespace
-                TRINO["Trino Cluster"]:::namespace
-                UI["UI Service"]:::namespace
-            end
-            class NS namespace
-        end
-        class K8S cyoda
-    end
-    class HETZNER cyoda
+![Cyoda Cloud Architecture](../../../assets/architecture/Cyoda-Cloud-Client-View-compact.svg)
 
-    %% CLIENT FRAME
-    subgraph CLIENT["Client-Side (External)"]
-        direction TB
-        CC["Client Compute Cluster"]:::client
-        CA["Client Application Nodes"]:::client
-    end
-    class CLIENT client
-
-    %% External Element
-    CF["Cloudflare Tunnel"]:::external
-
-    %% CONNECTIONS
-    
-    %% Client to Cloudflare Tunnel
-    CC -->|gRPC| CF
-    CA -->|HTTP API| CF
-    CA -->|JDBC| CF
-    CA -->|HTTP| CF
-
-    %% Cloudflare Tunnel to ingresses
-    CF -->|gRPC| LB_GRPC
-    CF -->|HTTP API| LB_HTTP
-    CF -->|JDBC| LB_JDBC
-    CF -->|HTTP| LB_UI
-
-    %% Ingresses to services
-    LB_GRPC -->|gRPC| CPM
-    LB_HTTP -->|HTTP API| CPM
-    LB_JDBC -->|JDBC| TRINO
-    LB_UI -->|HTTP| UI
-
-    %% Internal connections
-    CPM -->|CQL| CASS
-    CPM -->|TCP| ZK
-    TRINO -->|rsocket| CPM
-```
+Key points:
+- Cyoda calls client compute via **gRPC + CloudEvents**
+- Client compute is **client-owned**, **polyglot**, and **independently scalable**
+- Data is stored in **Cassandra (bare metal, per-tenant keyspaces)**
+- Data is **queried via HTTP API or Trino SQL**, in both cases as distributed queries with horizontally scalability
+- Each cluster layer (Cyoda, Trino, client compute, Cassandra) **scales horizontally**; nothing is coupled
 
 
-## Architecture Rules
+# Platform Overview
 
-### Components
+Cyoda Cloud is deployed on Hetzner bare‑metal infrastructure in Helsinki, Finland, supplemented by selected internal services running on Hetzner Cloud. Each lifecycle stage (development, staging, production) is deployed as an independent environment with its own Kubernetes and Cassandra clusters.
 
-The setup consists of:
-- A Cassandra cluster (C*) - N nodes on bare metal (4+)
-- Cyoda Processing Manager cluster (CPM) - containerized in Kubernetes
-- Trino cluster (TSQL) - containerized in Kubernetes  
-- Zookeeper cluster (ZK) - containerized in Kubernetes
-- Client Compute cluster (CC) - external, client-operated
-- Client Application Cluster (CA) - external, client-operated
-- UI Service - containerized in Kubernetes
-- nginx-ingress controllers - containerized in Kubernetes
+Key characteristics:
+- **Bare metal first**: Cassandra runs directly on bare‑metal servers for predictable latency and I/O performance, and is intentionally not containerised.
+- **High‑bandwidth internal network**: Bare‑metal nodes are connected via a private 10 Gbit LAN.
+- **Strict network isolation**: External access is fronted by Cloudflare. All ingress to internal services occurs through VPN‑secured channels. 
+- **Horizontal scalability by design**: Cyoda services, Trino, and client compute nodes scale independently.
 
-### Infrastructure
+## Client Compute Model
 
-**Cyoda Cloud Infrastructure:**
-- CPM, TSQL, ZK, UI, and nginx-ingress run on Kubernetes cluster on bare metal in Hetzner datacenter
-- C* runs directly on bare metal in Hetzner datacenter (outside Kubernetes)
-- Each client environment operates within an isolated Kubernetes namespace
-- Shared services (C*, ZK) serve multiple client environments
+Cyoda delegates all client‑specific business logic to Client Compute Nodes. These nodes:
+- Connect to Cyoda via gRPC and CloudEvents
+- Execute processors within workflows
+- Evaluate criteria that control gateway transitions
+- Are fully owned and implemented by the client
 
-**Client Infrastructure:**
-- CC and CA are external, client-operated clusters
-- CC encapsulates client business logic for compute externalization
-- CA hosts client applications consuming Cyoda services
-- CA and CC may be physically the same runtime
+Client compute is a first‑class part of the architecture and can be deployed flexibly depending on latency, isolation, and operational requirements.
 
-### Data Storage
+Currently supported client runtimes:
+- Java/Kotlin
+- Python
 
-**Cassandra Configuration:**
-- Per-client keyspaces for data isolation
-- Replication factor = 3 across all nodes
-- Consistency level = QUORUM for all operations
-- All writes use batched prepared statements
+Additional languages are planned, enabling a fully polyglot execution model.
 
-### Network Connectivity
+## Developer Mode
+In developer mode, client compute nodes typically run on the developer’s local machine.
 
-**Internal Connections:**
-- CPM connects to C* via CQL for data persistence and querying
-- CPM connects to ZK via TCP for cluster state management
-- TSQL connects to CPM via rsocket for SQL query processing
+![Cyoda Cloud Architecture](../../../assets/architecture/Cyoda-Cloud-Client-View-developer-mode.svg)
 
-**External Access:**
-- All external access routes through Cloudflare tunnel
-- Access is load-balanced through nginx-ingress controllers within each namespace
-- CC connects to CPM via gRPC for compute externalization
-- CA connects to CPM via HTTP API for application integration
-- CA connects to TSQL via JDBC for SQL querying
-- CA connects to UI via HTTP for web interface access
+Characteristics:
+- Client nodes connect to Cyoda Cloud via a **Cloudflare tunnel**
+- Developers use their preferred IDE, language, and local tooling
+- Hot‑reload and rapid iteration are supported
 
-### Service Endpoints
+In this mode:
+- **Client applications** interact with Cyoda using the HTTP API or the Trino JDBC driver to perform CRUD operations and queries
+- **SQL tooling** can be used directly against entity data via Trino
 
-**CPM Endpoints:**
-- gRPC interface for high-performance compute externalization
-- HTTP API for standard application integration (via HTTPS)
+Despite its simplicity, the architecture remains fully horizontally scalable:
+- Cyoda services scale elastically per tenant
+- Trino scales independently for analytical workloads
+- Client compute nodes scale independently
+- Cassandra scales horizontally and is shared across tenants
 
-**TSQL Endpoints:**
-- JDBC interface for SQL querying over flexible schemas
+## Multi-Cloud
+Cyoda supports multi‑cloud deployments where tenant resources run in a separate cloud or region from the Cyoda control plane.
+![Cyoda Cloud Architecture](../../../assets/architecture/Cyoda-Cloud-Client-View-multi-cloud.svg)
 
-**UI Endpoints:**
-- HTTP interface for web-based user interaction
+## Multi Language
+Each client compute node can be implemented in a different programming language.
 
-### Access Control
+This enables:
+- Polyglot architectures
+- Team autonomy
+- Incremental migration between languages
 
-External network access to Cyoda Cloud is exclusively via:
-- Cloudflare tunnel as the single entry point
-- nginx-ingress controllers providing protocol-specific load balancing
-- No direct access to internal services bypassing the ingress layer
+Cyoda treats all client nodes uniformly at the protocol level, regardless of implementation language.
 
-### Operational Responsibility
+![Cyoda Cloud Architecture](../../../assets/architecture/Cyoda-Cloud-Client-View-multi-language.svg)
 
-**Cyoda Cloud Operated:**
-- CPM, TSQL, ZK, UI, nginx-ingress (Kubernetes workloads)
-- C* (bare metal database cluster)
-- All infrastructure within Hetzner datacenter
+## Single-Cloud
+An entire Cyoda instance (control plane and tenant workloads) can be deployed into a single cloud environment.
 
-**Client Operated:**
-- CC (compute externalization nodes)
-- CA (application integration nodes)
-- All external client infrastructure
+![Cyoda Cloud Architecture](../../../assets/architecture/Cyoda-Cloud-Client-View-single-cloud.svg)
+
+## Sharded by Client Tag
+For advanced workloads, client tags can be used to route events to specific subsets of client compute nodes.
+
+This enables targeted execution strategies, such as:
+- Separating GPU/TPU‑backed compute from CPU‑only workloads
+- Isolating high‑throughput, low‑latency processing from batch workloads
+- Running specialised processors with different cost or performance characteristics
+
+Routing is explicit and deterministic, making this model suitable for complex or heterogeneous compute requirements.
+![Cyoda Cloud Architecture](../../../assets/architecture/Cyoda-Cloud-Client-View-tag-sharded.svg)
+
+## Cyoda Cloud Layout
+The current Cyoda Cloud deployment is a multi‑tenant platform running on bare‑metal infrastructure in Hetzner datacenters (EU).
+
+![Cyoda Cloud Architecture](../../../assets/architecture/Cyoda-Cloud-Client-View-cyoda-details.svg)
+
+High‑level characteristics:
+- Each tenant maps to a dedicated Kubernetes namespace
+- Each tenant has:
+  - Its own Cyoda pods 
+  - A dedicated Cassandra keyspace 
+  - A dedicated Trino deployment for SQL access
+
+Cyoda and Trino can both be elastically scaled per tenant to meet:
+- Event processing throughput
+- Workflow execution demand
+- Complex analytical query workloads
+
+In addition to the core runtime components, the platform includes:
+
+- Cyoda UI SPA for interactive use
+- Cyoda Toolbox Server for administrators, exposing a GraphQL API for maintenance and analysis
+- Apache Zookeeper for Cyoda cluster state management (multi‑tenant across namespaces)
+- Prometheus and Grafana (LGTM stack) for metrics and observability
+- Alertmanager for alert routing, with notifications sent to internal Google Chat
+
+Log aggregation and analysis are currently handled by Elasticsearch and Kibana. This is expected to be consolidated into Loki and Grafana LogQL in the future.
+
+### Scope of the Diagrams
+The diagrams intentionally omit some infrastructure components to keep the focus on data flow and execution topology. Omitted elements include:
+
+- Gateways and edge routing
+- VPN and internal network details
+- Authentication and identity services
+- AI Studio and Cloud Manager applications
+- Auxiliary load balancers and supporting services
+
+Their purpose is to illustrate how Cyoda, client compute, storage, and query layers fit together, rather than to serve as a complete infrastructure blueprint.
