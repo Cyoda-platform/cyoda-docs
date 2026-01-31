@@ -13,6 +13,9 @@
   --sl-color-accent: var(--cyoda-aqua);
   --sl-color-accent-low: var(--cyoda-aqua-light);
   --sl-color-border-accent: var(--cyoda-aqua);
+
+  /* Color scheme for light-dark() CSS function in SVGs */
+  color-scheme: light;
 }
 
 /* Dark mode critical adjustments */
@@ -20,6 +23,9 @@
   --sl-color-accent: var(--cyoda-aqua);
   --sl-color-accent-low: rgba(79, 184, 176, 0.15);
   --sl-color-border-accent: rgba(79, 184, 176, 0.5);
+
+  /* Color scheme for light-dark() CSS function in SVGs */
+  color-scheme: dark;
 }
 
 /* Critical layout styles - prevent layout shift */
