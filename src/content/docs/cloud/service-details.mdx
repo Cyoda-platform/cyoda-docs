@@ -7,10 +7,12 @@ sidebar:
 
 import { Aside } from '@astrojs/starlight/components';
 
-<Aside type="caution" title="Alpha Phase">
-    During Alpha, we are moving fast and we will be making breaking changes along the way. Make sure you backup your data,
-    and check before redeploying your cyoda cloud environment. It's good practice to set yourself up with some CI/CD pipelines to
-    automate tearing down and rebuilding your data and environment.
+<Aside type="caution" title="Beta Phase">
+    During Beta, we are still moving fast and we might be making breaking changes along the waym,
+    although we try to keep that to a minimum.
+    Make sure you backup your data, and check before redeploying your cyoda cloud environment.
+    It's good practice to set yourself up with some CI/CD pipelines to automate tearing down and
+    rebuilding your data and environment.
     Contact us on [Discord](https://discord.com/invite/95rdAyBZr2) if you need help.
 </Aside>
 
@@ -47,7 +49,7 @@ For detailed architecture information, see [Cyoda Cloud Architecture](/architect
 - **HTTP API**: REST endpoints for application integration
 - **gRPC**: High-performance interface for compute externalization
 - **JDBC**: SQL querying via Trino
-- **AI Assistant**: Entry point for signing up, creating new applications via chat dialogue, provisioning and
+- **AI Studio**: Entry point for signing up, creating new applications via chat dialogue, provisioning and
   controlling your environment(s), and getting help. Available at [https://ai.cyoda.net](https://ai.cyoda.net)
 - **Cyoda UI**: Web interface for your Cyoda environment. It's our legacy UI, but with extensive features including
   entity lifecycle configuration and observability, distributed report configuration and execution, entity model viewing
@@ -82,7 +84,7 @@ Rate limits vary by subscription tier. See [Subscription Tiers](/cloud/entitleme
 
 - Auth0-based human authentication for web interfaces
 - OAuth 2.0 client credentials flow for technical users
-- Technical user creation via [AI Assistant](https://ai.cyoda.net)
+- Technical user creation via [AI Studio](https://ai.cyoda.net)
 
 For complete authentication details, see [Authentication & Authorization](/guides/authentication-authorization/).
 
