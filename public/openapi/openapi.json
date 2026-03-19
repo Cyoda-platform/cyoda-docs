@@ -28,6 +28,22 @@
       "description": "APIs for managing entities including creation, updates, and statistics retrieval.\n\nA note on transaction handling:\n* All changes are executed transactionally\n* Collections are processed in transactional batches defined by `transactionWindow`\n* Collections exceeding `transactionWindow` size are automatically split into multiple transactional batches\n\nA note on transitions:\n* Normal transitions are explicitly configured in the workflow and move entities between different states\n* Loopback transitions are virtual transitions that loop back to the same state without explicit configuration\n* Loopback transitions trigger the first allowable automated exit transition, enabling subsequent automated workflow traversal"
     },
     {
+      "name": "OAuth, OIDC Providers",
+      "description": "API for managing trusted external OIDC providers for user authentication and authorization."
+    },
+    {
+      "name": "Entity Model, Workflow",
+      "description": "APIs for exporting and importing entity model workflows."
+    },
+    {
+      "name": "OAuth, Keys",
+      "description": "API for managing JWT signing key-pairs for OAuth 2.0 tokens, for issuing, retrieving, invalidating, reactivating, and deleting JWT key-pairs for different token audiences (human users and technical users/service accounts)"
+    },
+    {
+      "name": "Entity, Audit",
+      "description": "APIs for searching and retrieving entity audit events."
+    },
+    {
       "name": "Entity model",
       "description": "\nOperations for managing entity models, including import/export, versioning, and lifecycle management.\nSupports model locking/unlocking, change level control, and metadata conversion through various formats.\n\nModel Lifecycle Rules:\n- Entity models must be locked before any entities can be saved using that model\n- A locked model cannot be unlocked if there are existing entities in the database using that model\n- Models can only be deleted when unlocked and when no entities reference them\n\nChange Level Control:\nModels support hierarchical change levels (from least to most impactful):\n- ARRAY_LENGTH: Only allows UniTypeArray width increases\n- ARRAY_ELEMENTS: Permits MultiTypeArray changes without new types\n- TYPE: Allows type modifications\n- STRUCTURAL: Permits fundamental model changes\n\nWhen a change level is set, all less impactful changes are automatically allowed.\n    "
     },
@@ -36,12 +52,20 @@
       "description": "\nProvides endpoints for searching and retrieving entities using both synchronous and asynchronous approaches.\n\nKey Features:\n- Snapshot-based searches for large datasets\n- Real-time synchronous searches for immediate results\n- Point-in-time querying capabilities\n- Pagination support for large result sets\n\nSearch Methods:\n1. Snapshot Search (/snapshot/*):\n   - Creates a persistent snapshot of search results\n   - The query is distributed across the cluster of Cyoda processing nodes\n   - Horizontally scalable - query time decreases linearly with cluster size\n   - Supports asynchronous processing of large datasets\n   - Allows status monitoring and cancellation\n   - Results can be retrieved in pages\n\n2. Direct Search (/{entityName}/{modelVersion}):\n   - Synchronous, in-memory search\n   - Designed for small to medium datasets\n   - Limited by maximum result set size (default: 1000, max: 10000)\n   - Non-distributed (executes on single node)\n   - Configurable timeout and result limits\n   - Returns immediate streaming results\n\nAll endpoints support:\n- Point-in-time queries using ISO 8601 datetime format\n- Complex search conditions using GroupConditionDto\n- Model-specific searches by entity name and version\n"
     },
     {
+      "name": "User, Machine",
+      "description": "API for managing technical users and their credentials."
+    },
+    {
       "name": "CQL Execution Statistics",
       "description": "Endpoints for monitoring CQL query execution performance and statistics"
     },
     {
       "name": "Stream Data",
       "description": "Endpoints for streaming data operations, configuration management, and query planning"
+    },
+    {
+      "name": "User, Account",
+      "description": "API to retrieve information about user accounts and their subscriptions."
     },
     {
       "name": "SQL-Schema",
@@ -180,7 +204,8 @@
             "description": "Filter by transaction identifier",
             "required": false,
             "schema": {
-              "type": "string"
+              "type": "string",
+              "format": "uuid"
             }
           },
           {
@@ -273,6 +298,105 @@
         ]
       }
     },
+    "/audit/entity/{entityId}/workflow/{transactionId}/finished": {
+      "get": {
+        "tags": [
+          "Entity, Audit"
+        ],
+        "summary": "Get latest workflow finished event for transaction",
+        "description": "Retrieves the StateMachine Finished event for a specific entity and transaction.\nThis endpoint provides quick access to the workflow outcome for that transaction without needing to\nsearch through all audit events.\n\nBoth entityId and transactionId must be valid time-based UUIDs (version 1).\n",
+        "operationId": "getStateMachineFinishedEvent",
+        "parameters": [
+          {
+            "name": "entityId",
+            "in": "path",
+            "description": "Identifier of the entity. Must be a valid time-based UUID (version 1). ",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          },
+          {
+            "name": "transactionId",
+            "in": "path",
+            "description": "Identifier of the transaction. Must be a valid time-based UUID (version 1). ",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Workflow finished event retrieved successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/StateMachineFinishedDto"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid request - UUID is not time-based",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponseDto"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Error response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponseDto"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Error response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponseDto"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Entity or transaction not found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponseDto"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Error response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponseDto"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ]
+      }
+    },
     "/clients": {
       "get": {
         "tags": [
@@ -337,8 +461,19 @@
           "User, Machine"
         ],
         "summary": "Create M2M client",
-        "description": "Creates a new machine-to-machine (M2M)client for API authentication via OAuth 2.0.\n\nThe created user will have M2M role permissions, necessary for getting the bearer token.\n\n**Authorization Required:** SUPER_USER role\n",
+        "description": "Creates a new machine-to-machine (M2M) client for API authentication via OAuth 2.0.\n\nThe created user will have M2M role permissions, necessary for getting the bearer token.\n\nWhen `withAdminRole` is set to `true`, the M2M client will additionally receive the ADMIN role,\ngranting it full access to all ADMIN-level endpoints (e.g., trusted key registration).\nThis requires the `cyoda.security.web.jwt.m2m.admin-role-enabled` feature flag to be enabled;\notherwise, a 401 Unauthorized response is returned.\n\n**Authorization Required:** SUPER_USER role\n",
         "operationId": "createTechnicalUser",
+        "parameters": [
+          {
+            "name": "withAdminRole",
+            "in": "query",
+            "description": "When true, the created M2M client will additionally receive the ADMIN role. Requires the M2M admin role feature flag to be enabled. ",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
         "responses": {
           "200": {
             "description": "M2M client created successfully",
@@ -951,7 +1086,7 @@
             "example": "1d1e1b10-1155-11f0-bcd5-ae468cd3ed16"
           },
           {
-            "name": "arg1",
+            "name": "pointInTime",
             "in": "query",
             "description": "The point-in-time for loading the entity, in ISO 8601 format (e.g., '2035-01-01T12:00:00Z'). Defaults to the current consistency time of the system if not provided.",
             "required": false,
@@ -960,6 +1095,17 @@
               "format": "date-time"
             },
             "example": "2035-01-01T12:00:00Z"
+          },
+          {
+            "name": "transactionId",
+            "in": "query",
+            "description": "Load the entity as it was at the end of the specified transaction with the given transactionId",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            },
+            "example": "1d1e1b10-1155-11f0-bcd5-ae468cd3ed16"
           }
         ],
         "responses": {
@@ -1019,7 +1165,7 @@
             }
           },
           "400": {
-            "description": "Invalid UUID format",
+            "description": "Conflicting request paramters (both pointInTime and transactionId provided)",
             "content": {
               "application/json": {
                 "schema": {
@@ -1029,11 +1175,11 @@
                   "type": "about:blank",
                   "title": "Bad Request",
                   "status": 400,
-                  "detail": "Invalid value 'not-a-uuid' for parameter 'entityId'",
-                  "instance": "/api/entity/2ed54d80-f3c2-11ee-9e63-ae468cd3ed16",
+                  "detail": "Conflicting request parameters: Cannot provide both pointInTime and transactionId",
+                  "instance": "/api/entity/2ed54d80-f3c2-11ee-bf3f-ae468cd3ed16",
                   "properties": {
-                    "parameter": "entityId",
-                    "invalidValue": "not-a-uuid"
+                    "pointInTime": "2024-05-08T04:04:04Z",
+                    "transactionId": "ffef9680-26e6-11ef-bf3f-ae468cd3ed16"
                   }
                 }
               }
@@ -3602,7 +3748,7 @@
             }
           },
           "401": {
-            "description": "Unauthorized - Authentication is required",
+            "description": "Error response",
             "content": {
               "application/json": {
                 "schema": {
@@ -3612,7 +3758,7 @@
             }
           },
           "403": {
-            "description": "Forbidden - Insufficient permissions",
+            "description": "Error response",
             "content": {
               "application/json": {
                 "schema": {
@@ -3622,7 +3768,7 @@
             }
           },
           "404": {
-            "description": "Entity model not found",
+            "description": "Error response",
             "content": {
               "application/json": {
                 "schema": {
@@ -3632,7 +3778,7 @@
             }
           },
           "500": {
-            "description": "Internal Server Error - An unexpected error occurred",
+            "description": "Error response",
             "content": {
               "application/json": {
                 "schema": {
@@ -3694,7 +3840,7 @@
             "content": {}
           },
           "400": {
-            "description": "Invalid workflow configuration data",
+            "description": "Error response",
             "content": {
               "application/json": {
                 "schema": {
@@ -3704,7 +3850,7 @@
             }
           },
           "401": {
-            "description": "Unauthorized - Authentication is required",
+            "description": "Error response",
             "content": {
               "application/json": {
                 "schema": {
@@ -3714,7 +3860,7 @@
             }
           },
           "403": {
-            "description": "Forbidden - Insufficient permissions",
+            "description": "Error response",
             "content": {
               "application/json": {
                 "schema": {
@@ -3724,7 +3870,7 @@
             }
           },
           "404": {
-            "description": "Entity model not found",
+            "description": "Error response",
             "content": {
               "application/json": {
                 "schema": {
@@ -3734,7 +3880,7 @@
             }
           },
           "500": {
-            "description": "Internal Server Error - An unexpected error occurred",
+            "description": "Error response",
             "content": {
               "application/json": {
                 "schema": {
@@ -4014,7 +4160,7 @@
           "content": {
             "application/json": {
               "schema": {
-                "$ref": "#/components/schemas/InvalidateJwtKeyPairRequestDto"
+                "$ref": "#/components/schemas/InvalidateKeyRequestDto"
               }
             }
           }
@@ -4098,6 +4244,402 @@
               "application/json": {
                 "schema": {
                   "$ref": "#/components/schemas/JwtKeyPairResponseDto"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Error response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponseDto"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Error response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponseDto"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Error response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponseDto"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Error response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponseDto"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ]
+      }
+    },
+    "/oauth/keys/trusted": {
+      "get": {
+        "tags": [
+          "OAuth, Keys"
+        ],
+        "summary": "List registered trusted keys",
+        "description": "Returns all trusted public keys registered for the caller's tenant.\nRequires ADMIN or SUPER_USER role.\n",
+        "operationId": "listTrustedKeys",
+        "responses": {
+          "200": {
+            "description": "List of trusted keys",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/TrustedKeyResponseDto"
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Error response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponseDto"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Error response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponseDto"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Feature is disabled",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponseDto"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Error response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponseDto"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ]
+      },
+      "post": {
+        "tags": [
+          "OAuth, Keys"
+        ],
+        "summary": "Register a trusted public key",
+        "description": "Registers a pre-shared public key for JWT validation. This enables external applications\nto sign user JWTs that Cyoda can verify without requiring a reachable OIDC discovery endpoint.\nThe key is bound to the caller's tenant (legalEntityId).\n\nIf a key with the same `keyId` already exists and belongs to the caller's tenant, it is\nreplaced atomically (upsert semantics). This makes the endpoint retry-safe during key\nrotation — a retried request after a partial failure will succeed rather than conflict.\nIf the key belongs to a different tenant, the request is rejected with `409 Conflict`.\n\nUse `invalidatePrevious` to retire all other active trusted keys for this tenant\nin a single atomic operation, with an optional grace period (`invalidateGracePeriodSec`)\nduring which the old keys continue to be accepted.\n\nRequires ADMIN or SUPER_USER role. Disabled by default — enable via\n`cyoda.security.web.iam.trustedKeyRegistrationEnabled`.\n",
+        "operationId": "registerTrustedKey",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/RegisterTrustedKeyRequestDto"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Trusted key registered successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/TrustedKeyResponseDto"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Error response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponseDto"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Error response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponseDto"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Error response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponseDto"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Feature is disabled",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponseDto"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "Key with this keyId belongs to a different tenant",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponseDto"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Error response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponseDto"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ]
+      }
+    },
+    "/oauth/keys/trusted/{keyId}": {
+      "delete": {
+        "tags": [
+          "OAuth, Keys"
+        ],
+        "summary": "Delete a trusted public key",
+        "description": "Deletes a registered trusted public key. The key must belong to the caller's tenant.\nRequires ADMIN or SUPER_USER role.\n",
+        "operationId": "deleteTrustedKey",
+        "parameters": [
+          {
+            "name": "keyId",
+            "in": "path",
+            "description": "The key ID of the trusted key to delete",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Trusted key deleted successfully",
+            "content": {}
+          },
+          "401": {
+            "description": "Error response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponseDto"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Error response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponseDto"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Error response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponseDto"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Error response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponseDto"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ]
+      }
+    },
+    "/oauth/keys/trusted/{keyId}/invalidate": {
+      "post": {
+        "tags": [
+          "OAuth, Keys"
+        ],
+        "summary": "Invalidate a trusted public key",
+        "description": "Invalidates a registered trusted public key. After invalidation, JWTs signed with the\ncorresponding private key will no longer be accepted for validation (after the grace period).\nRequires ADMIN or SUPER_USER role.\n",
+        "operationId": "invalidateTrustedKey",
+        "parameters": [
+          {
+            "name": "keyId",
+            "in": "path",
+            "description": "The key ID of the trusted key to invalidate",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/InvalidateKeyRequestDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Trusted key invalidated successfully",
+            "content": {}
+          },
+          "401": {
+            "description": "Error response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponseDto"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Error response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponseDto"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Error response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponseDto"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Error response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponseDto"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ]
+      }
+    },
+    "/oauth/keys/trusted/{keyId}/reactivate": {
+      "post": {
+        "tags": [
+          "OAuth, Keys"
+        ],
+        "summary": "Reactivate a trusted public key",
+        "description": "Reactivates a previously invalidated trusted public key, allowing JWTs signed with it to\nbe accepted again. This operation is idempotent.\nRequires ADMIN or SUPER_USER role.\n\n**Important**: Reactivation removes the key's expiration entirely (`validTo` is cleared to null),\nregardless of the original `validTo` value the key was registered with. The key will remain valid\nindefinitely until explicitly invalidated or deleted again.\n",
+        "operationId": "reactivateTrustedKey",
+        "parameters": [
+          {
+            "name": "keyId",
+            "in": "path",
+            "description": "The key ID of the trusted key to reactivate",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Trusted key reactivated successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/TrustedKeyResponseDto"
                 }
               }
             }
@@ -4694,7 +5236,7 @@
           "User, Machine"
         ],
         "summary": "Obtain access token for M2M client",
-        "description": "Authenticates a M2M client using client credentials and returns an access token.\n\nThis endpoint implements the standard OAuth 2.0 Client Credentials Grant, designed for\nmachine-to-machine authentication. The client must authenticate using HTTP Basic Authentication,\nwhere the client_id and client_secret are provided in the Authorization header.\n\nThe returned access token can be used to authenticate subsequent API requests using the Bearer token scheme.\n\n**Note:** This endpoint does not require an existing access token, as it serves as the authentication entry point.\n",
+        "description": "Authenticates a M2M client and returns an access token.\n\nSupports two grant types:\n\n1. **client_credentials** — Standard OAuth 2.0 Client Credentials Grant for M2M authentication.\n2. **urn:ietf:params:oauth:grant-type:token-exchange** — RFC 8693 Token Exchange.\n   The M2M client acts on behalf of a user by presenting the user's JWT as `subject_token`.\n\nIn both cases the M2M client authenticates via HTTP Basic Authentication\n(client_id and client_secret in the Authorization header).\n\n**Note:** This endpoint does not require an existing access token, as it serves as the authentication entry point.\n",
         "operationId": "getTechnicalUserToken",
         "parameters": [
           {
@@ -4710,11 +5252,28 @@
           "content": {
             "application/x-www-form-urlencoded": {
               "schema": {
-                "type": "string",
-                "description": "Must be 'client_credentials'",
-                "enum": [
-                  "client_credentials"
-                ]
+                "type": "object",
+                "properties": {
+                  "grant_type": {
+                    "type": "string",
+                    "description": "The OAuth 2.0 grant type",
+                    "enum": [
+                      "urn:ietf:params:oauth:grant-type:token-exchange"
+                    ]
+                  },
+                  "subject_token": {
+                    "type": "string",
+                    "description": "The subject token to exchange"
+                  },
+                  "subject_token_type": {
+                    "type": "string",
+                    "description": "The type of the subject token",
+                    "enum": [
+                      "urn:ietf:params:oauth:token-type:jwt",
+                      "urn:ietf:params:oauth:token-type:access_token"
+                    ]
+                  }
+                }
               }
             }
           }
@@ -4741,7 +5300,17 @@
             }
           },
           "401": {
-            "description": "Unauthorized - Invalid client credentials",
+            "description": "Unauthorized - Invalid client credentials or subject token",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponseDto"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Forbidden - Tenant boundary violation",
             "content": {
               "application/json": {
                 "schema": {
@@ -5541,99 +6110,79 @@
         }
       }
     },
-    "/search/snapshot/{entityName}/{modelVersion}": {
+    "/search/async/{entityName}/{modelVersion}": {
       "post": {
         "tags": [
           "Search"
         ],
-        "summary": "Create Search Snapshot",
-        "description": "\nCreates a persistent snapshot of search results for large datasets.\n\nThis endpoint initiates an asynchronous search operation that:\n1. Validates the search criteria against the specified entity model\n2. Creates a persistent snapshot of matching entities\n3. Returns a UUID that can be used to:\n   - Monitor the snapshot creation progress (/snapshot/{snapshotId}/status)\n   - Retrieve paginated results (/snapshot/{snapshotId})\n   - Cancel the snapshot creation if needed (/snapshot/{snapshotId}/cancel)\n\nSnapshots are temporary and have a limited lifetime:\n- Each snapshot has an automatic expiration date\n- Expired snapshots are automatically deleted by the system\n- The expiration date can be retrieved using GET /snapshot/{snapshotId}/status\n- Plan to retrieve your data before the snapshot expires\n\nThe snapshot creation process runs in the background, allowing handling of large datasets\nwithout timeout concerns.\n\nIf no request body is provided or an empty request body is sent, all entities of the specified model and version will be included in the snapshot.\n\nQuery Structure:\nThe search condition is a tree of predicates that can include:\n1. Simple conditions - search within entity data using JSONPath\n2. Lifecycle conditions - search based on entity lifecyle (state, creationDate, previousTransition)\n3. Group conditions - combine multiple conditions with AND/OR operators\n\nOperator Types (Predicates)\nAvailable Operations:\n\n1. Basic Comparison\n- EQUALS: Exact match\n- NOT_EQUAL: Non-matching values\n- IS_NULL, NOT_NULL: Null checks\n- GREATER_THAN, LESS_THAN: Numeric/date comparisons\n- GREATER_OR_EQUAL, LESS_OR_EQUAL: Inclusive comparisons\n- BETWEEN, BETWEEN_INCLUSIVE: Range checks\n\n2. String Operations (Case-Sensitive)\n- CONTAINS: Substring match\n- NOT_CONTAINS: Negative substring match\n- STARTS_WITH, NOT_STARTS_WITH: Prefix matching\n- ENDS_WITH, NOT_ENDS_WITH: Suffix matching\n- MATCHES_PATTERN: Regular expression match\n- LIKE: SQL-style pattern matching\n\n3. Case-Insensitive String Operations\n- IEQUALS, INOT_EQUAL: Case-insensitive equality\n- ICONTAINS, INOT_CONTAINS: Case-insensitive substring\n- ISTARTS_WITH, INOT_STARTS_WITH: Case-insensitive prefix\n- IENDS_WITH, INOT_ENDS_WITH: Case-insensitive suffix\n\n4. State Tracking\n- IS_UNCHANGED: Field hasn't changed\n- IS_CHANGED: Field has changed\n        ",
-        "operationId": "saveSnapshotWithData",
+        "summary": "Submit async search job",
+        "description": "Submits an asynchronous search job for creating a persistent search result set for large datasets.\n\nThis endpoint initiates an asynchronous search operation that:\n1. Validates the search criteria against the specified entity model\n2. Creates a persistent search result set of matching entities\n3. Returns a UUID that can be used to:\n   - Monitor the search job progress (/search/async/{jobId}/status)\n   - Retrieve paginated results (/search/async/{jobId})\n   - Cancel the search job if needed (/search/async/{jobId}/cancel)\n\nSearch jobs are temporary and have a limited lifetime:\n- Each search job has an automatic expiration date\n- Expired search jobs are automatically deleted by the system\n- The expiration date can be retrieved using GET /search/async/{jobId}/status\n- Plan to retrieve your data before the search job expires\n\nThe search job runs in the background, allowing handling of large datasets\nwithout timeout concerns.\n\nIf no request body is provided or an empty request body is sent, all entities of the specified model and version will be included in the search results.\n\nQuery Structure:\nThe search condition is a tree of predicates that can include:\n1. Simple conditions - search within entity data using JSONPath\n2. Lifecycle conditions - search based on entity lifecycle (state, creationDate, previousTransition)\n3. Group conditions - combine multiple conditions with AND/OR operators\n\nOperator Types (Predicates)\nAvailable Operations:\n\n1. Basic Comparison\n- EQUALS: Exact match\n- NOT_EQUAL: Non-matching values\n- IS_NULL, NOT_NULL: Null checks\n- GREATER_THAN, LESS_THAN: Numeric/date comparisons\n- GREATER_OR_EQUAL, LESS_OR_EQUAL: Inclusive comparisons\n- BETWEEN, BETWEEN_INCLUSIVE: Range checks\n\n2. String Operations (Case-Sensitive)\n- CONTAINS: Substring match\n- NOT_CONTAINS: Negative substring match\n- STARTS_WITH, NOT_STARTS_WITH: Prefix matching\n- ENDS_WITH, NOT_ENDS_WITH: Suffix matching\n- MATCHES_PATTERN: Regular expression match\n- LIKE: SQL-style pattern matching\n\n3. Case-Insensitive String Operations\n- IEQUALS, INOT_EQUAL: Case-insensitive equality\n- ICONTAINS, INOT_CONTAINS: Case-insensitive substring\n- ISTARTS_WITH, INOT_STARTS_WITH: Case-insensitive prefix\n- IENDS_WITH, INOT_ENDS_WITH: Case-insensitive suffix\n\n4. State Tracking\n- IS_UNCHANGED: Field hasn't changed\n- IS_CHANGED: Field has changed\n",
+        "operationId": "submitAsyncSearchJob",
         "parameters": [
+          {
+            "name": "entityName",
+            "in": "path",
+            "description": "Name of the entity model to search",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "modelVersion",
+            "in": "path",
+            "description": "Version of the entity model",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            }
+          },
           {
             "name": "pointInTime",
             "in": "query",
-            "description": "The point-in-time for the report, in ISO 8601 format (e.g., '2035-01-01T12:00:00Z'). Defaults to the current consistency time of the system if not provided.",
+            "description": "The point-in-time for the report, in ISO 8601 format (e.g., '2035-01-01T12:00:00Z'). Defaults to the current consistency time of the system if not provided. ",
             "required": false,
             "schema": {
               "type": "string",
               "format": "date-time"
-            },
-            "example": "2035-01-01T12:00:00Z"
+            }
           }
         ],
         "requestBody": {
           "content": {
             "application/json": {
               "schema": {
-                "$ref": "#/components/schemas/AbstractConditionDto"
-              },
-              "examples": {
-                "Physics Nobel Prize Search": {
-                  "summary": "Find VALIDATED physics Nobel prizes with neural networks research",
-                  "description": "Physics Nobel Prize Search",
-                  "value": {
-                    "operator": "AND",
-                    "conditions": [
-                      {
-                        "field": "state",
-                        "operatorType": "EQUALS",
-                        "value": "VALIDATED",
-                        "type": "lifecycle"
-                      },
-                      {
-                        "jsonPath": "$.category",
-                        "operatorType": "EQUALS",
-                        "value": "physics",
-                        "type": "simple"
-                      },
-                      {
-                        "jsonPath": "$.laureates[*].motivation",
-                        "operatorType": "CONTAINS",
-                        "value": "neural networks",
-                        "type": "simple"
-                      }
-                    ],
-                    "type": "group"
+                "oneOf": [
+                  {
+                    "$ref": "#/components/schemas/ArrayConditionDto"
+                  },
+                  {
+                    "$ref": "#/components/schemas/FunctionConditionDto"
+                  },
+                  {
+                    "$ref": "#/components/schemas/GroupConditionDto"
+                  },
+                  {
+                    "$ref": "#/components/schemas/LifecycleConditionDto"
+                  },
+                  {
+                    "$ref": "#/components/schemas/SimpleConditionDto"
                   }
-                },
-                "Family Member Search": {
-                  "summary": "Find married family members born after 1998",
-                  "description": "Family Member Search",
-                  "value": {
-                    "operator": "AND",
-                    "conditions": [
-                      {
-                        "jsonPath": "$.married",
-                        "operatorType": "EQUALS",
-                        "value": true,
-                        "type": "simple"
-                      },
-                      {
-                        "jsonPath": "$.birthdate",
-                        "operatorType": "GREATER_OR_EQUAL",
-                        "value": "1999-01-01",
-                        "type": "simple"
-                      }
-                    ],
-                    "type": "group"
-                  }
-                }
+                ]
               }
             }
-          },
-          "required": true
+          }
         },
         "responses": {
           "200": {
-            "description": "Snapshot creation initiated successfully. Note that the snapshot will expire after a certain period.",
+            "description": "Async search job submitted successfully. Note that the search job will expire after a certain period.",
             "content": {
               "application/json": {
                 "schema": {
                   "type": "string",
                   "format": "uuid"
-                },
-                "example": "3fa94f40-0cc0-11f0-ac28-ae468cd3ed16"
+                }
               }
             }
           },
@@ -5642,37 +6191,32 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/ProblemDetail"
-                },
-                "example": {
-                  "type": "about:blank",
-                  "title": "Not Found",
-                  "status": 404,
-                  "detail": "cannot find model entityName=nobel-prize, version=2",
-                  "instance": "/api/search/snapshot/nobel-prize/2",
-                  "properties": {
-                    "entityName": "nobel-prize",
-                    "entityVersion": 2
-                  }
+                  "$ref": "#/components/schemas/ProblemDetailDto"
                 }
               }
             }
           }
-        }
+        },
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ]
       }
     },
-    "/search/snapshot/{snapshotId}": {
+    "/search/async/{jobId}": {
       "get": {
         "tags": [
           "Search"
         ],
-        "summary": "Retrieve paginated results from a search snapshot",
-        "description": "\nRetrieves a page of results from a previously created search snapshot.\nTo find out how many entities were found, call the snapshot creation status endpoint.\n\nThe results are sorted in descending order by entity id.\n\nThe results are returned in a paginated format, with:\n- Configurable page size (default: 10)\n- Zero-based page numbering\n- Optional point-in-time specification for the data being retrieved\n        ",
-        "operationId": "getSnapshotResults",
+        "summary": "Retrieve paginated results from an async search job",
+        "description": "Retrieves a page of results from a previously submitted async search job.\nTo find out how many entities were found, call the search job status endpoint.\n\nThe results are sorted in descending order by entity id.\n\nThe results are returned in a paginated format, with:\n- Configurable page size (default: 10)\n- Zero-based page numbering\n- Optional point-in-time specification for the data being retrieved\n",
+        "operationId": "getAsyncSearchResults",
         "parameters": [
           {
-            "name": "snapshotId",
+            "name": "jobId",
             "in": "path",
+            "description": "UUID of the search job to retrieve results from",
             "required": true,
             "schema": {
               "type": "string",
@@ -5682,33 +6226,30 @@
           {
             "name": "pageSize",
             "in": "query",
+            "description": "Number of results per page",
             "required": false,
             "schema": {
-              "type": "integer",
-              "format": "int32",
-              "default": 10
+              "type": "string"
             }
           },
           {
             "name": "pageNumber",
             "in": "query",
+            "description": "Zero-based page number",
             "required": false,
             "schema": {
-              "type": "integer",
-              "format": "int32",
-              "default": 0
+              "type": "string"
             }
           },
           {
             "name": "pointInTime",
             "in": "query",
-            "description": "The point-in-time for loading the entities, in ISO 8601 format (e.g., '2035-01-01T12:00:00Z'). Defaults to the point-in-time of the report if not provided.",
+            "description": "The point-in-time for loading the entities, in ISO 8601 format (e.g., '2035-01-01T12:00:00Z'). Defaults to the point-in-time of the report if not provided. ",
             "required": false,
             "schema": {
               "type": "string",
               "format": "date-time"
-            },
-            "example": "2035-01-01T12:00:00Z"
+            }
           }
         ],
         "responses": {
@@ -5717,28 +6258,17 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "type": "string"
-                },
-                "example": "{\"content\":[{\"type\":\"ENTITY\",\"data\":{\"category\":\"physics\",\"year\":\"2024\",\"laureates\":[{\"firstname\":\"John\",\"surname\":\"Hopfield\",\"id\":\"1037\",\"motivation\":\"\\\"for foundational discoveries and inventions that enable machine learning with artificial neural networks\\\"\",\"share\":\"2\"},{\"firstname\":\"Geoffrey\",\"surname\":\"Hinton\",\"id\":\"1038\",\"motivation\":\"\\\"for foundational discoveries and inventions that enable machine learning with artificial neural networks\\\"\",\"share\":\"2\"}]},\"meta\":{\"id\":\"a9d92c64-3f49-11b2-ad21-125557264b03\",\"state\":\"VALIDATED\",\"creationDate\":\"2025-08-12T20:32:29.559Z\",\"transitionForLatestSave\":\"VALIDATE\"}},{\"type\":\"ENTITY\",\"data\":{\"category\":\"economics\",\"year\":\"2024\",\"laureates\":[{\"firstname\":\"Daron\",\"surname\":\"Acemoglu\",\"id\":\"1044\",\"motivation\":\"\\\"for studies of how institutions are formed and affect prosperity\\\"\",\"share\":\"3\"},{\"firstname\":\"Simon\",\"surname\":\"Johnson\",\"id\":\"1045\",\"motivation\":\"\\\"for studies of how institutions are formed and affect prosperity\\\"\",\"share\":\"3\"},{\"firstname\":\"James\",\"surname\":\"Robinson\",\"id\":\"1046\",\"motivation\":\"\\\"for studies of how institutions are formed and affect prosperity\\\"\",\"share\":\"3\"}]},\"meta\":{\"id\":\"a9dc8206-3f49-11b2-ad21-125557264b03\",\"state\":\"VALIDATED\",\"creationDate\":\"2025-08-12T20:32:29.561Z\",\"transitionForLatestSave\":\"VALIDATE\"}}],\"page\":{\"size\":2,\"totalElements\":2,\"totalPages\":1,\"number\":0}}"
+                  "$ref": "#/components/schemas/PagedEntityResultsDto"
+                }
               }
             }
           },
           "404": {
-            "description": "Snapshot not found or expired",
+            "description": "Search job not found or expired",
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/ProblemDetail"
-                },
-                "example": {
-                  "type": "about:blank",
-                  "title": "Not Found",
-                  "status": 404,
-                  "detail": "cannot find snapshot by id=8824c480-c166-11ee-8f75-ae468cd3ed16",
-                  "instance": "/api/search/snapshot/8824c480-c166-11ee-8f75-ae468cd3ed16",
-                  "properties": {
-                    "snapshotId": "8824c480-c166-11ee-8f75-ae468cd3ed16"
-                  }
+                  "$ref": "#/components/schemas/ProblemDetailDto"
                 }
               }
             }
@@ -5748,42 +6278,32 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/ProblemDetail"
-                },
-                "examples": {
-                  "Invalid DateTime Format": {
-                    "description": "Invalid DateTime Format",
-                    "value": {
-                      "type": "about:blank",
-                      "title": "Bad Request",
-                      "status": 400,
-                      "detail": "Invalid value '1234' for parameter 'pointInTime'",
-                      "instance": "/api/search/snapshot/8824c480-c166-11ee-8f75-ae468cd3ed16",
-                      "properties": {
-                        "parameter": "pointInTime",
-                        "invalidValue": "1234"
-                      }
-                    }
-                  }
+                  "$ref": "#/components/schemas/ProblemDetailDto"
                 }
               }
             }
           }
-        }
+        },
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ]
       }
     },
-    "/search/snapshot/{snapshotId}/cancel": {
+    "/search/async/{jobId}/cancel": {
       "put": {
         "tags": [
           "Search"
         ],
-        "summary": "Cancel a running snapshot creation",
-        "description": "\nAttempts to cancel a running snapshot creation process. The operation:\n- Only succeeds if the snapshot is in RUNNING state\n- Returns the cancellation result and final status\n- Invalidates the snapshot entry if cancellation succeeds\n        ",
-        "operationId": "cancelOfCreatingSnapshot",
+        "summary": "Cancel a running async search job",
+        "description": "Attempts to cancel a running async search job. The operation:\n- Only succeeds if the search job is in RUNNING state\n- Returns the cancellation result and final status\n- Invalidates the search job entry if cancellation succeeds\n",
+        "operationId": "cancelAsyncSearch",
         "parameters": [
           {
-            "name": "snapshotId",
+            "name": "jobId",
             "in": "path",
+            "description": "UUID of the search job to cancel",
             "required": true,
             "schema": {
               "type": "string",
@@ -5797,83 +6317,52 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/CancelSnapshotDto"
-                },
-                "examples": {
-                  "Successful Cancellation": {
-                    "description": "Successful Cancellation",
-                    "value": {
-                      "isCancelled": true,
-                      "currentSnapshotStatus": "CANCELLED"
-                    }
-                  },
-                  "Failed Cancellation": {
-                    "description": "Failed Cancellation",
-                    "value": {
-                      "isCancelled": false,
-                      "currentSnapshotStatus": "NOT_FOUND"
-                    }
-                  }
+                  "$ref": "#/components/schemas/CancelAsyncSearchDto"
                 }
               }
             }
           },
           "404": {
-            "description": "Snapshot not found",
+            "description": "Search job not found",
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/ProblemDetail"
-                },
-                "example": {
-                  "type": "about:blank",
-                  "title": "Not Found",
-                  "status": 404,
-                  "detail": "cannot find snapshot by id=8824c480-c166-11ee-8f75-ae468cd3ed16",
-                  "instance": "/api/search/snapshot/8824c480-c166-11ee-8f75-ae468cd3ed16/cancel",
-                  "properties": {
-                    "snapshotId": "8824c480-c166-11ee-8f75-ae468cd3ed16"
-                  }
+                  "$ref": "#/components/schemas/ProblemDetailDto"
                 }
               }
             }
           },
           "400": {
-            "description": "Snapshot is not in RUNNING state",
+            "description": "Search job is not in RUNNING state",
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/ProblemDetail"
-                },
-                "example": {
-                  "type": "about:blank",
-                  "title": "Bad Request",
-                  "status": 400,
-                  "detail": "snapshot by id=8824c480-c166-11ee-8f75-ae468cd3ed16 is not running. current status=SUCCESSFUL",
-                  "instance": "/api/search/snapshot/8824c480-c166-11ee-8f75-ae468cd3ed16/cancel",
-                  "properties": {
-                    "snapshotId": "8824c480-c166-11ee-8f75-ae468cd3ed16",
-                    "currentStatus": "SUCCESSFUL"
-                  }
+                  "$ref": "#/components/schemas/ProblemDetailDto"
                 }
               }
             }
           }
-        }
+        },
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ]
       }
     },
-    "/search/snapshot/{snapshotId}/status": {
+    "/search/async/{jobId}/status": {
       "get": {
         "tags": [
           "Search"
         ],
-        "summary": "Get snapshot search status",
-        "description": "\nRetrieves the current status of a snapshot search. The response includes:\n- Current status (one of: RUNNING, FAILED, CANCELLED, SUCCESSFUL, NOT_FOUND)\n- Number of entities collected\n- Calculation time\n- Creation timestamp\n- Finish timestamp (if completed)\n- Expiration date\n\nNote: The NOT_FOUND status occurs in rare race conditions where the snapshot exists when the endpoint is called but is deleted during data retrieval.\n        ",
-        "operationId": "getStatusForSavingSnapshot",
+        "summary": "Get async search job status",
+        "description": "Retrieves the current status of an async search job. The response includes:\n- Current status (one of: RUNNING, FAILED, CANCELLED, SUCCESSFUL, NOT_FOUND)\n- Number of entities collected\n- Calculation time\n- Creation timestamp\n- Finish timestamp (if completed)\n- Expiration date\n\nNote: The NOT_FOUND status occurs in rare race conditions where the search job exists when the endpoint is called but is deleted during data retrieval.\n",
+        "operationId": "getAsyncSearchStatus",
         "parameters": [
           {
-            "name": "snapshotId",
+            "name": "jobId",
             "in": "path",
+            "description": "UUID of the search job to check status for",
             "required": true,
             "schema": {
               "type": "string",
@@ -5883,73 +6372,46 @@
         ],
         "responses": {
           "200": {
-            "description": "Successfully retrieved snapshot status",
+            "description": "Successfully retrieved search job status",
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/SnapshotStatusDto"
-                },
-                "examples": {
-                  "Running Status": {
-                    "description": "Running Status",
-                    "value": {
-                      "snapshotStatus": "RUNNING",
-                      "expirationDate": "2025-08-13T13:32:29.475018-07:00",
-                      "entitiesCount": 0,
-                      "calculationTimeMillis": 300,
-                      "createTime": "2025-08-12T13:32:29.175018-07:00"
-                    }
-                  },
-                  "Successful Status": {
-                    "description": "Successful Status",
-                    "value": {
-                      "snapshotStatus": "SUCCESSFUL",
-                      "expirationDate": "2025-08-13T13:32:29.475018-07:00",
-                      "entitiesCount": 2500,
-                      "calculationTimeMillis": 2000,
-                      "createTime": "2025-08-12T13:32:27.475018-07:00",
-                      "finishTime": "2025-08-12T13:32:29.475018-07:00"
-                    }
-                  }
+                  "$ref": "#/components/schemas/AsyncSearchStatusDto"
                 }
               }
             }
           },
           "404": {
-            "description": "Snapshot not found",
+            "description": "Search job not found",
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/ProblemDetail"
-                },
-                "example": {
-                  "type": "about:blank",
-                  "title": "Not Found",
-                  "status": 404,
-                  "detail": "cannot find snapshot by id=8824c480-c166-11ee-8f75-ae468cd3ed16",
-                  "instance": "/api/search/snapshot/8824c480-c166-11ee-8f75-ae468cd3ed16/status",
-                  "properties": {
-                    "snapshotId": "8824c480-c166-11ee-8f75-ae468cd3ed16"
-                  }
+                  "$ref": "#/components/schemas/ProblemDetailDto"
                 }
               }
             }
           }
-        }
+        },
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ]
       }
     },
-    "/search/{entityName}/{modelVersion}": {
+    "/search/direct/{entityName}/{modelVersion}": {
       "post": {
         "tags": [
           "Search"
         ],
         "summary": "Perform synchronous entity search",
-        "description": "\nExecutes a direct, in-memory search for entities without creating a persistent snapshot. This endpoint:\n- Returns results immediately as a streaming response\n- Is optimized for smaller result sets\n- Has configurable timeout and result limits\n- Supports point-in-time querying\n\nThe results are sorted in descending order by entity id.\n\nIf no request body is provided or an empty request body is sent, all entities of the specified model and version\nwill be returned (subject to the limit parameter).\n\nBest suited for:\n- Interactive searches requiring immediate results\n- Queries expected to return limited number of entities\n- UI components with real-time search functionality\n\nLimitations:\n- Maximum result limit: 10000 entities (this will silently limit the result to 10000)\n- Default result limit: 1000 entities\n- Default timeout: 60000 milliseconds\n        ",
-        "operationId": "search",
+        "description": "Executes a direct, in-memory search for entities without creating a persistent search job. This endpoint:\n- Returns results immediately as a streaming response\n- Is optimized for smaller result sets\n- Has configurable timeout and result limits\n- Supports point-in-time querying\n\nThe results are sorted in descending order by entity id.\n\nIf no request body is provided or an empty request body is sent, all entities of the specified model and version\nwill be returned (subject to the limit parameter).\n\nBest suited for:\n- Interactive searches requiring immediate results\n- Queries expected to return limited number of entities\n- UI components with real-time search functionality\n\nLimitations:\n- Maximum result limit: 10000 entities (this will silently limit the result to 10000)\n- Default result limit: 1000 entities\n- Default timeout: 60000 milliseconds\n",
+        "operationId": "searchEntities",
         "parameters": [
           {
             "name": "entityName",
             "in": "path",
+            "description": "Name of the entity model to search",
             "required": true,
             "schema": {
               "type": "string"
@@ -5958,6 +6420,7 @@
           {
             "name": "modelVersion",
             "in": "path",
+            "description": "Version of the entity model",
             "required": true,
             "schema": {
               "type": "integer",
@@ -5965,102 +6428,59 @@
             }
           },
           {
-            "name": "clientPointTime",
+            "name": "pointInTime",
             "in": "query",
-            "description": "The point-in-time for searching the entities, in ISO 8601 format. Defaults to the consistency time of the system if not provided.",
+            "description": "The point-in-time for searching the entities, in ISO 8601 format. Defaults to the consistency time of the system if not provided. ",
             "required": false,
             "schema": {
               "type": "string",
               "format": "date-time"
-            },
-            "example": "2035-01-01T12:00:00Z"
+            }
           },
           {
             "name": "limit",
             "in": "query",
-            "description": "The maximum number of rows to return. You can specify a limit of up to 10000 and defaults to 1000 if not provided.",
+            "description": "The maximum number of rows to return. You can specify a limit of up to 10000 and defaults to 1000 if not provided. ",
             "required": false,
             "schema": {
-              "type": "integer",
-              "format": "int32",
-              "default": 1000
-            },
-            "example": 25
+              "type": "string",
+              "maximum": 10000
+            }
           },
           {
             "name": "timeoutMillis",
             "in": "query",
-            "description": "The maximum time to wait for the query to complete, in milliseconds, and defaults to60000 if not provided.",
+            "description": "The maximum time to wait for the query to complete, in milliseconds, and defaults to 60000 if not provided. ",
             "required": false,
             "schema": {
-              "type": "integer",
-              "format": "int32",
-              "default": 60000
-            },
-            "example": 1000
+              "type": "string"
+            }
           }
         ],
         "requestBody": {
           "content": {
             "application/json": {
               "schema": {
-                "$ref": "#/components/schemas/AbstractConditionDto"
-              },
-              "examples": {
-                "Physics Nobel Prize Search": {
-                  "summary": "Find VALIDATED physics Nobel prizes with neural networks research",
-                  "description": "Physics Nobel Prize Search",
-                  "value": {
-                    "operator": "AND",
-                    "conditions": [
-                      {
-                        "field": "state",
-                        "operatorType": "EQUALS",
-                        "value": "VALIDATED",
-                        "type": "lifecycle"
-                      },
-                      {
-                        "jsonPath": "$.category",
-                        "operatorType": "EQUALS",
-                        "value": "physics",
-                        "type": "simple"
-                      },
-                      {
-                        "jsonPath": "$.laureates[*].motivation",
-                        "operatorType": "CONTAINS",
-                        "value": "neural networks",
-                        "type": "simple"
-                      }
-                    ],
-                    "type": "group"
+                "oneOf": [
+                  {
+                    "$ref": "#/components/schemas/ArrayConditionDto"
+                  },
+                  {
+                    "$ref": "#/components/schemas/FunctionConditionDto"
+                  },
+                  {
+                    "$ref": "#/components/schemas/GroupConditionDto"
+                  },
+                  {
+                    "$ref": "#/components/schemas/LifecycleConditionDto"
+                  },
+                  {
+                    "$ref": "#/components/schemas/SimpleConditionDto"
                   }
-                },
-                "Family Member Search": {
-                  "summary": "Find married family members born after 1998",
-                  "description": "Family Member Search",
-                  "value": {
-                    "operator": "AND",
-                    "conditions": [
-                      {
-                        "jsonPath": "$.married",
-                        "operatorType": "EQUALS",
-                        "value": true,
-                        "type": "simple"
-                      },
-                      {
-                        "jsonPath": "$.birthdate",
-                        "operatorType": "GREATER_OR_EQUAL",
-                        "value": "1999-01-01",
-                        "type": "simple"
-                      }
-                    ],
-                    "type": "group"
-                  }
-                }
+                ]
               }
             }
-          },
-          "required": true
+          }
         },
         "responses": {
           "200": {
@@ -6069,91 +6489,32 @@
               "application/x-ndjson": {
                 "schema": {
                   "type": "array",
-                  "$ref": "#/components/schemas/JsonNode"
-                },
-                "example": [
-                  {
-                    "type": "ENTITY",
-                    "data": {
-                      "category": "physics",
-                      "year": "2024",
-                      "laureates": [
-                        {
-                          "firstname": "John",
-                          "surname": "Hopfield",
-                          "id": "1037",
-                          "motivation": "\"for foundational discoveries and inventions that enable machine learning with artificial neural networks\"",
-                          "share": "2"
-                        },
-                        {
-                          "firstname": "Geoffrey",
-                          "surname": "Hinton",
-                          "id": "1038",
-                          "motivation": "\"for foundational discoveries and inventions that enable machine learning with artificial neural networks\"",
-                          "share": "2"
-                        }
-                      ]
-                    },
-                    "meta": {
-                      "id": "a9d92c64-3f49-11b2-ad21-125557264b03",
-                      "state": "VALIDATED",
-                      "creationDate": "2025-08-12T20:32:29.559Z",
-                      "transitionForLatestSave": "VALIDATE"
-                    }
-                  },
-                  {
-                    "type": "ENTITY",
-                    "data": {
-                      "category": "economics",
-                      "year": "2024",
-                      "laureates": [
-                        {
-                          "firstname": "Daron",
-                          "surname": "Acemoglu",
-                          "id": "1044",
-                          "motivation": "\"for studies of how institutions are formed and affect prosperity\"",
-                          "share": "3"
-                        },
-                        {
-                          "firstname": "Simon",
-                          "surname": "Johnson",
-                          "id": "1045",
-                          "motivation": "\"for studies of how institutions are formed and affect prosperity\"",
-                          "share": "3"
-                        },
-                        {
-                          "firstname": "James",
-                          "surname": "Robinson",
-                          "id": "1046",
-                          "motivation": "\"for studies of how institutions are formed and affect prosperity\"",
-                          "share": "3"
-                        }
-                      ]
-                    },
-                    "meta": {
-                      "id": "a9dc8206-3f49-11b2-ad21-125557264b03",
-                      "state": "VALIDATED",
-                      "creationDate": "2025-08-12T20:32:29.561Z",
-                      "transitionForLatestSave": "VALIDATE"
-                    }
+                  "items": {
+                    "$ref": "#/components/schemas/EntityResultDto"
                   }
-                ]
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/EntityResultDto"
+                  }
+                }
               }
             }
           },
           "400": {
             "description": "Invalid search parameters",
             "content": {
+              "application/x-ndjson": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetailDto"
+                }
+              },
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/ProblemDetail"
-                },
-                "example": {
-                  "type": "about:blank",
-                  "title": "Bad Request",
-                  "status": 400,
-                  "detail": "Limit 9999999 exceeds maximum allowed value of 10000",
-                  "instance": "/api/search/nobel-prize/2"
+                  "$ref": "#/components/schemas/ProblemDetailDto"
                 }
               }
             }
@@ -6161,20 +6522,14 @@
           "404": {
             "description": "Entity model not found",
             "content": {
+              "application/x-ndjson": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetailDto"
+                }
+              },
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/ProblemDetail"
-                },
-                "example": {
-                  "type": "about:blank",
-                  "title": "Not Found",
-                  "status": 404,
-                  "detail": "cannot find model entityName=nobel-prize, version=2",
-                  "instance": "/api/search/nobel-prize/2",
-                  "properties": {
-                    "entityName": "nobel-prize",
-                    "entityVersion": 2
-                  }
+                  "$ref": "#/components/schemas/ProblemDetailDto"
                 }
               }
             }
@@ -6182,21 +6537,24 @@
           "408": {
             "description": "Search timeout exceeded",
             "content": {
+              "application/x-ndjson": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetailDto"
+                }
+              },
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/ProblemDetail"
-                },
-                "example": {
-                  "type": "about:blank",
-                  "title": "Request Timeout",
-                  "status": 408,
-                  "detail": "your report description failed with: Report timed out after 5m.Query timed out. Cause may be high load or too much data to process. For large data sets, it is recommended to use snapshot searches.",
-                  "instance": "/api/search/nobel-prize/2"
+                  "$ref": "#/components/schemas/ProblemDetailDto"
                 }
               }
             }
           }
-        }
+        },
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ]
       }
     },
     "/sql/schema/": {
@@ -8197,13 +8555,14 @@
           }
         }
       },
-      "CancelSnapshotDto": {
+      "CancelAsyncSearchDto": {
         "type": "object",
         "properties": {
           "isCancelled": {
-            "type": "boolean"
+            "type": "boolean",
+            "description": "Whether the cancellation was successful"
           },
-          "currentSnapshotStatus": {
+          "currentSearchJobStatus": {
             "type": "string",
             "enum": [
               "RUNNING",
@@ -8212,12 +8571,52 @@
               "SUCCESSFUL",
               "NOT_FOUND"
             ]
+          },
+          "cancelled": {
+            "type": "boolean",
+            "writeOnly": true
           }
         },
         "required": [
-          "currentSnapshotStatus",
+          "currentSearchJobStatus",
           "isCancelled"
         ]
+      },
+      "ProblemDetailDto": {
+        "type": "object",
+        "properties": {
+          "type": {
+            "type": "string",
+            "description": "A URI reference that identifies the problem type",
+            "example": "about:blank"
+          },
+          "title": {
+            "type": "string",
+            "description": "A short, human-readable summary of the problem type",
+            "example": "Not Found"
+          },
+          "status": {
+            "type": "integer",
+            "format": "int32",
+            "description": "The HTTP status code",
+            "example": 404
+          },
+          "detail": {
+            "type": "string",
+            "description": "A human-readable explanation specific to this occurrence of the problem"
+          },
+          "instance": {
+            "type": "string",
+            "description": "A URI reference that identifies the specific occurrence of the problem"
+          },
+          "properties": {
+            "type": "object",
+            "additionalProperties": {
+              "type": "object"
+            },
+            "description": "Additional properties specific to the problem type"
+          }
+        }
       },
       "AbstractCondition": {
         "type": "object",
@@ -8490,12 +8889,34 @@
               "client_credentials"
             ],
             "example": "client_credentials"
+          },
+          "client_secret_expires_at": {
+            "type": "integer",
+            "format": "int64",
+            "description": "Time at which the client secret will expire, as the number of seconds from 1970-01-01T00:00:00Z (Unix epoch), or 0 if it will not expire. Per RFC 7591 Section 3.2.1, this field is required when a client_secret is issued. ",
+            "example": 0
+          },
+          "roles": {
+            "type": "array",
+            "description": "The roles assigned to the M2M client",
+            "example": "[M2M]",
+            "items": {
+              "type": "string"
+            }
+          },
+          "client_id_issued_at": {
+            "type": "integer",
+            "format": "int64",
+            "description": "Time at which the client identifier was issued, as the number of seconds from 1970-01-01T00:00:00Z (Unix epoch) per RFC 7591 Section 3.2.1. ",
+            "example": 1709913600
           }
         },
         "required": [
           "client_id",
           "client_secret",
-          "grant_type"
+          "client_secret_expires_at",
+          "grant_type",
+          "roles"
         ]
       },
       "ErrorResponseDto": {
@@ -8510,7 +8931,8 @@
               "invalid_grant",
               "unauthorized_client",
               "unsupported_grant_type",
-              "invalid_scope"
+              "invalid_scope",
+              "access_denied"
             ],
             "example": "invalid_request"
           },
@@ -8530,7 +8952,355 @@
           "error_description"
         ]
       },
-      "AbstractConditionDto": {
+      "EntityMetadataDto": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid",
+            "description": "Unique identifier of the entity"
+          },
+          "state": {
+            "type": "string",
+            "description": "Current state of the entity in its workflow"
+          },
+          "creationDate": {
+            "type": "string",
+            "format": "date-time",
+            "description": "When the entity was created"
+          },
+          "transitionForLatestSave": {
+            "type": "string",
+            "description": "The transition that triggered the latest save"
+          }
+        }
+      },
+      "EntityResultDto": {
+        "type": "object",
+        "properties": {
+          "type": {
+            "type": "string",
+            "description": "Type of the result (typically \"ENTITY\")",
+            "example": "ENTITY"
+          },
+          "data": {
+            "type": "object",
+            "additionalProperties": {
+              "type": "object"
+            },
+            "description": "The entity data as a JSON object"
+          },
+          "meta": {
+            "$ref": "#/components/schemas/EntityMetadataDto"
+          }
+        }
+      },
+      "ArrayConditionDto": {
+        "allOf": [
+          {
+            "$ref": "#/components/schemas/AbstractConditionDto"
+          },
+          {
+            "type": "object",
+            "properties": {
+              "jsonPath": {
+                "type": "string"
+              },
+              "operatorType": {
+                "type": "string",
+                "enum": [
+                  "EQUALS",
+                  "OBJECT_EQUALS",
+                  "NOT_EQUAL",
+                  "IEQUALS",
+                  "INOT_EQUAL",
+                  "GREATER_THAN",
+                  "LESS_THAN",
+                  "GREATER_OR_EQUAL",
+                  "LESS_OR_EQUAL",
+                  "CONTAINS",
+                  "STARTS_WITH",
+                  "ENDS_WITH",
+                  "ICONTAINS",
+                  "ISTARTS_WITH",
+                  "IENDS_WITH",
+                  "NOT_CONTAINS",
+                  "NOT_STARTS_WITH",
+                  "NOT_ENDS_WITH",
+                  "INOT_CONTAINS",
+                  "INOT_STARTS_WITH",
+                  "INOT_ENDS_WITH",
+                  "IBETWEEN_INCLUSIVE",
+                  "MATCHES_PATTERN",
+                  "IMATCHES_PATTERN",
+                  "CONTAINS_PATTERN",
+                  "STARTS_WITH_PATTERN",
+                  "ENDS_WITH_PATTERN",
+                  "ICONTAINS_PATTERN",
+                  "ISTARTS_WITH_PATTERN",
+                  "IENDS_WITH_PATTERN",
+                  "REGEXP",
+                  "IREGEXP",
+                  "IS_NULL",
+                  "NOT_NULL",
+                  "IN_SET",
+                  "NOT_IN_SET",
+                  "EQUALS_FIELD",
+                  "NOT_EQUAL_FIELD",
+                  "IEQUALS_FIELD",
+                  "INOT_EQUAL_FIELD",
+                  "GREATER_THAN_FIELD",
+                  "LESS_THAN_FIELD",
+                  "GREATER_OR_EQUAL_FIELD",
+                  "LESS_OR_EQUAL_FIELD",
+                  "CONTAINS_FIELD",
+                  "STARTS_WITH_FIELD",
+                  "ENDS_WITH_FIELD",
+                  "ICONTAINS_FIELD",
+                  "ISTARTS_WITH_FIELD",
+                  "IENDS_WITH_FIELD",
+                  "NOT_CONTAINS_FIELD",
+                  "NOT_STARTS_WITH_FIELD",
+                  "NOT_ENDS_WITH_FIELD",
+                  "INOT_CONTAINS_FIELD",
+                  "INOT_STARTS_WITH_FIELD",
+                  "INOT_ENDS_WITH_FIELD",
+                  "AND",
+                  "NOT",
+                  "OR",
+                  "BETWEEN",
+                  "BETWEEN_INCLUSIVE",
+                  "EQUAL_BY_ATTRIBUTES",
+                  "INSTANCE_OF",
+                  "LIKE",
+                  "IS_UNCHANGED",
+                  "IS_CHANGED"
+                ]
+              },
+              "value": {
+                "type": "array",
+                "items": {
+                  "type": "string"
+                }
+              }
+            }
+          }
+        ],
+        "required": [
+          "jsonPath",
+          "operatorType",
+          "type",
+          "value"
+        ]
+      },
+      "ExternalizedFunctionConfigDto": {
+        "type": "object",
+        "properties": {
+          "attachEntity": {
+            "type": "boolean",
+            "description": "Whether to attach entity data to the function call"
+          },
+          "calculationNodesTags": {
+            "type": "string",
+            "description": "Comma-separated list of calculation node tags"
+          },
+          "responseTimeoutMs": {
+            "type": "integer",
+            "format": "int64",
+            "description": "Response timeout in milliseconds"
+          },
+          "retryPolicy": {
+            "type": "string",
+            "description": "Retry policy for the function"
+          },
+          "context": {
+            "type": "string",
+            "description": "Additional context for the function"
+          }
+        }
+      },
+      "ExternalizedFunctionDto": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string",
+            "description": "Name of the function that returns boolean",
+            "maxLength": 2147483647,
+            "minLength": 1
+          },
+          "config": {
+            "$ref": "#/components/schemas/ExternalizedFunctionConfigDto"
+          },
+          "criterion": {
+            "$ref": "#/components/schemas/QueryConditionDto",
+            "description": "Optional criterion to check before calling an expensive function, used when the result can be confidently determined from entity data"
+          }
+        },
+        "required": [
+          "name"
+        ]
+      },
+      "FunctionConditionDto": {
+        "allOf": [
+          {
+            "$ref": "#/components/schemas/QueryConditionDto"
+          },
+          {
+            "type": "object",
+            "properties": {
+              "function": {
+                "$ref": "#/components/schemas/ExternalizedFunctionDto"
+              }
+            }
+          }
+        ],
+        "required": [
+          "function"
+        ]
+      },
+      "GroupConditionDto": {
+        "allOf": [
+          {
+            "$ref": "#/components/schemas/AbstractConditionDto"
+          },
+          {
+            "type": "object",
+            "properties": {
+              "operator": {
+                "type": "string",
+                "enum": [
+                  "AND",
+                  "OR",
+                  "NOT"
+                ]
+              },
+              "conditions": {
+                "type": "array",
+                "items": {
+                  "oneOf": [
+                    {
+                      "$ref": "#/components/schemas/ArrayConditionDto"
+                    },
+                    {
+                      "$ref": "#/components/schemas/GroupConditionDto"
+                    },
+                    {
+                      "$ref": "#/components/schemas/LifecycleConditionDto"
+                    },
+                    {
+                      "$ref": "#/components/schemas/SimpleConditionDto"
+                    }
+                  ]
+                }
+              }
+            }
+          }
+        ],
+        "required": [
+          "conditions",
+          "operator",
+          "type"
+        ]
+      },
+      "JsonNode": {
+        "type": "object"
+      },
+      "LifecycleConditionDto": {
+        "allOf": [
+          {
+            "$ref": "#/components/schemas/AbstractConditionDto"
+          },
+          {
+            "type": "object",
+            "properties": {
+              "field": {
+                "type": "string"
+              },
+              "operatorType": {
+                "type": "string",
+                "enum": [
+                  "EQUALS",
+                  "OBJECT_EQUALS",
+                  "NOT_EQUAL",
+                  "IEQUALS",
+                  "INOT_EQUAL",
+                  "GREATER_THAN",
+                  "LESS_THAN",
+                  "GREATER_OR_EQUAL",
+                  "LESS_OR_EQUAL",
+                  "CONTAINS",
+                  "STARTS_WITH",
+                  "ENDS_WITH",
+                  "ICONTAINS",
+                  "ISTARTS_WITH",
+                  "IENDS_WITH",
+                  "NOT_CONTAINS",
+                  "NOT_STARTS_WITH",
+                  "NOT_ENDS_WITH",
+                  "INOT_CONTAINS",
+                  "INOT_STARTS_WITH",
+                  "INOT_ENDS_WITH",
+                  "IBETWEEN_INCLUSIVE",
+                  "MATCHES_PATTERN",
+                  "IMATCHES_PATTERN",
+                  "CONTAINS_PATTERN",
+                  "STARTS_WITH_PATTERN",
+                  "ENDS_WITH_PATTERN",
+                  "ICONTAINS_PATTERN",
+                  "ISTARTS_WITH_PATTERN",
+                  "IENDS_WITH_PATTERN",
+                  "REGEXP",
+                  "IREGEXP",
+                  "IS_NULL",
+                  "NOT_NULL",
+                  "IN_SET",
+                  "NOT_IN_SET",
+                  "EQUALS_FIELD",
+                  "NOT_EQUAL_FIELD",
+                  "IEQUALS_FIELD",
+                  "INOT_EQUAL_FIELD",
+                  "GREATER_THAN_FIELD",
+                  "LESS_THAN_FIELD",
+                  "GREATER_OR_EQUAL_FIELD",
+                  "LESS_OR_EQUAL_FIELD",
+                  "CONTAINS_FIELD",
+                  "STARTS_WITH_FIELD",
+                  "ENDS_WITH_FIELD",
+                  "ICONTAINS_FIELD",
+                  "ISTARTS_WITH_FIELD",
+                  "IENDS_WITH_FIELD",
+                  "NOT_CONTAINS_FIELD",
+                  "NOT_STARTS_WITH_FIELD",
+                  "NOT_ENDS_WITH_FIELD",
+                  "INOT_CONTAINS_FIELD",
+                  "INOT_STARTS_WITH_FIELD",
+                  "INOT_ENDS_WITH_FIELD",
+                  "AND",
+                  "NOT",
+                  "OR",
+                  "BETWEEN",
+                  "BETWEEN_INCLUSIVE",
+                  "EQUAL_BY_ATTRIBUTES",
+                  "INSTANCE_OF",
+                  "LIKE",
+                  "IS_UNCHANGED",
+                  "IS_CHANGED"
+                ]
+              },
+              "value": {
+                "$ref": "#/components/schemas/JsonNode"
+              }
+            }
+          }
+        ],
+        "required": [
+          "field",
+          "operatorType",
+          "type",
+          "value"
+        ]
+      },
+      "QueryConditionDto": {
         "type": "object",
         "discriminator": {
           "propertyName": "type"
@@ -8544,8 +9314,100 @@
           "type"
         ]
       },
-      "JsonNode": {
-        "type": "object"
+      "SimpleConditionDto": {
+        "allOf": [
+          {
+            "$ref": "#/components/schemas/AbstractConditionDto"
+          },
+          {
+            "type": "object",
+            "properties": {
+              "jsonPath": {
+                "type": "string"
+              },
+              "operatorType": {
+                "type": "string",
+                "enum": [
+                  "EQUALS",
+                  "OBJECT_EQUALS",
+                  "NOT_EQUAL",
+                  "IEQUALS",
+                  "INOT_EQUAL",
+                  "GREATER_THAN",
+                  "LESS_THAN",
+                  "GREATER_OR_EQUAL",
+                  "LESS_OR_EQUAL",
+                  "CONTAINS",
+                  "STARTS_WITH",
+                  "ENDS_WITH",
+                  "ICONTAINS",
+                  "ISTARTS_WITH",
+                  "IENDS_WITH",
+                  "NOT_CONTAINS",
+                  "NOT_STARTS_WITH",
+                  "NOT_ENDS_WITH",
+                  "INOT_CONTAINS",
+                  "INOT_STARTS_WITH",
+                  "INOT_ENDS_WITH",
+                  "IBETWEEN_INCLUSIVE",
+                  "MATCHES_PATTERN",
+                  "IMATCHES_PATTERN",
+                  "CONTAINS_PATTERN",
+                  "STARTS_WITH_PATTERN",
+                  "ENDS_WITH_PATTERN",
+                  "ICONTAINS_PATTERN",
+                  "ISTARTS_WITH_PATTERN",
+                  "IENDS_WITH_PATTERN",
+                  "REGEXP",
+                  "IREGEXP",
+                  "IS_NULL",
+                  "NOT_NULL",
+                  "IN_SET",
+                  "NOT_IN_SET",
+                  "EQUALS_FIELD",
+                  "NOT_EQUAL_FIELD",
+                  "IEQUALS_FIELD",
+                  "INOT_EQUAL_FIELD",
+                  "GREATER_THAN_FIELD",
+                  "LESS_THAN_FIELD",
+                  "GREATER_OR_EQUAL_FIELD",
+                  "LESS_OR_EQUAL_FIELD",
+                  "CONTAINS_FIELD",
+                  "STARTS_WITH_FIELD",
+                  "ENDS_WITH_FIELD",
+                  "ICONTAINS_FIELD",
+                  "ISTARTS_WITH_FIELD",
+                  "IENDS_WITH_FIELD",
+                  "NOT_CONTAINS_FIELD",
+                  "NOT_STARTS_WITH_FIELD",
+                  "NOT_ENDS_WITH_FIELD",
+                  "INOT_CONTAINS_FIELD",
+                  "INOT_STARTS_WITH_FIELD",
+                  "INOT_ENDS_WITH_FIELD",
+                  "AND",
+                  "NOT",
+                  "OR",
+                  "BETWEEN",
+                  "BETWEEN_INCLUSIVE",
+                  "EQUAL_BY_ATTRIBUTES",
+                  "INSTANCE_OF",
+                  "LIKE",
+                  "IS_UNCHANGED",
+                  "IS_CHANGED"
+                ]
+              },
+              "value": {
+                "$ref": "#/components/schemas/JsonNode"
+              }
+            }
+          }
+        ],
+        "required": [
+          "jsonPath",
+          "operatorType",
+          "type",
+          "value"
+        ]
       },
       "QueryPlanDTO": {
         "type": "object",
@@ -8708,6 +9570,13 @@
             "type": "string",
             "description": "The scope of the access token, as per RFC 6749 Section 3.3. See https://datatracker.ietf.org/doc/html/rfc6749#section-3.3",
             "example": "ROLE_M2M"
+          },
+          "issued_token_type": {
+            "type": "string",
+            "description": "The type of the issued token (present only for token-exchange responses, per RFC 8693)",
+            "enum": [
+              "urn:ietf:params:oauth:token-type:access_token"
+            ]
           }
         },
         "required": [
@@ -8789,6 +9658,135 @@
             "type": "boolean",
             "description": "If true, also reactivates all related JWK keys that were invalidated with this provider",
             "example": true
+          }
+        }
+      },
+      "TrustedKeyResponseDto": {
+        "type": "object",
+        "properties": {
+          "keyId": {
+            "type": "string",
+            "description": "Unique key identifier",
+            "example": "my-app-key-1"
+          },
+          "jwk": {
+            "type": "object",
+            "additionalProperties": {
+              "type": "object"
+            },
+            "description": "The registered public key in JWK format (RFC 7517). Contains only public key components. "
+          },
+          "audience": {
+            "type": "string",
+            "enum": [
+              "human",
+              "client"
+            ]
+          },
+          "validFrom": {
+            "type": "string",
+            "format": "date-time",
+            "description": "When this key became valid",
+            "example": "2025-11-01T10:00:00.000Z"
+          },
+          "legalEntityId": {
+            "type": "string",
+            "description": "The tenant this key is bound to",
+            "example": "tenant-abc-123"
+          },
+          "issuers": {
+            "type": "array",
+            "example": "[https://my-app.local/]",
+            "items": {
+              "type": "string"
+            }
+          },
+          "validTo": {
+            "type": "string",
+            "format": "date-time",
+            "description": "When this key expires",
+            "example": "2026-02-01T10:00:00.000Z"
+          }
+        },
+        "required": [
+          "audience",
+          "jwk",
+          "keyId",
+          "legalEntityId",
+          "validFrom"
+        ]
+      },
+      "RegisterTrustedKeyRequestDto": {
+        "type": "object",
+        "properties": {
+          "keyId": {
+            "type": "string",
+            "description": "Unique key identifier. Will be matched against the `kid` header in JWTs.",
+            "example": "my-app-key-1"
+          },
+          "jwk": {
+            "type": "object",
+            "additionalProperties": {
+              "type": "object"
+            },
+            "description": "A JSON Web Key (JWK) as defined in RFC 7517. Must contain the public key components only. Supported key types: RSA (`kty: \"RSA\"`), EC (`kty: \"EC\"`), and OKP/EdDSA (`kty: \"OKP\"`). See RFC 7517, RFC 7518, and RFC 8037 for field definitions. ",
+            "example": "{kty=RSA, kid=my-app-key-1, alg=RS256, n=0vx7agoebGcQSuuPiLJXZptN9nndrQmbXEps2aiAFbWhM..., e=AQAB}"
+          },
+          "audience": {
+            "type": "string",
+            "enum": [
+              "human",
+              "client"
+            ]
+          },
+          "issuers": {
+            "type": "array",
+            "description": "List of allowed issuer URIs. When this parameter is configured, the JWT must contain an iss claim, and its value must match one of the entries in this list. ",
+            "example": "[https://my-app.local/]",
+            "items": {
+              "type": "string"
+            }
+          },
+          "validFrom": {
+            "type": "string",
+            "format": "date-time",
+            "description": "When the key becomes valid. Defaults to current time if not specified. ",
+            "example": "2025-10-15T10:00:00.000Z"
+          },
+          "validTo": {
+            "type": "string",
+            "format": "date-time",
+            "description": "When the key expires. Defaults to the system-configured maximum validity. ",
+            "example": "2026-10-15T10:00:00.000Z"
+          },
+          "invalidatePrevious": {
+            "type": "boolean",
+            "description": "If true, invalidates all other keys for the same audience belonging to the caller's tenant. Enables atomic key rotation. ",
+            "example": false
+          },
+          "invalidateGracePeriodSec": {
+            "type": "integer",
+            "format": "int64",
+            "description": "Grace period in seconds for invalidating previous keys (only used when invalidatePrevious is true). Default is 0 (immediate invalidation). ",
+            "example": 3600,
+            "minimum": 0
+          }
+        },
+        "required": [
+          "audience",
+          "jwk",
+          "keyId"
+        ]
+      },
+      "InvalidateKeyRequestDto": {
+        "type": "object",
+        "properties": {
+          "gracePeriodSec": {
+            "type": "integer",
+            "format": "int64",
+            "description": "Number of seconds to keep the key valid after invalidation. Default is 0 (immediate invalidation).",
+            "example": 3600,
+            "minimum": 0
           }
         }
       },
@@ -8895,17 +9893,255 @@
           "audience"
         ]
       },
-      "InvalidateJwtKeyPairRequestDto": {
+      "ExternalizedProcessorConfigDto": {
         "type": "object",
         "properties": {
-          "gracePeriodSec": {
+          "attachEntity": {
+            "type": "boolean",
+            "description": "Whether to attach entity data to the function call"
+          },
+          "calculationNodesTags": {
+            "type": "string",
+            "description": "Comma-separated list of calculation node tags"
+          },
+          "responseTimeoutMs": {
             "type": "integer",
             "format": "int64",
-            "description": "Number of seconds to keep the key valid after invalidation. Default is 0 (immediate invalidation).",
-            "example": 3600,
-            "minimum": 0
+            "description": "Response timeout in milliseconds"
+          },
+          "retryPolicy": {
+            "type": "string",
+            "description": "Retry policy for the function"
+          },
+          "context": {
+            "type": "string",
+            "description": "Additional context for the function"
+          },
+          "asyncResult": {
+            "type": "boolean",
+            "description": "Whether to await the result asynchronously, outside of the transaction"
+          },
+          "crossoverToAsyncMs": {
+            "type": "integer",
+            "format": "int64",
+            "description": "Crossover delay to switch to asynchronous processing (ms), effective only when asyncResult is true"
           }
         }
+      },
+      "ExternalizedProcessorDefinitionDto": {
+        "allOf": [
+          {
+            "$ref": "#/components/schemas/ProcessorDefinitionDto"
+          },
+          {
+            "type": "object",
+            "properties": {
+              "executionMode": {
+                "type": "string",
+                "enum": [
+                  "SYNC",
+                  "ASYNC_SAME_TX",
+                  "ASYNC_NEW_TX"
+                ]
+              },
+              "config": {
+                "$ref": "#/components/schemas/ExternalizedProcessorConfigDto"
+              }
+            }
+          }
+        ],
+        "required": [
+          "name"
+        ]
+      },
+      "ProcessorDefinitionDto": {
+        "type": "object",
+        "discriminator": {
+          "propertyName": "type"
+        },
+        "properties": {
+          "type": {
+            "type": "string",
+            "description": "Type of the processor (externalized or scheduled)"
+          },
+          "name": {
+            "type": "string",
+            "description": "Name of the processor"
+          }
+        },
+        "required": [
+          "name"
+        ]
+      },
+      "ScheduledTransitionConfigDto": {
+        "type": "object",
+        "properties": {
+          "delayMs": {
+            "type": "integer",
+            "format": "int64",
+            "description": "Delay in milliseconds before executing the transition"
+          },
+          "transition": {
+            "type": "string",
+            "description": "The transition to execute after waiting delayMs"
+          },
+          "timeoutMs": {
+            "type": "integer",
+            "format": "int64",
+            "description": "Timeout in milliseconds for executing the transition task, after which it will be expired"
+          }
+        },
+        "required": [
+          "delayMs",
+          "transition"
+        ]
+      },
+      "ScheduledTransitionProcessorDefinitionDto": {
+        "allOf": [
+          {
+            "$ref": "#/components/schemas/ProcessorDefinitionDto"
+          },
+          {
+            "type": "object",
+            "properties": {
+              "config": {
+                "$ref": "#/components/schemas/ScheduledTransitionConfigDto"
+              }
+            }
+          }
+        ],
+        "required": [
+          "config",
+          "name"
+        ]
+      },
+      "StateDefinitionDto": {
+        "type": "object",
+        "properties": {
+          "transitions": {
+            "type": "array",
+            "description": "List of possible transitions from this state",
+            "items": {
+              "$ref": "#/components/schemas/TransitionDefinitionDto"
+            }
+          }
+        }
+      },
+      "TransitionDefinitionDto": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string",
+            "description": "Name of the transition"
+          },
+          "next": {
+            "type": "string",
+            "description": "Target state code for this transition"
+          },
+          "manual": {
+            "type": "boolean",
+            "description": "Whether this transition requires manual triggering"
+          },
+          "disabled": {
+            "type": "boolean",
+            "description": "Flag indicating if the transition is disabled"
+          },
+          "processors": {
+            "type": "array",
+            "description": "List of processors to execute for this transition",
+            "items": {
+              "oneOf": [
+                {
+                  "$ref": "#/components/schemas/ExternalizedProcessorDefinitionDto"
+                },
+                {
+                  "$ref": "#/components/schemas/ScheduledTransitionProcessorDefinitionDto"
+                }
+              ]
+            }
+          },
+          "criterion": {
+            "oneOf": [
+              {
+                "$ref": "#/components/schemas/ArrayConditionDto"
+              },
+              {
+                "$ref": "#/components/schemas/FunctionConditionDto"
+              },
+              {
+                "$ref": "#/components/schemas/GroupConditionDto"
+              },
+              {
+                "$ref": "#/components/schemas/LifecycleConditionDto"
+              },
+              {
+                "$ref": "#/components/schemas/SimpleConditionDto"
+              }
+            ]
+          }
+        },
+        "required": [
+          "manual",
+          "name",
+          "next"
+        ]
+      },
+      "WorkflowConfigurationDto": {
+        "type": "object",
+        "properties": {
+          "version": {
+            "type": "string",
+            "description": "Version of the workflow configuration schema"
+          },
+          "name": {
+            "type": "string",
+            "description": "Name of the workflow"
+          },
+          "initialState": {
+            "type": "string",
+            "description": "Initial state for entities in this workflow"
+          },
+          "states": {
+            "type": "object",
+            "additionalProperties": {
+              "$ref": "#/components/schemas/StateDefinitionDto"
+            },
+            "description": "Map of state codes to state definitions"
+          },
+          "desc": {
+            "type": "string",
+            "description": "Description of the workflow"
+          },
+          "active": {
+            "type": "boolean",
+            "description": "Flag indicating if the workflow is active"
+          },
+          "criterion": {
+            "oneOf": [
+              {
+                "$ref": "#/components/schemas/ArrayConditionDto"
+              },
+              {
+                "$ref": "#/components/schemas/FunctionConditionDto"
+              },
+              {
+                "$ref": "#/components/schemas/GroupConditionDto"
+              },
+              {
+                "$ref": "#/components/schemas/LifecycleConditionDto"
+              },
+              {
+                "$ref": "#/components/schemas/SimpleConditionDto"
+              }
+            ]
+          }
+        },
+        "required": [
+          "initialState",
+          "name",
+          "states",
+          "version"
+        ]
       },
       "WorkflowImportRequestDto": {
         "type": "object",
@@ -8915,7 +10151,7 @@
             "type": "array",
             "description": "Array of workflow configurations to import",
             "items": {
-              "$ref": "#/components/schemas/JsonNode"
+              "$ref": "#/components/schemas/WorkflowConfigurationDto"
             }
           },
           "importMode": {
@@ -8947,10 +10183,50 @@
           }
         }
       },
-      "SnapshotStatusDto": {
+      "PageMetadataDto": {
         "type": "object",
         "properties": {
-          "snapshotStatus": {
+          "size": {
+            "type": "integer",
+            "format": "int32",
+            "description": "Number of elements in the current page"
+          },
+          "totalElements": {
+            "type": "integer",
+            "format": "int64",
+            "description": "Total number of elements across all pages"
+          },
+          "totalPages": {
+            "type": "integer",
+            "format": "int32",
+            "description": "Total number of pages"
+          },
+          "number": {
+            "type": "integer",
+            "format": "int32",
+            "description": "Current page number (zero-based)"
+          }
+        }
+      },
+      "PagedEntityResultsDto": {
+        "type": "object",
+        "properties": {
+          "content": {
+            "type": "array",
+            "description": "List of entity results for the current page",
+            "items": {
+              "$ref": "#/components/schemas/EntityResultDto"
+            }
+          },
+          "page": {
+            "$ref": "#/components/schemas/PageMetadataDto"
+          }
+        }
+      },
+      "AsyncSearchStatusDto": {
+        "type": "object",
+        "properties": {
+          "searchJobStatus": {
             "type": "string",
             "enum": [
               "RUNNING",
@@ -8962,23 +10238,28 @@
           },
           "expirationDate": {
             "type": "string",
-            "format": "date-time"
+            "format": "date-time",
+            "description": "When the search job will expire and be automatically deleted"
           },
           "entitiesCount": {
             "type": "integer",
-            "format": "int64"
+            "format": "int64",
+            "description": "Number of entities found by the search"
           },
           "calculationTimeMillis": {
             "type": "integer",
-            "format": "int64"
+            "format": "int64",
+            "description": "Time taken to calculate the search job in milliseconds"
           },
           "createTime": {
             "type": "string",
-            "format": "date-time"
+            "format": "date-time",
+            "description": "When the search job was initiated"
           },
           "finishTime": {
             "type": "string",
-            "format": "date-time"
+            "format": "date-time",
+            "description": "When the search job completed (null if still running)"
           }
         },
         "required": [
@@ -8986,7 +10267,7 @@
           "createTime",
           "entitiesCount",
           "expirationDate",
-          "snapshotStatus"
+          "searchJobStatus"
         ]
       },
       "TableOperationStatsDTO": {
@@ -9227,7 +10508,7 @@
             "type": "array",
             "description": "Collection of workflow configurations for the entity model",
             "items": {
-              "$ref": "#/components/schemas/JsonNode"
+              "$ref": "#/components/schemas/WorkflowConfigurationDto"
             }
           }
         },
@@ -9737,12 +11018,21 @@
             "format": "date-time",
             "description": "The date and time when the M2M client was last updated",
             "example": "2023-04-21T10:02:27.88Z"
+          },
+          "roles": {
+            "type": "array",
+            "description": "The roles assigned to the M2M client",
+            "example": "[M2M]",
+            "items": {
+              "type": "string"
+            }
           }
         },
         "required": [
           "clientId",
           "creationDate",
-          "lastUpdateDate"
+          "lastUpdateDate",
+          "roles"
         ]
       },
       "AuditActorInfoDto": {
@@ -9759,6 +11049,10 @@
           "name": {
             "type": "string",
             "description": "Name of the actor"
+          },
+          "externalId": {
+            "type": "string",
+            "description": "External identifier of the actor, if applicable"
           }
         },
         "required": [
@@ -9772,6 +11066,25 @@
           "propertyName": "auditEventType"
         },
         "properties": {
+          "entityId": {
+            "type": "string",
+            "format": "uuid",
+            "description": "Identifier of the entity related to this event"
+          },
+          "entityModel": {
+            "type": "string",
+            "description": "Type of the entity related to this event (model.version)"
+          },
+          "consistencyTime": {
+            "type": "string",
+            "format": "date-time",
+            "description": "Cyoda consistency time"
+          },
+          "transactionId": {
+            "type": "string",
+            "format": "uuid",
+            "description": "Transaction identifier related to this event"
+          },
           "severity": {
             "type": "string",
             "description": "Severity level of the event",
@@ -9782,27 +11095,13 @@
               "DEBUG"
             ]
           },
-          "auditEventType": {
+          "details": {
             "type": "string",
-            "description": "Type of the audit event, used as discriminator for inherited types",
-            "enum": [
-              "StateMachine",
-              "EntityChange",
-              "System"
-            ]
+            "description": "Details of the event"
           },
-          "consistencyTime": {
-            "type": "string",
-            "format": "date-time",
-            "description": "Cyoda consistency time"
-          },
-          "transactionId": {
-            "type": "string",
-            "description": "Transaction identifier related to this event"
-          },
-          "entityType": {
-            "type": "string",
-            "description": "Type of the entity related to this event (model.version)"
+          "system": {
+            "type": "boolean",
+            "description": "Flag indicating whether this is a system-level event"
           },
           "utcTime": {
             "type": "string",
@@ -9818,17 +11117,8 @@
             "$ref": "#/components/schemas/AuditActorInfoDto",
             "description": "Actor related to this event"
           },
-          "details": {
-            "type": "string",
-            "description": "Details of the event"
-          },
-          "system": {
-            "type": "boolean",
-            "description": "Flag indicating whether this is a system-level event"
-          },
-          "entityId": {
-            "type": "string",
-            "description": "Identifier of the entity related to this event"
+          "auditEventType": {
+            "type": "string"
           }
         },
         "required": [
@@ -9866,13 +11156,13 @@
             "items": {
               "oneOf": [
                 {
-                  "$ref": "#/components/schemas/EntityChangeEventDto"
+                  "$ref": "#/components/schemas/EntityChangeAuditEventDto"
                 },
                 {
-                  "$ref": "#/components/schemas/StateMachineEventDto"
+                  "$ref": "#/components/schemas/StateMachineAuditEventDto"
                 },
                 {
-                  "$ref": "#/components/schemas/SystemEventDto"
+                  "$ref": "#/components/schemas/SystemAuditEventDto"
                 }
               ]
             }
@@ -9882,7 +11172,7 @@
           "pagination"
         ]
       },
-      "EntityChangeEventDto": {
+      "EntityChangeAuditEventDto": {
         "allOf": [
           {
             "$ref": "#/components/schemas/AuditEventDto"
@@ -9907,7 +11197,6 @@
           }
         ],
         "required": [
-          "auditEventType",
           "changeType",
           "microsTime",
           "severity",
@@ -9927,7 +11216,29 @@
           }
         }
       },
-      "StateMachineEventDto": {
+      "RejectedTransitionCriterionDto": {
+        "type": "object",
+        "properties": {
+          "transitionName": {
+            "type": "string",
+            "description": "The name of the transition"
+          },
+          "criterion": {
+            "type": "string",
+            "description": "The name of the criterion"
+          },
+          "reason": {
+            "type": "string",
+            "description": "The reason why the criterion returned false"
+          }
+        },
+        "required": [
+          "criterion",
+          "reason",
+          "transitionName"
+        ]
+      },
+      "StateMachineAuditEventDto": {
         "allOf": [
           {
             "$ref": "#/components/schemas/AuditEventDto"
@@ -9941,37 +11252,70 @@
               },
               "eventType": {
                 "type": "string",
-                "description": "Type of the state machine event"
+                "description": "Type of the state machine event",
+                "enum": [
+                  "STARTED",
+                  "FINISHED",
+                  "CANCELLED",
+                  "FORCED_SUCCESS",
+                  "WORKFLOW_FOUND",
+                  "WORKFLOW_NOT_FOUND",
+                  "WORKFLOW_SKIPPED",
+                  "TRANSITION_MADE",
+                  "TRANSITION_NOT_FOUND",
+                  "TRANSITION_CRITERION_NOT_MATCHED",
+                  "PROCESS_CRITERION_NOT_MATCHED",
+                  "PROCESSING_PAUSED",
+                  "STATE_PROCESS_RESULT"
+                ]
               },
-              "workflowName": {
-                "type": "string",
-                "description": "Name of the related workflow, if any"
-              },
-              "transitionName": {
-                "type": "string",
-                "description": "Name of the related transition, if any"
-              },
-              "processorName": {
-                "type": "string",
-                "description": "Name of the related processor, if any"
-              },
-              "criteriaName": {
-                "type": "string",
-                "description": "Name of the related criteria, if any"
-              },
-              "targetState": {
-                "type": "string",
-                "description": "Name of the target state, if any"
-              },
-              "resultType": {
-                "type": "string",
-                "description": "Result of the state machine execution, if any"
+              "data": {
+                "oneOf": [
+                  {
+                    "$ref": "#/components/schemas/StateMachineCancelledDto"
+                  },
+                  {
+                    "$ref": "#/components/schemas/StateMachineFinishedDto"
+                  },
+                  {
+                    "$ref": "#/components/schemas/StateMachineForcedSuccessDto"
+                  },
+                  {
+                    "$ref": "#/components/schemas/StateMachineProcessCriterionNotMatchedDto"
+                  },
+                  {
+                    "$ref": "#/components/schemas/StateMachineProcessingPausedDto"
+                  },
+                  {
+                    "$ref": "#/components/schemas/StateMachineStartedDto"
+                  },
+                  {
+                    "$ref": "#/components/schemas/StateMachineStateProcessResultDto"
+                  },
+                  {
+                    "$ref": "#/components/schemas/StateMachineTransitionCriterionNotMatchedDto"
+                  },
+                  {
+                    "$ref": "#/components/schemas/StateMachineTransitionMadeDto"
+                  },
+                  {
+                    "$ref": "#/components/schemas/StateMachineTransitionNotFoundDto"
+                  },
+                  {
+                    "$ref": "#/components/schemas/StateMachineWorkflowFoundDto"
+                  },
+                  {
+                    "$ref": "#/components/schemas/StateMachineWorkflowNotFoundDto"
+                  },
+                  {
+                    "$ref": "#/components/schemas/StateMachineWorkflowSkippedDto"
+                  }
+                ]
               }
             }
           }
         ],
         "required": [
-          "auditEventType",
           "eventType",
           "microsTime",
           "severity",
@@ -9979,7 +11323,347 @@
           "utcTime"
         ]
       },
-      "SystemEventDto": {
+      "StateMachineCancelledDto": {
+        "allOf": [
+          {
+            "$ref": "#/components/schemas/StateMachineEventDto"
+          },
+          {
+            "type": "object",
+            "properties": {
+              "reason": {
+                "type": "string",
+                "description": "Reason for cancellation"
+              }
+            }
+          }
+        ],
+        "required": [
+          "reason"
+        ]
+      },
+      "StateMachineEventDto": {
+        "type": "object",
+        "discriminator": {
+          "propertyName": "eventType"
+        },
+        "properties": {
+          "eventType": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "eventType"
+        ]
+      },
+      "StateMachineFinishedDto": {
+        "type": "object",
+        "properties": {
+          "state": {
+            "type": "string",
+            "description": "The state of the entity when the state machine flow was finished"
+          },
+          "success": {
+            "type": "boolean",
+            "description": "Whether the state machine execution was successful"
+          },
+          "stopReason": {
+            "$ref": "#/components/schemas/WorkflowStopReasonDto"
+          }
+        },
+        "required": [
+          "state",
+          "stopReason",
+          "success"
+        ]
+      },
+      "StateMachineForcedSuccessDto": {
+        "allOf": [
+          {
+            "$ref": "#/components/schemas/StateMachineEventDto"
+          }
+        ]
+      },
+      "StateMachineProcessCriterionNotMatchedDto": {
+        "allOf": [
+          {
+            "$ref": "#/components/schemas/StateMachineEventDto"
+          },
+          {
+            "type": "object",
+            "properties": {
+              "workflowName": {
+                "type": "string",
+                "description": "Name of the workflow"
+              },
+              "processorClassName": {
+                "type": "string",
+                "description": "Fully qualified class name of the processor"
+              },
+              "criterion": {
+                "type": "string",
+                "description": "Name of the criterion that was not matched"
+              },
+              "reason": {
+                "type": "string",
+                "description": "Reason why the criterion was not matched"
+              }
+            }
+          }
+        ],
+        "required": [
+          "criterion",
+          "processorClassName",
+          "workflowName"
+        ]
+      },
+      "StateMachineProcessingPausedDto": {
+        "allOf": [
+          {
+            "$ref": "#/components/schemas/StateMachineEventDto"
+          },
+          {
+            "type": "object",
+            "properties": {
+              "workflowName": {
+                "type": "string",
+                "description": "Name of the workflow"
+              },
+              "transition": {
+                "type": "string",
+                "description": "Name of the transition"
+              },
+              "processNames": {
+                "type": "array",
+                "description": "List of process names that are paused",
+                "items": {
+                  "type": "string"
+                }
+              }
+            }
+          }
+        ],
+        "required": [
+          "processNames",
+          "transition",
+          "workflowName"
+        ]
+      },
+      "StateMachineStartedDto": {
+        "allOf": [
+          {
+            "$ref": "#/components/schemas/StateMachineEventDto"
+          },
+          {
+            "type": "object",
+            "properties": {
+              "state": {
+                "type": "string",
+                "description": "The state of the entity when the state machine flow was started"
+              }
+            }
+          }
+        ],
+        "required": [
+          "state"
+        ]
+      },
+      "StateMachineStateProcessResultDto": {
+        "allOf": [
+          {
+            "$ref": "#/components/schemas/StateMachineEventDto"
+          },
+          {
+            "type": "object",
+            "properties": {
+              "stateProcessId": {
+                "$ref": "#/components/schemas/StateProcessIdDto"
+              },
+              "stateProcessClassName": {
+                "type": "string",
+                "description": "Fully qualified class name of the state process"
+              },
+              "stateProcessType": {
+                "type": "string",
+                "enum": [
+                  "SUCCESS",
+                  "FAIL",
+                  "RESUBMIT",
+                  "UNKNOWN"
+                ]
+              },
+              "failReason": {
+                "type": "string",
+                "description": "Reason for failure, if applicable"
+              }
+            }
+          }
+        ],
+        "required": [
+          "stateProcessClassName",
+          "stateProcessId",
+          "stateProcessType"
+        ]
+      },
+      "StateMachineTransitionCriterionNotMatchedDto": {
+        "allOf": [
+          {
+            "$ref": "#/components/schemas/StateMachineEventDto"
+          },
+          {
+            "type": "object",
+            "properties": {
+              "workflowName": {
+                "type": "string",
+                "description": "Name of the workflow"
+              },
+              "transition": {
+                "type": "string",
+                "description": "Name of the transition"
+              },
+              "criterion": {
+                "type": "string",
+                "description": "Name of the criterion that was not matched"
+              },
+              "reason": {
+                "type": "string",
+                "description": "Reason why the criterion was not matched"
+              }
+            }
+          }
+        ],
+        "required": [
+          "criterion",
+          "transition",
+          "workflowName"
+        ]
+      },
+      "StateMachineTransitionMadeDto": {
+        "allOf": [
+          {
+            "$ref": "#/components/schemas/StateMachineEventDto"
+          },
+          {
+            "type": "object",
+            "properties": {
+              "workflowName": {
+                "type": "string",
+                "description": "Name of the workflow"
+              },
+              "transition": {
+                "type": "string",
+                "description": "Name of the transition that was made"
+              },
+              "newState": {
+                "type": "string",
+                "description": "New state after the transition"
+              }
+            }
+          }
+        ],
+        "required": [
+          "newState",
+          "transition",
+          "workflowName"
+        ]
+      },
+      "StateMachineTransitionNotFoundDto": {
+        "allOf": [
+          {
+            "$ref": "#/components/schemas/StateMachineEventDto"
+          },
+          {
+            "type": "object",
+            "properties": {
+              "workflowName": {
+                "type": "string",
+                "description": "Name of the workflow"
+              },
+              "transition": {
+                "type": "string",
+                "description": "Name of the transition that was not found"
+              }
+            }
+          }
+        ],
+        "required": [
+          "workflowName"
+        ]
+      },
+      "StateMachineWorkflowFoundDto": {
+        "allOf": [
+          {
+            "$ref": "#/components/schemas/StateMachineEventDto"
+          },
+          {
+            "type": "object",
+            "properties": {
+              "workflowName": {
+                "type": "string",
+                "description": "Name of the workflow that was found"
+              }
+            }
+          }
+        ],
+        "required": [
+          "workflowName"
+        ]
+      },
+      "StateMachineWorkflowNotFoundDto": {
+        "allOf": [
+          {
+            "$ref": "#/components/schemas/StateMachineEventDto"
+          }
+        ]
+      },
+      "StateMachineWorkflowSkippedDto": {
+        "allOf": [
+          {
+            "$ref": "#/components/schemas/StateMachineEventDto"
+          },
+          {
+            "type": "object",
+            "properties": {
+              "workflowName": {
+                "type": "string",
+                "description": "Name of the workflow that was skipped"
+              },
+              "reason": {
+                "type": "string",
+                "description": "Reason for skipping the workflow"
+              }
+            }
+          }
+        ],
+        "required": [
+          "reason",
+          "workflowName"
+        ]
+      },
+      "StateProcessIdDto": {
+        "type": "object",
+        "properties": {
+          "persisted": {
+            "type": "boolean",
+            "description": "Whether the process is persisted"
+          },
+          "runtimeId": {
+            "type": "integer",
+            "format": "int32",
+            "description": "Runtime identifier"
+          },
+          "persistedId": {
+            "type": "string",
+            "format": "uuid",
+            "description": "Persisted identifier, if applicable"
+          }
+        },
+        "required": [
+          "persisted",
+          "runtimeId"
+        ]
+      },
+      "SystemAuditEventDto": {
         "allOf": [
           {
             "$ref": "#/components/schemas/AuditEventDto"
@@ -10017,10 +11701,43 @@
           }
         ],
         "required": [
-          "auditEventType",
           "microsTime",
           "severity",
           "utcTime"
+        ]
+      },
+      "WorkflowStopReasonDto": {
+        "type": "object",
+        "properties": {
+          "type": {
+            "type": "string",
+            "enum": [
+              "COMPLETED_NO_AUTO_TRANSITIONS",
+              "COMPLETED_ALL_CRITERIA_REJECTED",
+              "PAUSED_FOR_PROCESSING",
+              "CANCELED",
+              "NO_WORKFLOW_FOUND",
+              "WORKFLOW_SKIPPED",
+              "FORCE_SUCCESS",
+              "INCOMPLETE_TRANSACTION",
+              "UNKNOWN"
+            ]
+          },
+          "description": {
+            "type": "string",
+            "description": "Human-readable description of why the workflow stopped"
+          },
+          "rejectedTransitions": {
+            "type": "array",
+            "description": "If stopped due to criteria rejections, the transitions that were rejected",
+            "items": {
+              "$ref": "#/components/schemas/RejectedTransitionCriterionDto"
+            }
+          }
+        },
+        "required": [
+          "description",
+          "type"
         ]
       },
       "LegalEntityInfoDto": {
@@ -10216,6 +11933,20 @@
             }
           }
         }
+      },
+      "AbstractConditionDto": {
+        "type": "object",
+        "discriminator": {
+          "propertyName": "type"
+        },
+        "properties": {
+          "type": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "type"
+        ]
       },
       "StreamDeleteResult": {
         "type": "object",
