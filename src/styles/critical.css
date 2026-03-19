@@ -3,6 +3,9 @@
 
 /* Essential CSS Custom Properties - Critical for layout */
 :root {
+  /* Increase main content width for wider screens (default is ~45rem) */
+  --sl-content-width: 65rem;
+
   /* Cyoda Brand Colors - Critical for header/navigation */
   --cyoda-aqua: #4FB8B0;
   --cyoda-aqua-rgb: 79, 184, 176;

@@ -15,11 +15,11 @@ Get your first Cyoda environment running in under 10 minutes with our AI-powered
 - A Google or GitHub account for authentication
 - 5-10 minutes of your time
 
-## Step 1: Access the AI Assistant
+## Step 1: Access AI Studio
 
 Navigate to [https://ai.cyoda.net](https://ai.cyoda.net) in your web browser.
 
-You'll be greeted by the Cyoda AI Assistant, your intelligent guide to the platform.
+You'll be greeted by the Cyoda AI Studio, your intelligent guide to the platform.
 
 ## Step 2: Authenticate
 
@@ -28,11 +28,11 @@ Choose your preferred authentication method:
 - **Google Account**: Sign in with your Google credentials
 - **GitHub Account**: Sign in with your GitHub credentials
 
-The AI Assistant uses Auth0 for secure authentication, ensuring your credentials are protected.
+The AI Studio uses Auth0 for secure authentication, ensuring your credentials are protected.
 
 ## Step 3: Deploy Your Environment
 
-Once authenticated, simply tell the AI Assistant:
+Once authenticated, simply ask for you environment to be deployed in the AI Studio:
 
 ```
 Please deploy my Cyoda environment
@@ -110,7 +110,7 @@ curl -X POST https://client-<your_user_id>.eu.cyoda.net/auth/token \
 ### Environment Not Accessible
 If your environment URL isn't working:
 1. Wait a few more minutes for provisioning to complete
-2. Check the AI Assistant for any error messages
+2. Check the AI Studio for any error messages
 3. Try refreshing your browser
 
 ### Authentication Issues
@@ -127,7 +127,7 @@ If API calls are failing:
 
 ## Getting Help
 
-- **AI Assistant**: Ask questions directly at [https://ai.cyoda.net](https://ai.cyoda.net)
+- **AI Studio**: Ask questions directly at [https://ai.cyoda.net](https://ai.cyoda.net)
 - **Documentation**: Browse our [guides](/guides/)
 - **Community**: Connect with other developers on our platform
 

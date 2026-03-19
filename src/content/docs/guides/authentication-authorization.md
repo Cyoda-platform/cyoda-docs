@@ -28,7 +28,7 @@ Before using Cyoda Cloud, you must:
 
 ### Registration Process
 
-1. **Access the AI Assistant**: Navigate to the Cyoda Cloud web-based Single Page Application (SPA)
+1. **Access the AI Studio**: Navigate to the Cyoda Cloud web-based Single Page Application (SPA)
 2. **Choose Authentication Provider**: Register using one of the supported providers:
     - **Google Auth**: Sign up using your Google account
     - **GitHub**: Sign up using your GitHub account
@@ -58,16 +58,16 @@ Your environment has several service endpoints, which are determined by your CAA
 
 ### Overview
 
-You need a technical user to access your Cyoda Cloud API outside of the UI (Cyoda UI or AI Assistant). Technical users are machine-to-machine (M2M) clients authenticated using OAuth 2.0 client credentials flow.
+You need a technical user to access your Cyoda Cloud API outside of the UI (Cyoda UI or AI Studio). Technical users are machine-to-machine (M2M) clients authenticated using OAuth 2.0 client credentials flow.
 
 ### Creation Process
 
-1. **Login Requirement**: You must be logged into the AI Assistant
-2. **Request Technical User**: Prompt the AI Assistant with your environment name and request to create a new technical user
+1. **Login Requirement**: You must be logged into the AI Studio
+2. **Request Technical User**: Prompt with your environment name and request to create a new technical user
    ```
    Example prompt: "add new machine user"
    ```
-3. **Receive Credentials**: The AI Assistant will provide:
+3. **Receive Credentials**: The AI Studio will provide:
     - **Client ID**: Unique identifier for your technical user
     - **Client Secret**: Secret key for authentication (shown only once)
 
