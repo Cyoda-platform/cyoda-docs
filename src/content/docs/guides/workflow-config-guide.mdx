@@ -16,18 +16,6 @@ Cyoda workflows define finite, distributed state machines that govern the lifecy
 
 The platform supports adaptable entity modeling, allowing business logic to evolve through configuration rather than implementation changes. Workflows declare the set of states, valid transitions, and associated processing steps while preserving immutable persistence for auditability.
 
-# Workflow Config Guide
-
-Understanding Cyoda JSON workflow configurations
-
-> Understanding Cyoda JSON workflow configurations.
-
-## Overview
-
-Cyoda workflows define finite, distributed state machines that govern the lifecycle of business entities in an event-driven environment. Each entity progresses through a sequence of states based on defined transitions, criteria, and processing rules.
-
-The platform supports adaptable entity modeling, allowing business logic to evolve through configuration rather than implementation changes. Workflows declare the set of states, valid transitions, and associated processing steps while preserving immutable persistence for auditability.
-
 ## Workflow Architecture
 
 ### Core Components
@@ -38,6 +26,7 @@ The platform supports adaptable entity modeling, allowing business logic to evol
 4. **Processors**: Executable logic triggered during transitions
 
 ## Configuration Schema
+
 
 You can find the workflow schema in the [API Documentation](/api-reference/). See the workflow import endpoints for complete schema specifications. Here we explain the structure and meaning of each element.
 
@@ -400,7 +389,7 @@ stages allow users or systems to correct or re-evaluate the request.
 
 The following section walks through the configuration step by step.
 
-![Payment Request Workflow](paymentRequestWorkflow)
+<Image src={paymentRequestWorkflow} alt="Payment Request Workflow" width={1000} height={700} loading="lazy" />
 
 ### Step 1: Workflow Metadata
 
@@ -735,6 +724,7 @@ We add two processors to the `APPROVE` transition in the `SUBMITTED` state, resp
 - Prefer asynchronous processing for external dependencies
 - Use self-transitions for triggering workflow automation on exit from the current state
 
+
 ## Platform Integration
 
 Cyoda workflows integrate directly with:
@@ -743,3 +733,4 @@ Cyoda workflows integrate directly with:
 - **Execution Engine**: Drives state and transition logic
 - **External Functions**: Implement validation and custom behavior
 - **Event System**: Triggers automated transitions on event reception
+
