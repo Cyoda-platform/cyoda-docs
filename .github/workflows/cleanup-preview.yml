@@ -19,13 +19,21 @@ jobs:
         run: npm install -g surge
 
       - name: Remove Surge deployment
+        env:
+          INPUT_ENV_NAME: ${{ github.event.inputs.environment_name }}
+          SURGE_TOKEN: ${{ secrets.SURGE_TOKEN }}
         run: |
-          ENV_NAME="${{ github.event.inputs.environment_name }}"
-          SURGE_DOMAIN="cyoda-docs-${ENV_NAME}.surge.sh"
+          # Sanitize input to allow only safe domain characters
+          CLEAN_ENV=$(printf '%s' "$INPUT_ENV_NAME" | tr -cd 'a-zA-Z0-9-' )
+          if [ -z "$CLEAN_ENV" ]; then
+            echo "❌ environment_name is empty after sanitization"; exit 1
+          fi
+          SURGE_DOMAIN="cyoda-docs-${CLEAN_ENV}.surge.sh"
           echo "🗑️ Removing deployment: https://$SURGE_DOMAIN"
-          surge teardown $SURGE_DOMAIN --token ${{ secrets.SURGE_TOKEN }} || echo "Domain may not exist or already removed"
+          surge teardown "$SURGE_DOMAIN" --token "$SURGE_TOKEN" || echo "Domain may not exist or already removed"
+          echo "CLEAN_ENV=$CLEAN_ENV" >> "$GITHUB_ENV"
 
       - name: Confirm cleanup
         run: |
-          echo "✅ Cleanup completed for environment: ${{ github.event.inputs.environment_name }}"
-          echo "🗑️ Removed: https://cyoda-docs-${{ github.event.inputs.environment_name }}.surge.sh"
+          echo "✅ Cleanup completed for environment: ${CLEAN_ENV}"
+          echo "🗑️ Removed: https://cyoda-docs-${CLEAN_ENV}.surge.sh"

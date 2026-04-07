@@ -40,6 +40,10 @@ const uniqueId = `special-display-${Math.random().toString(36).substr(2, 9)}`;
 
 <script define:vars={{ uniqueId }}>
     // Minimal, framework-free. Decodes and injects appropriate content.
+    // Uses DOM APIs (textContent, createElement) instead of innerHTML so that
+    // any future content authoring that introduces HTML special characters
+    // cannot turn into stored XSS even if the docs build pipeline starts
+    // accepting less trusted inputs.
     (function () {
         const span = document.getElementById(uniqueId);
         if (!span) return;
@@ -48,11 +52,18 @@ const uniqueId = `special-display-${Math.random().toString(36).substr(2, 9)}`;
             const text = span.getAttribute("data-label") || decoded;
             const type = span.getAttribute("data-type");
 
+            // Clear any existing children (e.g. the <noscript> fallback).
+            while (span.firstChild) span.removeChild(span.firstChild);
+
             if (type === 'email') {
-                span.innerHTML = `<a href="mailto:${decoded}" rel="nofollow">${text}</a>`;
+                const a = document.createElement('a');
+                a.href = 'mailto:' + decoded;
+                a.rel = 'nofollow';
+                a.textContent = text;
+                span.appendChild(a);
             } else {
                 // For text content, just display it without a link
-                span.innerHTML = text;
+                span.appendChild(document.createTextNode(text));
             }
         } catch (e) {
             // If decoding fails, leave the <noscript> fallback in place.

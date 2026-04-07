@@ -14,7 +14,17 @@ const description = 'Interactive API documentation for the Cyoda platform';
     <title>{title} | Cyoda Documentation</title>
     <meta name="description" content={description} />
     <link rel="icon" href="/favicon.svg" sizes="any" />
-    <link rel="stylesheet" href="https://unpkg.com/@stoplight/elements/styles.min.css">
+    <!-- Stoplight Elements styles: pinned version with Subresource Integrity. -->
+    <!-- When bumping the version, regenerate the integrity hash:                -->
+    <!--   curl -sL "https://unpkg.com/@stoplight/elements@<ver>/styles.min.css" \-->
+    <!--     | openssl dgst -sha384 -binary | openssl base64 -A                   -->
+    <link
+      rel="stylesheet"
+      href="https://unpkg.com/@stoplight/elements@9.0.16/styles.min.css"
+      integrity="sha384-iVQBHadsD+eV0M5+ubRCEVXrXEBj+BqcuwjUwPoVJc0Pb1fmrhYSAhL+BFProHdV"
+      crossorigin="anonymous"
+      referrerpolicy="no-referrer"
+    >
     <style>
       @import '../../../styles/primer.css';
 
