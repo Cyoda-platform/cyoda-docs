@@ -159,8 +159,17 @@ const description = 'Interactive API documentation for the Cyoda platform';
       ></script>
     </main>
 
-    <!-- Use CDN for Scalar API Reference -->
-    <script is:inline src="https://cdn.jsdelivr.net/npm/@scalar/api-reference@latest"></script>
+    <!-- Scalar API Reference: pinned version with Subresource Integrity. -->
+    <!-- When bumping the version, regenerate the integrity hash:               -->
+    <!--   curl -sL "https://cdn.jsdelivr.net/npm/@scalar/api-reference@<ver>" \-->
+    <!--     | openssl dgst -sha384 -binary | openssl base64 -A                 -->
+    <script
+      is:inline
+      src="https://cdn.jsdelivr.net/npm/@scalar/api-reference@1.51.0"
+      integrity="sha384-NMXUONwp2BXDpg9WZPFiCRAyu0xvHNbpLFT+x+5+sjMaJgNl8dxzEqlCWWwUJnRt"
+      crossorigin="anonymous"
+      referrerpolicy="no-referrer"
+    ></script>
   </body>
 </html>
 

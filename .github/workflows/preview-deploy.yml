@@ -34,16 +34,20 @@ jobs:
 
       - name: Get branch info
         id: branch-info
+        env:
+          INPUT_BRANCH: ${{ github.event.inputs.branch }}
+          INPUT_ENV_NAME: ${{ github.event.inputs.environment_name }}
+          REF_NAME: ${{ github.ref_name }}
         run: |
           # Determine which branch to use
-          BRANCH_NAME="${{ github.event.inputs.branch }}"
+          BRANCH_NAME="$INPUT_BRANCH"
           if [ -z "$BRANCH_NAME" ]; then
-            BRANCH_NAME="${{ github.ref_name }}"
+            BRANCH_NAME="$REF_NAME"
           fi
 
           # Use custom environment name if provided, otherwise use branch name
-          if [ -n "${{ github.event.inputs.environment_name }}" ]; then
-            ENV_NAME="${{ github.event.inputs.environment_name }}"
+          if [ -n "$INPUT_ENV_NAME" ]; then
+            ENV_NAME="$INPUT_ENV_NAME"
           else
             ENV_NAME="$BRANCH_NAME"
           fi
@@ -101,11 +105,13 @@ jobs:
         run: npm install -g surge
 
       - name: Deploy to Surge
+        env:
+          ENV_NAME: ${{ steps.branch-info.outputs.branch-name }}
+          SURGE_TOKEN: ${{ secrets.SURGE_TOKEN }}
         run: |
-          ENV_NAME="${{ steps.branch-info.outputs.branch-name }}"
           SURGE_DOMAIN="cyoda-docs-${ENV_NAME}.surge.sh"
-          echo "🚀 Deploying to: ${{ env.SURGE_URL }}"
-          surge ./dist $SURGE_DOMAIN --token ${{ secrets.SURGE_TOKEN }}
+          echo "🚀 Deploying to: ${SURGE_URL}"
+          surge ./dist "$SURGE_DOMAIN" --token "$SURGE_TOKEN"
 
       - name: Output deployment info
         run: |

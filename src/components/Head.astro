@@ -6,6 +6,18 @@ import Analytics from './Analytics.astro';
 import HashRedirect from './HashRedirect.astro';
 ---
 
+{/*
+  Security: limit referrer leakage on outbound navigations and asset loads.
+  GitHub Pages cannot set HTTP response headers; this <meta> is the
+  highest-impact security policy we can set declaratively.
+
+  Note: a Content-Security-Policy meta is intentionally NOT set here.
+  The site uses several Astro `define:vars` inline scripts whose hashes
+  change on every build, and meta CSP cannot use `frame-ancestors`. A real
+  CSP requires fronting docs.cyoda.net with a CDN that can set headers.
+*/}
+<meta name="referrer" content="strict-origin-when-cross-origin" />
+
 <StarlightHead {...Astro.props} />
 <Analytics />
 <HashRedirect />
