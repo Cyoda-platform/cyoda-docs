@@ -213,70 +213,91 @@ explicit and explain why compat classes are not a platform concern.
 
 ---
 
-## Issue 6 — CDC / event-out position
+## Issue 6 — CDC / event-out: confirm delivery semantics for outbox-via-processor recipe
 
 **Repo:** `Cyoda-platform/cyoda-go`
-**Labels:** `cyoda-docs`, `product-decision`
-**Title:** Clarify product position on change-data / event-out surface
+**Labels:** `cyoda-docs`, `documentation`
+**Title:** Confirm delivery semantics for outbox-via-processor so the docs recipe matches runtime behaviour
 
 ### Context
 The three-persona review (data-engineer deep-dive) found **no non-gRPC,
 non-processor event-out channel** anywhere in the docs — no Kafka topic,
 outbox, webhook, CDC stream, NATS, SSE, or changefeed. The only option
-documented is "poll REST/Trino with a watermark" or "attach a gRPC processor
-to every transition and produce to Kafka yourself." Silence on this point
-blocks adoption by any team running a Kafka / Debezium / Iceberg estate.
+available is "poll REST/Trino with a watermark" or "attach a gRPC processor
+to every transition and produce to Kafka yourself." Silence on this blocks
+adoption by teams running a Kafka / Debezium / Iceberg estate.
+
+**Product decision taken:** we will land an **outbox-via-processor recipe**
+in cyoda-docs (pseudo-code form) under Build. No first-class event-out
+surface is planned for now.
 
 ### Proposal
-Make the product position explicit:
+Confirm upstream the runtime semantics the recipe should assume, so the
+pseudo-code is faithful:
 
-- **Option A:** Ship an outbox-via-processor recipe with delivery semantics
-  (at-least-once + dedup by `requestId`, ordering guarantees, replay).
-- **Option B:** State "no first-class change-data-out surface today" on the
-  roadmap page, with a link to the GitHub discussion tracking it.
-
-Either position is defensible; silence is not.
+- Processor invocation delivery: **at-least-once**? Expected dedup key
+  (e.g. `requestId` or transition id)?
+- Ordering guarantees across transitions on a single entity. Across
+  entities — none, assume concurrent?
+- Replay behaviour on processor failure / retry — is the processor
+  invoked again with the same ids?
+- Idempotency contract the recipe should document for downstream
+  consumers.
 
 ### Acceptance
-- [ ] A product decision is recorded (design doc, discussion thread, or
-      roadmap page)
-- [ ] cyoda-docs documents the position accordingly (either the recipe or
-      the gap)
+- [ ] Delivery semantics documented upstream (design doc or
+      runtime-contract page) so the docs recipe quotes real behaviour
+- [ ] cyoda-docs lands `build/outbox-pattern.md` (or equivalent) with
+      pseudo-code and a pointer to the upstream semantics page
 
 ---
 
-## Issue 7 — Operational production guidance
+## Issue 7 — Publish the ops interface surface (metrics, health, tracing)
 
 **Repo:** `Cyoda-platform/cyoda-go`
 **Labels:** `cyoda-docs`, `documentation`
-**Title:** Production operations guidance — DR, multi-region, Postgres HA, sizing
+**Title:** Document the ops-facing interface surface — canonical metric names, health/readiness paths, trace header contract
 
 ### Context
-The three-persona review (platform-architect deep-dive) audited `run/`
-coverage of HA, DR, backup/restore, upgrade/rollback, sizing, observability,
-networking, secrets, multi-AZ, capacity planning. **DR and multi-region are
-absent entirely.** PostgreSQL is drawn as a single box with no HA story
-(no Patroni/CloudNativePG/RDS guidance). Backup is a four-line paragraph.
-Sizing is qualitative tiers only. Observability lacks concrete metric names
-or endpoint paths. These are the deal-breaker topics in a regulated-
-enterprise platform review; their absence blocks adoption regardless of
-concept-layer quality.
+The three-persona review (platform-architect deep-dive) flagged gaps in
+`run/` coverage. Taking a step back: a platform vendor's remit stops at
+the **interface** ops teams integrate with — concrete metric names,
+health/readiness endpoints, the trace-context contract. *How* to run the
+show (PostgreSQL HA patterns, DR/RPO-RTO, sizing models, multi-AZ
+placement, capacity planning) is tightly coupled to the operator's
+infrastructure provider, app load profile, and compliance posture, and
+is not in Cyoda's remit to prescribe.
+
+What the review genuinely exposed is that the interface surface is
+under-documented: observability lacks concrete metric names or endpoint
+paths, and there is no published trace-header contract. That makes it
+impossible for an ops team to wire alerting, dashboards, or distributed
+tracing without reading the source. Fix the interface; leave the
+playbook to the operator.
 
 ### Proposal
-Produce upstream guidance that cyoda-docs can base a production-readiness
-page on:
+Produce upstream guidance cyoda-docs can cite under `run/`:
 
-- Supported PostgreSQL HA patterns (one or two canonical recommendations)
-- DR expectations and RPO/RTO targets (or a statement that these are
-  operator-defined, with the levers)
-- A concrete sizing model — CPU/mem requests, Postgres IOPS/WAL
-  throughput, gRPC concurrency, pod-to-TPS coefficient
-- Canonical metric names, health/readiness paths, trace header contract
-- Multi-AZ placement guidance
+- **Metrics catalogue.** Canonical metric names emitted by cyoda-go, their
+  types (counter/gauge/histogram), labels, and meaning. Stable-vs-
+  evolving marker on each.
+- **Health and readiness endpoints.** Path(s), expected response shape,
+  what "ready" and "healthy" actually check.
+- **Trace-context contract.** Which headers cyoda-go propagates
+  (W3C `traceparent`/`tracestate`, B3, or other), where ids appear in
+  logs, and the correlation contract across REST, gRPC, and processor
+  invocations.
+- **Structured-log schema.** Key field names (`request_id`,
+  `entity_id`, `transition`, etc.) and their stability.
+
+Deliberately **out of scope**: Postgres HA recipes, DR targets, sizing
+models, multi-AZ placement. Those belong to the operator, not the
+platform vendor.
 
 ### Acceptance
-- [ ] An ops-guidance reference exists upstream
-- [ ] cyoda-docs `run/kubernetes.md` can be rewritten against it
+- [ ] Metrics, health, tracing, and log-schema references exist upstream
+- [ ] cyoda-docs `run/observability.md` (and neighbours) can cite them
+      directly
 
 ---
 
