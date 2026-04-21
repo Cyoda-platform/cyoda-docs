@@ -328,11 +328,65 @@ Filed against cyoda-docs (or a new sibling repo) as a **follow-up issue**, not b
 - **MCP docs server** — companion service exposing cyoda-docs as MCP tools (`search_docs`, `get_page`, `list_sections`) for Claude Code / Cursor / VS Code / etc. Reads `/llms-full.txt` and the schemas. Likely a Cloudflare Worker or small standalone service.
 - **Stretch goal on that same issue:** Cloudflare Pages edge function for content negotiation (`Accept: text/markdown` on the same URL returns markdown instead of HTML).
 
+## Versioning
+
+The site versions track **cyoda-go major versions**. A docs version is cut when cyoda-go cuts a new major (v1.x → v2.0). Between majors, the docs site stays on that major and absorbs minor/patch-level changes in place.
+
+### URL strategy
+
+- **Default (`docs.cyoda.net/...`)** serves the latest stable major.
+- **Previous majors** remain available at `docs.cyoda.net/v<MAJOR>/...` (e.g., `/v1/`). Minor versions are not exposed in URLs.
+- **Version picker** in the header lets readers switch majors. It links to the matching page in the target version where one exists, falling back to that version's section index otherwise.
+- Redirects from this pivot (see Migration mapping) apply at the default (latest) path. Legacy version paths are read-only snapshots.
+
+### Vendored artefact pinning
+
+Each site version pins the cyoda-go release it consumes. Concretely:
+
+- A file `vendored/CYODA_GO_VERSION` (or an env-var equivalent) declares the pinned cyoda-go release tag for the current site version.
+- `scripts/sync-vendored.mjs` (see Delegation model) reads that pin when `VENDOR_MODE=release` or `VENDOR_MODE=url`, so every ingested artefact (CLI help, env vars, OpenAPI, proto, helm values) comes from the same cyoda-go release.
+- Bumping the pin within a major is a routine release-notes change. Cutting a new major means snapshotting the previous version directory and moving the default forward.
+
+### Content responsibilities per version tier
+
+| Tier | Lives here indefinitely | Notes |
+|---|---|---|
+| Concepts | Yes | Version-agnostic by design; rarely needs per-version forks |
+| Build | Yes, lightly versioned | Patterns don't move much; version-specific snippets marked inline |
+| Run | Versioned | Deployment mechanics change across majors |
+| Reference | Fully versioned | All ingested artefacts pinned per major |
+| Cyoda Cloud | Single stream, dated | Hosted service evolves independently of cyoda-go majors — treated as a rolling product page rather than a versioned manual |
+
+### Implementation note
+
+The first version-cut mechanism does **not** need to be built during this pivot — there is only one supported version today (cyoda-go v0.x, pre-1.0). The pivot lays the groundwork:
+
+- Frontmatter and vendoring are already version-aware.
+- URL structure reserves `/v<MAJOR>/` so no redirect rework is needed at cut time.
+- A follow-up issue covers the actual version-cut tooling (CI step that snapshots `src/content/docs/` into a versioned directory, sidebar config that exposes the picker).
+
+## Worked examples
+
+`cyoda-go/examples/` is the **canonical home** for worked example applications. Docs pages link to specific examples rather than embedding them inline.
+
+### Requirements for an example to be referenced from docs
+
+Every example referenced from cyoda-docs must:
+
+1. **Run end-to-end with one command** (e.g., `go run ./...`, or `docker compose up`). Default storage mode is SQLite; in-memory allowed if the example is explicitly about the test harness.
+2. **Have a `README.md`** with: purpose (1–3 sentences), prerequisites, run steps, expected output, and a back-link to the docs page(s) it supports.
+3. **Be covered by CI** in the `cyoda-go` repo. An example that stops running is a bug in cyoda-go, not cyoda-docs.
+4. **Illustrate one concept.** No kitchen-sink demos. If a concept needs more than one example, split them.
+5. **Minimise dependencies** beyond cyoda-go itself. External services allowed only when the example is specifically about integrating them.
+6. **Be pinned by commit.** cyoda-docs links to a specific commit/tag (not `main`) so link text stays accurate as examples evolve. Pin bumps are routine.
+
+### Relocating examples later
+
+If examples outgrow `cyoda-go/examples/` and warrant a dedicated repo, the move is mechanical: the cyoda-docs link-resolver (a small helper in `src/utils/`) reads from a single config pointing at the canonical examples source. No content changes required.
+
 ## Open questions (resolve post-pivot, not blocking)
 
-1. **Versioning strategy for the site itself.** Versioned URLs (`/v0.2/…`) vs. latest-only with release notes vs. per-page version badges. Whichever we pick must be compatible with the delegation model (vendored artefacts versioned per release). Separate design spec.
-2. **Examples repository home.** Whether `cyoda-go/examples/` is the canonical home for worked code, or whether a separate `cyoda-examples` repo is warranted as the library grows.
-3. **Self-hosted IAM page scope.** If cyoda-go's own identity docs prove insufficient for operators, we may need a thin `run/self-hosted-identity.md` summarising the deployment-mode concerns. Revisit once cyoda-go's docs land.
+1. **Self-hosted IAM page scope.** If cyoda-go's own identity docs prove insufficient for operators, we may need a thin `run/self-hosted-identity.md` summarising the deployment-mode concerns. Revisit once cyoda-go's docs land.
 
 ## Constraints and non-goals
 
