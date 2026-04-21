@@ -236,3 +236,75 @@ when `modelVersion` increments.
   has the biggest architect-perception lift.
 - **Fix list items 11–13 (large).** Defer until product decisions are made
   upstream.
+
+---
+
+## Post-review update — 2026-04-21
+
+### Dropped-content audit
+
+The data-engineer deep-dive (DE-D1) scored the Trino surface as **7/8
+UNANSWERED**. That score reflected the pivot branch, but not the
+substance of what existed on `main`. An audit of the old `guides/` tree
+against the new IA found two cases of silently dropped content:
+
+- **`guides/sql-and-trino.md`** (1014 lines) — projection rules, table
+  naming, JDBC URL template, type mapping with polymorphic temporal
+  resolution, complete worked example. Addressed ~5 of DE-D1's 8
+  questions; was dropped entirely.
+- **`guides/entity-model-simple-view-specification.md`** (561 lines) —
+  full API specification for `GET /model/export/SIMPLE_VIEW/…`: response
+  envelope, node descriptors, 23-value DataType enum, 6 worked
+  examples, embedded JSON Schema, RFC 7807 error shapes. Dropped
+  entirely.
+
+The two IAM pages (`iam-jwt-keys-and-oidc.md`,
+`iam-oidc-and-jwt-claims.md`) were confirmed cleanly ported into
+`run/cyoda-cloud/identity-and-entitlements.md`; no action needed.
+
+### Ports landed on this branch
+
+- `src/content/docs/reference/trino.mdx` — mostly-verbatim port of
+  `guides/sql-and-trino.md`; frontmatter reframed for `reference/`
+  voice, cross-links retargeted to new IA, `awaiting-upstream` banner
+  replaced with `evolving` stability tier, explicit "Gaps in this
+  reference" section captures what still needs upstream input
+  (dialect scope, push-down, isolation, performance envelope).
+- `src/content/docs/build/analytics-with-sql.md` — new concise
+  Build-side intro page. One-page shape: when to use the SQL surface,
+  JDBC connection recipe, first query, performance notes, pointer to
+  the reference.
+- `src/content/docs/reference/entity-model-export.mdx` —
+  mostly-verbatim port of
+  `guides/entity-model-simple-view-specification.md`; frontmatter
+  reframed, duplicate H1 removed (Starlight renders the title), light
+  copy edits for reference voice.
+- `src/content/docs/concepts/apis-and-surfaces.md` — retired the
+  "will move into a dedicated Trino reference page once the surface
+  stabilises" promise; now links the live
+  [`/reference/trino/`](https://docs.cyoda.net/reference/trino/) and
+  the Build-side
+  [`/build/analytics-with-sql/`](https://docs.cyoda.net/build/analytics-with-sql/).
+- `src/content/docs/build/modeling-entities.md` — added cross-link to
+  the new entity-model-export reference.
+- `astro.config.mjs` — redirects for `/guides/sql-and-trino/` and
+  `/guides/entity-model-simple-view-specification/` retargeted from
+  placeholder destinations to the new pages.
+
+### Net effect on DE-D1 findings
+
+Trino deep-dive scored 7/8 UNANSWERED before the port. After the port,
+roughly 5/8 of those answers are now in the reference page
+(catalogue/table naming, JDBC URL, nested-type projection with worked
+example, type mapping with polymorphic handling, a minimum temporal
+predicate example via `point_time` and `TIMESTAMP` literal). The
+remaining 3/8 — dialect scope, push-down matrix, isolation/consistency
+and performance envelope — are reframed as upstream issue #4 in
+`2026-04-21-upstream-issues.md`.
+
+### New follow-up tracked
+
+- **`build/searching-entities.md`** — captured as issue #10 in
+  `2026-04-21-upstream-issues.md`. Mirrors
+  `build/analytics-with-sql.md` for the REST surface and closes the
+  dead `/reference/api/#search` anchor flagged by the review.
