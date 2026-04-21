@@ -15,4 +15,13 @@ test.describe('Discoverability', () => {
     expect(hrefs.some(h => h.endsWith('/llms.txt'))).toBe(true);
     expect(hrefs.some(h => h.endsWith('/llms-full.txt'))).toBe(true);
   });
+
+  test('pages emit TechnicalArticle JSON-LD', async ({ page }) => {
+    await page.goto('/');
+    const script = await page.locator('script[type="application/ld+json"]').first().innerText();
+    const data = JSON.parse(script);
+    expect(data['@type']).toBe('TechnicalArticle');
+    expect(data.headline).toBeTruthy();
+    expect(data.inLanguage).toBe('en');
+  });
 });
