@@ -1,15 +1,45 @@
 /* src/styles/visual.css — look-and-feel utilities aligned with cyoda-launchpad */
 
-body {
-  background-image: radial-gradient(
-    circle at 1px 1px,
-    hsl(var(--cyoda-foreground) / 0.08) 1px,
-    transparent 0
-  );
-  background-size: 20px 20px;
+/*
+ * Hero band — faded blueprint/perspective image painted behind the page title only.
+ *
+ * Starlight renders page sections as <div class="content-panel">; the first
+ * one contains the <h1>. We apply the hero image via a ::before layer on that
+ * first panel so every doc page gets the launchpad-style band behind its
+ * title, and body text remains on a clean surface for reading.
+ *
+ * The launchpad itself uses the image at opacity 0.6 with a background colour
+ * overlay at 0.7 (see src/components/HeroSection.tsx in cyoda-launchpad).
+ * We match that feel with a single ::before layer at low opacity — one
+ * compositing pass instead of two.
+ *
+ * Source: ~/dev/cyoda-launchpad/src/assets/hero-bg{.jpg,-lm.png}, re-encoded
+ * to webp at build-tool time. Served from /img/ (public/).
+ */
+.content-panel:first-of-type {
+  position: relative;
+  isolation: isolate;
 }
 
-/* Subtle teal wash for hero/section-index pages (opt-in via class) */
+.content-panel:first-of-type::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background-image: url('/img/hero-bg-light.webp');
+  background-repeat: no-repeat;
+  background-position: center bottom;
+  background-size: cover;
+  opacity: 0.35;
+  z-index: -1;
+  pointer-events: none;
+}
+
+:root[data-theme='dark'] .content-panel:first-of-type::before {
+  background-image: url('/img/hero-bg-dark.webp');
+  opacity: 0.45;
+}
+
+/* Subtle teal wash for splash/landing pages (opt-in via class) */
 .section-hero {
   background: linear-gradient(
     to bottom,
