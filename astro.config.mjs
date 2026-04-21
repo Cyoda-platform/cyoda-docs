@@ -56,6 +56,25 @@ export default defineConfig({
 			}]
 		]
 	},
+	redirects: {
+		'/getting-started/introduction/': '/concepts/what-is-cyoda/',
+		'/getting-started/quickstart/': '/getting-started/install-and-first-entity/',
+		'/guides/cyoda-design-principles/': '/concepts/design-principles/',
+		'/guides/api-saving-and-getting-data/': '/build/working-with-entities/',
+		'/guides/authentication-authorization/': '/concepts/authentication-and-identity/',
+		'/guides/iam-jwt-keys-and-oidc/': '/run/cyoda-cloud/identity-and-entitlements/',
+		'/guides/iam-oidc-and-jwt-claims/': '/run/cyoda-cloud/identity-and-entitlements/',
+		'/guides/workflow-config-guide/': '/build/workflows-and-processors/',
+		'/guides/client-calculation-member-guide/': '/build/client-compute-nodes/',
+		'/guides/entity-model-simple-view-specification/': '/concepts/entities-and-lifecycle/',
+		'/guides/sql-and-trino/': '/concepts/apis-and-surfaces/',
+		'/guides/provision-environment/': '/run/cyoda-cloud/provisioning/',
+		'/architecture/cyoda-cloud-architecture/': '/run/cyoda-cloud/overview/',
+		'/cloud/entitlements/': '/run/cyoda-cloud/identity-and-entitlements/',
+		'/cloud/roadmap/': '/run/cyoda-cloud/status-and-roadmap/',
+		'/cloud/service-details/': '/run/cyoda-cloud/overview/',
+		'/cloud/status/': '/run/cyoda-cloud/status-and-roadmap/',
+	},
 	integrations: [
 		react(),
 		cookieconsent({
