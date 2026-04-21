@@ -1,0 +1,113 @@
+---
+title: "Kubernetes"
+description: "Deploy cyoda-go with the Helm chart for clustered PostgreSQL-backed production."
+sidebar:
+  order: 30
+---
+
+Kubernetes is the recommended production packaging for self-hosted cyoda-go.
+The application is designed for active-active stateless deployment: three to
+ten cyoda-go pods behind a load balancer, with PostgreSQL as the only
+stateful dependency.
+
+## When Kubernetes fits
+
+- **Production workloads** that need high availability.
+- **Multi-node clustering** with rolling upgrades and blue/green.
+- **Horizontal scale** up to the PostgreSQL backend's limits (10+ stateless
+  pods serving one PostgreSQL cluster is a comfortable envelope).
+- **Enterprise operations** — GitOps, secrets management, service meshes.
+
+## Deployment shape
+
+```
+          ┌─────────────┐
+          │ Load        │
+          │ Balancer    │
+          └──────┬──────┘
+                 │
+        ┌────────┼────────┐
+        │        │        │
+   ┌────▼─┐ ┌────▼─┐ ┌────▼─┐
+   │cyoda │ │cyoda │ │cyoda │   (stateless, 3–10 pods)
+   │-go   │ │-go   │ │-go   │
+   └────┬─┘ └────┬─┘ └────┬─┘
+        │        │        │
+        └────────┼────────┘
+                 │
+          ┌──────▼──────┐
+          │ PostgreSQL  │  (the only stateful dependency)
+          └─────────────┘
+```
+
+Every pod is identical; any pod can serve any request. There is no leader
+election, no ZooKeeper, no etcd. Writes are coordinated through PostgreSQL's
+`SERIALIZABLE` isolation so concurrent writers never silently corrupt data.
+
+## Helm chart
+
+cyoda-go ships a Helm chart under
+[`deploy/helm`](https://github.com/cyoda-platform/cyoda-go/tree/main/deploy/helm).
+The chart provisions the cyoda-go Deployment, a Service, a ConfigMap for
+non-sensitive configuration, and Secret references for credentials.
+
+The authoritative values reference lives under
+[Reference → Helm values](/reference/helm/) (awaiting upstream at the time of
+writing); the chart's own `values.yaml` is the source of truth until that
+reference is published.
+
+## High availability
+
+- **Load balancer.** Any Kubernetes-native L4 or L7 will do; match the pod
+  readiness probe to the one the chart exposes.
+- **Readiness and liveness probes.** Both are wired by default; tune if
+  your control plane has stricter latency budgets.
+- **Pod Disruption Budgets.** Set a minimum available count that matches
+  your replica count minus one so rolling upgrades and node drains do not
+  take the service below quorum.
+
+## Backup and restore
+
+Backup is standard PostgreSQL tooling: `pg_dump`, continuous WAL archiving,
+snapshot-based backups from your cloud provider. cyoda-go does not maintain
+any state outside PostgreSQL, so a PostgreSQL restore brings the platform
+back to that point in time in full.
+
+## Upgrades and rollback
+
+cyoda-go releases follow semantic versioning. For production:
+
+- **Blue/green or canary.** Run the new version alongside the old, cut
+  traffic over, retire the old.
+- **Rolling upgrade.** Fine for minor releases; set `maxUnavailable: 0` so
+  capacity never drops.
+- **Schema migration ordering.** Check the release notes for whether a
+  release requires a PostgreSQL schema migration step before the new binary
+  starts serving.
+
+## Sizing
+
+Sizing is driven by write volume more than read volume, because reads scale
+horizontally across pods while writes are serialised through PostgreSQL.
+Qualitative guide:
+
+- **Small.** 3 pods, `db.small` (or equivalent), up to a few hundred
+  transitions per second.
+- **Medium.** 5–7 pods, dedicated PostgreSQL, low thousands of
+  transitions per second.
+- **Large.** 10 pods with PostgreSQL scaled up; you are usually at a point
+  where Cyoda Cloud's Cassandra backend is worth evaluating.
+
+## Observability
+
+The chart exposes a Prometheus scrape annotation on the pods and surfaces
+the admin endpoints for log-level and tracing control. Standard
+OpenTelemetry configuration applies; wire OTLP exporters via environment
+variables in the Helm values.
+
+## When you outgrow Kubernetes
+
+At the upper end of the sizing guide, operating PostgreSQL at cyoda-go's
+write volume becomes the bottleneck. That is where the Cassandra backend
+(today via Cyoda Cloud) makes sense. See
+[Cyoda Cloud](./cyoda-cloud/).

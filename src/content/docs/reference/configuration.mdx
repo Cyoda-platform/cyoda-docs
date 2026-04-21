@@ -1,0 +1,24 @@
+---
+title: "Configuration"
+description: "cyoda-go configuration reference — awaiting upstream artefact."
+sidebar:
+  order: 40
+---
+
+import VendoredBanner from '../../../components/VendoredBanner.astro';
+
+<VendoredBanner stability="awaiting-upstream" issue="https://github.com/Cyoda-platform/cyoda-go/issues/new?labels=docs&title=docs%3A+publish+configuration+reference" />
+
+cyoda-go reads configuration from three sources, with this precedence (later
+overrides earlier):
+
+1. **Config file** — TOML/YAML at a default path, or passed via `--config`.
+2. **Environment variables** — prefixed `CYODA_`. Secrets support a `_FILE`
+   suffix to read the value from a mounted file.
+3. **CLI flags** — the highest-precedence override for any single run.
+
+The full reference — every key, its type, its default, and its environment
+variable form — will be generated from cyoda-go source. Until it is
+published upstream, the
+[`Config` struct in cyoda-go](https://github.com/cyoda-platform/cyoda-go/tree/main/config)
+is the authoritative source.

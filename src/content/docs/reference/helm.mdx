@@ -1,0 +1,19 @@
+---
+title: "Helm values"
+description: "cyoda-go Helm chart values reference — awaiting upstream artefact."
+sidebar:
+  order: 50
+---
+
+import VendoredBanner from '../../../components/VendoredBanner.astro';
+
+<VendoredBanner stability="awaiting-upstream" issue="https://github.com/Cyoda-platform/cyoda-go/issues/new?labels=docs&title=docs%3A+publish+Helm+values+reference" />
+
+Until the generated Helm values reference is published upstream, the
+chart's own `values.yaml` is the authoritative source:
+
+- [`deploy/helm/cyoda/values.yaml`](https://github.com/cyoda-platform/cyoda-go/blob/main/deploy/helm/cyoda/values.yaml)
+  — the complete list of configurable keys with inline documentation.
+
+See [Run → Kubernetes](/run/kubernetes/) for the deployment pattern and
+production-sizing guidance.

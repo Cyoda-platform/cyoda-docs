@@ -1,0 +1,23 @@
+---
+title: "CLI"
+description: "cyoda-go CLI reference — awaiting upstream artefact."
+sidebar:
+  order: 30
+---
+
+import VendoredBanner from '../../../components/VendoredBanner.astro';
+
+<VendoredBanner stability="awaiting-upstream" issue="https://github.com/Cyoda-platform/cyoda-go/issues/new?labels=docs&title=docs%3A+publish+CLI+reference+dump" />
+
+Until the CLI help dump is published from cyoda-go, the authoritative command
+list is:
+
+```bash
+cyoda --help
+cyoda <subcommand> --help
+```
+
+The CLI exposes subcommands for initialising a store (`cyoda init`), serving
+(`cyoda serve`), and administration. Each subcommand's flags mirror the
+configuration environment variables; see
+[Configuration](/reference/configuration/) for the cross-reference.
