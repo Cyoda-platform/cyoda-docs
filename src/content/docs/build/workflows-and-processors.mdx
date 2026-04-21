@@ -1,8 +1,8 @@
 ---
-title: Workflow Config Guide
-description: Understanding Cyoda JSON workflow configurations
+title: "Workflows and processors"
+description: "State-machine design, transitions, and external processors — with a preference for gRPC in compute nodes."
 sidebar:
-  order: 3
+  order: 30
 ---
 
 import { Image } from 'astro:assets';
@@ -13,6 +13,13 @@ import paymentRequestWorkflow from '../../../assets/payment-request-workflow.web
 ## Overview
 
 Cyoda workflows define finite, distributed state machines that govern the lifecycle of business entities in an event-driven environment. Each entity progresses through a sequence of states based on defined transitions, criteria, and processing rules.
+
+:::tip[Use gRPC for compute nodes]
+When implementing processors or criteria services, prefer gRPC over
+HTTP. gRPC preserves audit hygiene and simplifies authorization.
+See [APIs and surfaces](/concepts/apis-and-surfaces/) for the
+decision rationale.
+:::
 
 The platform supports adaptable entity modeling, allowing business logic to evolve through configuration rather than implementation changes. Workflows declare the set of states, valid transitions, and associated processing steps while preserving immutable persistence for auditability.
 
@@ -28,7 +35,7 @@ The platform supports adaptable entity modeling, allowing business logic to evol
 ## Configuration Schema
 
 
-You can find the workflow schema in the [API Documentation](/api-reference/). See the workflow import endpoints for complete schema specifications. Here we explain the structure and meaning of each element.
+You can find the workflow schema in the [API reference](/reference/api/). See the workflow import endpoints for complete schema specifications. Here we explain the structure and meaning of each element.
 
 ### Workflow Object
 
@@ -60,53 +67,16 @@ An entity model can have multiple workflows, each with its own `criterion` at th
 
 ## Import and Export
 
-Workflows are managed via the import and export API endpoints:
-
-- **Export**: `GET /model/{entityName}/{modelVersion}/workflow/export` — returns all workflows for an entity model
-- **Import**: `POST /model/{entityName}/{modelVersion}/workflow/import` — creates or updates workflows
-
-### Import Modes
-
-The import request includes an `importMode` field that controls how existing workflows are handled:
+Workflows are managed via import and export API endpoints on the entity
+model. The import request supports three modes that control how
+existing workflows are reconciled with the payload:
 
 - **`MERGE`** (default): Incremental update. Workflows with matching names are updated; unspecified workflows remain unchanged.
 - **`REPLACE`**: Removes all existing workflows for the entity model and retains only the imported ones. Also deletes all unused processors and criteria.
 - **`ACTIVATE`**: Similar to REPLACE, but deactivates (rather than deletes) existing workflows and transitions not included in the import. Unused processors and criteria are preserved.
 
-### Import Request Format
-
-```json
-{
-  "importMode": "MERGE",
-  "workflows": [
-    {
-      "version": "1.0",
-      "name": "Workflow Name",
-      "initialState": "StateName",
-      "active": true,
-      "states": { }
-    }
-  ]
-}
-```
-
-### Export Response Format
-
-```json
-{
-  "entityName": "Customer",
-  "modelVersion": 1,
-  "workflows": [
-    {
-      "version": "1.0",
-      "name": "Workflow Name",
-      "initialState": "StateName",
-      "active": true,
-      "states": { }
-    }
-  ]
-}
-```
+See [API reference](/reference/api/) for endpoint details and the full
+request/response schemas.
 
 ## States
 
@@ -373,7 +343,7 @@ Scheduled processors trigger a delayed transition after a configured time period
 
 ### Calculation Nodes Tags
 
-As described in the [Architecture](cyoda-cloud-architecture.md) section, the execution of processors and criteria is delegated to client compute nodes, i.e. your own infrastructure running your business logic. These nodes can be organized into groups and tagged based on their roles or capabilities. By optionally setting the `calculationNodesTags` property in a processor or criterion definition, you can direct execution to specific groups, giving you fine-grained control over workload distribution across your compute environment.
+As described in the [Architecture](/architecture/cyoda-cloud-architecture/) section, the execution of processors and criteria is delegated to client compute nodes, i.e. your own infrastructure running your business logic. These nodes can be organized into groups and tagged based on their roles or capabilities. By optionally setting the `calculationNodesTags` property in a processor or criterion definition, you can direct execution to specific groups, giving you fine-grained control over workload distribution across your compute environment.
 
 ## Example: Payment Request Workflow
 
