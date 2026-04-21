@@ -9,6 +9,9 @@ dist/
 # auto-generated schema documentation pages (all MDX files in schemas/)
 src/content/docs/schemas/**/*.mdx
 
+# Materialised from vendored/schemas/ at build time
+src/schemas/
+
 # dependencies
 node_modules/
 
