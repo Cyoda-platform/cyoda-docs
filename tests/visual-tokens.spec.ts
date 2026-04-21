@@ -1,12 +1,21 @@
 import { test, expect } from '@playwright/test';
 
 test.describe('Visual tokens', () => {
-  test('Montserrat is loaded and applied', async ({ page }) => {
+  test('Inter is loaded and applied', async ({ page }) => {
     await page.goto('/');
     // Wait for font loading to settle before probing.
     await page.evaluate(() => (document as any).fonts.ready);
     const loaded = await page.evaluate(() =>
-      (document as any).fonts.check('1em Montserrat')
+      (document as any).fonts.check('1em Inter')
+    );
+    expect(loaded).toBe(true);
+  });
+
+  test('JetBrains Mono is loaded for code', async ({ page }) => {
+    await page.goto('/');
+    await page.evaluate(() => (document as any).fonts.ready);
+    const loaded = await page.evaluate(() =>
+      (document as any).fonts.check('1em "JetBrains Mono"')
     );
     expect(loaded).toBe(true);
   });
