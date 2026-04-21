@@ -242,29 +242,24 @@ export default defineConfig({
 					autogenerate: { directory: 'getting-started' }
 				},
 				{
-					label: 'Guides',
-					collapsed: true,
-					autogenerate: { directory: 'guides' }
-				},
-				{
-					label: 'Concepts and Ideas',
+					label: 'Concepts',
 					collapsed: true,
 					autogenerate: { directory: 'concepts' }
 				},
 				{
-					label: 'Architecture',
+					label: 'Build',
 					collapsed: true,
-					autogenerate: { directory: 'architecture' }
+					autogenerate: { directory: 'build' }
 				},
 				{
-					label: 'Cloud Info',
+					label: 'Run',
 					collapsed: true,
-					autogenerate: { directory: 'cloud' }
+					autogenerate: { directory: 'run' }
 				},
 				{
-					label: 'JSON Schemas',
+					label: 'Reference',
 					collapsed: true,
-					autogenerate: { directory: 'schemas' }
+					autogenerate: { directory: 'reference' }
 				},
 			],
 			components: {
