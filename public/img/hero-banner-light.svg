@@ -1,0 +1,65 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 580" preserveAspectRatio="xMidYMid slice" fill="none">
+  <defs>
+    <linearGradient id="heroGradient" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="hsl(175,45%,92%)"/>
+      <stop offset="35%" stop-color="hsl(175,32%,95%)"/>
+      <stop offset="65%" stop-color="hsl(175,18%,97%)"/>
+      <stop offset="100%" stop-color="hsl(0,0%,99%)"/>
+    </linearGradient>
+  </defs>
+
+  <rect width="1200" height="580" fill="url(#heroGradient)"/>
+
+  <g stroke="hsl(175,60%,32%)" stroke-width="0.35" opacity="0.07">
+    <line x1="0" y1="72" x2="1200" y2="72"/>
+    <line x1="0" y1="144" x2="1200" y2="144"/>
+    <line x1="0" y1="216" x2="1200" y2="216"/>
+    <line x1="0" y1="288" x2="1200" y2="288"/>
+    <line x1="0" y1="360" x2="1200" y2="360"/>
+    <line x1="0" y1="432" x2="1200" y2="432"/>
+    <line x1="0" y1="504" x2="1200" y2="504"/>
+
+    <line x1="96" y1="0" x2="96" y2="580"/>
+    <line x1="192" y1="0" x2="192" y2="580"/>
+    <line x1="288" y1="0" x2="288" y2="580"/>
+    <line x1="384" y1="0" x2="384" y2="580"/>
+    <line x1="480" y1="0" x2="480" y2="580"/>
+    <line x1="576" y1="0" x2="576" y2="580"/>
+    <line x1="672" y1="0" x2="672" y2="580"/>
+    <line x1="768" y1="0" x2="768" y2="580"/>
+    <line x1="864" y1="0" x2="864" y2="580"/>
+    <line x1="960" y1="0" x2="960" y2="580"/>
+    <line x1="1056" y1="0" x2="1056" y2="580"/>
+    <line x1="1152" y1="0" x2="1152" y2="580"/>
+  </g>
+
+  <path d="M -80 580 A 780 780 0 0 1 840 -80" stroke="hsl(175,55%,35%)" stroke-width="1" opacity="0.16"/>
+  <path d="M 1280 -40 A 700 700 0 0 1 360 580" stroke="hsl(175,50%,38%)" stroke-width="0.9" opacity="0.11"/>
+
+  <g opacity="0.20" stroke="hsl(175,55%,36%)">
+    <circle cx="870" cy="150" r="110" stroke-width="0.7" stroke-dasharray="8 10"/>
+    <circle cx="870" cy="150" r="30" stroke-width="0.9"/>
+    <circle cx="870" cy="150" r="13" stroke-width="1.2"/>
+    <circle cx="870" cy="150" r="5" fill="hsl(175,55%,40%)" stroke="none"/>
+  </g>
+
+  <g opacity="0.15" stroke="hsl(175,52%,36%)">
+    <circle cx="230" cy="470" r="17" stroke-width="0.7"/>
+    <circle cx="230" cy="470" r="7.5" stroke-width="1"/>
+    <circle cx="230" cy="470" r="2.8" fill="hsl(175,52%,40%)" stroke="none"/>
+
+    <circle cx="1090" cy="390" r="14" stroke-width="0.7"/>
+    <circle cx="1090" cy="390" r="6" stroke-width="1"/>
+    <circle cx="1090" cy="390" r="2.2" fill="hsl(175,52%,40%)" stroke="none"/>
+
+    <circle cx="130" cy="165" r="11" stroke-width="0.7"/>
+    <circle cx="130" cy="165" r="4.5" stroke-width="1"/>
+    <circle cx="130" cy="165" r="1.8" fill="hsl(175,52%,40%)" stroke="none"/>
+  </g>
+
+  <g stroke="hsl(175,50%,38%)" stroke-width="0.75" opacity="0.11">
+    <line x1="130" y1="165" x2="870" y2="150"/>
+    <line x1="870" y1="150" x2="1090" y2="390"/>
+    <line x1="230" y1="470" x2="870" y2="150"/>
+  </g>
+</svg>
