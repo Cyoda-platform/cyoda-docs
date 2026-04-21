@@ -13,10 +13,10 @@ const REDIRECTS: [string, string][] = [
   ['/guides/entity-model-simple-view-specification/', '/concepts/entities-and-lifecycle/'],
   ['/guides/sql-and-trino/', '/concepts/apis-and-surfaces/'],
   ['/guides/provision-environment/', '/run/cyoda-cloud/provisioning/'],
-  ['/architecture/cyoda-cloud-architecture/', '/run/cyoda-cloud/overview/'],
+  ['/architecture/cyoda-cloud-architecture/', '/run/cyoda-cloud/'],
   ['/cloud/entitlements/', '/run/cyoda-cloud/identity-and-entitlements/'],
   ['/cloud/roadmap/', '/run/cyoda-cloud/status-and-roadmap/'],
-  ['/cloud/service-details/', '/run/cyoda-cloud/overview/'],
+  ['/cloud/service-details/', '/run/cyoda-cloud/'],
   ['/cloud/status/', '/run/cyoda-cloud/status-and-roadmap/'],
 ];
 
