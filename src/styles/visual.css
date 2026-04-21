@@ -67,26 +67,36 @@
 }
 
 /*
- * Heading rules — thin teal underlines matching the banner strokes.
+ * Heading rules — thin teal lines matching the banner strokes.
  *
- * primer.css (inherited) adds heavy 2–3px aqua underlines. Replace with
- * whisper-thin 1px lines at the same opacity band as the hero-banner
- * strokes (~0.15) so the page chrome has one consistent line language.
- * Drop the h3 chevron ::before — pure type for smaller headings.
+ * - H1 (page title): no underline; the hero banner below it demarcates.
+ * - H2: full-width 1px teal divider.
+ * - H3: short 1px line only under the heading text (inline-block box).
+ * - H4–H6: pure typography, no line.
  *
- * Loaded from visual.css which is last in customCss, so these overrides
- * win without having to edit primer.css/custom.css directly.
+ * primer.css (inherited) adds heavy 2–3px aqua underlines plus an h3
+ * chevron ::before. Override all of it here; visual.css is last in
+ * customCss so these rules win.
  */
 .sl-markdown-content h1,
-.sl-markdown-content h2,
 .content-panel h1:first-of-type,
 .main-frame h1:first-of-type {
+  border-bottom: none;
+  padding-bottom: 0;
+}
+
+.sl-markdown-content h2 {
   border-bottom: 1px solid hsl(var(--cyoda-teal) / 0.35);
   padding-bottom: 0.4rem;
   width: 100%;
 }
 
-.sl-markdown-content h3,
+.sl-markdown-content h3 {
+  display: inline-block;
+  border-bottom: 1px solid hsl(var(--cyoda-teal) / 0.35);
+  padding-bottom: 0.2rem;
+}
+
 .sl-markdown-content h4,
 .sl-markdown-content h5,
 .sl-markdown-content h6 {
