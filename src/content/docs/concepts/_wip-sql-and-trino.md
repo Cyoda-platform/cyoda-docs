@@ -1,9 +1,10 @@
-
 ---
 title: "SQL and Trino"
 description: Learn how entities are mapped to SQL schemas and how to query with SQL
+draft: true
 sidebar:
   order: 8
+  hidden: true
 ---
 
 ## Overview
