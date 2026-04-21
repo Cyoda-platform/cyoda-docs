@@ -26,7 +26,7 @@
   background-size: cover;
   z-index: -1;
   pointer-events: none;
-  border-bottom: 1px solid hsl(var(--cyoda-teal) / 0.25);
+  border-bottom: 1px solid hsl(var(--cyoda-teal) / 0.12);
 }
 
 :root[data-theme='dark'] .content-panel:first-of-type::before {

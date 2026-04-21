@@ -1,9 +1,9 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 200" preserveAspectRatio="xMidYMid slice" fill="none">
   <defs>
     <linearGradient id="heroGradient" x1="0" y1="0" x2="1" y2="1">
-      <stop offset="0%" stop-color="hsl(175,48%,83%)"/>
-      <stop offset="45%" stop-color="hsl(175,38%,89%)"/>
-      <stop offset="100%" stop-color="hsl(175,28%,95%)"/>
+      <stop offset="0%" stop-color="hsl(175,28%,96%)"/>
+      <stop offset="50%" stop-color="hsl(175,18%,98%)"/>
+      <stop offset="100%" stop-color="hsl(0,0%,100%)"/>
     </linearGradient>
   </defs>
 
