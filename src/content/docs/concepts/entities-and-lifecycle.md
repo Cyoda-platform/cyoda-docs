@@ -58,8 +58,10 @@ structural contract is frozen and any incoming entity that does not match
 is rejected. Lock is the right default for production systems with external
 producers, where silently accepting a widened shape would be a compliance
 or correctness failure. `modelVersion` is application-controlled; to change
-the contract after lock, the application increments the version and — if
-needed — migrates old data explicitly. Old revisions are never re-validated
+the contract after lock, the application bumps the version and **registers
+the new schema** for it — by submitting a comprehensive set of
+representative samples (the same mechanism as initial discovery; the
+samples themselves are not stored). Old revisions are never re-validated
 or re-cast; each remains valid under the model version active at write
 time. See [Modeling entities](/build/modeling-entities/) for when to choose
 each mode and how to plan evolutions.
