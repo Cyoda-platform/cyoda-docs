@@ -1,0 +1,43 @@
+/* src/styles/visual.css — look-and-feel utilities aligned with cyoda-launchpad */
+
+body {
+  background-image: radial-gradient(
+    circle at 1px 1px,
+    hsl(var(--cyoda-foreground) / 0.08) 1px,
+    transparent 0
+  );
+  background-size: 20px 20px;
+}
+
+/* Subtle teal wash for hero/section-index pages (opt-in via class) */
+.section-hero {
+  background: linear-gradient(
+    to bottom,
+    hsl(var(--cyoda-teal) / 0.06),
+    transparent
+  );
+  padding-block-end: 2rem;
+  margin-block-end: 2rem;
+}
+
+/* Dotted divider */
+.section-separator {
+  height: 1rem;
+  background-image: radial-gradient(
+    circle at center,
+    hsl(var(--cyoda-foreground) / 0.2) 1px,
+    transparent 1.5px
+  );
+  background-size: 8px 8px;
+  background-repeat: repeat-x;
+  background-position: center;
+  margin-block: 2rem;
+}
+
+/* Teal-tinted card variant */
+.card-teal {
+  background: hsl(var(--cyoda-teal) / 0.05);
+  border: 1px solid hsl(var(--cyoda-teal) / 0.3);
+  border-radius: 0.5rem;
+  padding: 1.25rem;
+}
