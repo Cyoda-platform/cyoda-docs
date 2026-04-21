@@ -1,0 +1,105 @@
+---
+title: "Install cyoda-go and create your first entity"
+description: "Install cyoda-go with SQLite (the default), define an entity model, trigger a workflow, and read state back."
+sidebar:
+  order: 0
+---
+
+import { Aside } from '@astrojs/starlight/components';
+
+This page takes you from nothing installed to a persisted entity you can query,
+running entirely on your own machine. The default backend is **SQLite** — zero
+operational overhead, one file on disk, data survives restarts.
+
+## Install
+
+cyoda-go ships as a single binary. Pick the flavour that fits your machine; the
+authoritative list of installers lives in the
+[cyoda-go README](https://github.com/cyoda-platform/cyoda-go#install).
+
+```bash
+# macOS / Linux via Homebrew
+brew install cyoda-platform/cyoda-go/cyoda
+```
+
+The Homebrew formula runs `cyoda init` for you, enabling SQLite persistence with
+data stored in `~/.local/share/cyoda/cyoda.db`. A `curl | sh` installer, Debian
+packages, and Fedora RPMs are available for other environments.
+
+## Why SQLite is the default
+
+SQLite is durable (data survives restarts), zero-ops (no server to run), and
+single-file (easy to inspect, back up, or delete). It is the right starting
+point for everyone except two groups: teams running functional tests where
+latency matters more than durability (use **in-memory** mode — see the callout
+below), and teams building production services (graduate to **PostgreSQL** when
+you need active-active HA; see [Run → overview](/run/)).
+
+## Your first entity
+
+Start the server with the defaults:
+
+```bash
+cyoda serve
+```
+
+Define a minimal model and push an entity. Cyoda discovers the schema from the
+sample you send, so you do not need to declare it up front:
+
+```bash
+curl -X POST http://localhost:8080/api/models/orders/entities \
+  -H 'Content-Type: application/json' \
+  -d '{ "orderId": "ORD-1", "amount": 42.00, "currency": "EUR" }'
+```
+
+## Your first workflow
+
+Attach a workflow to the `orders` model with two states — `draft` and
+`submitted` — and one manual transition. The exact request shape lives in the
+[API reference](/reference/api/); the idea is small:
+
+```json
+{
+  "states": ["draft", "submitted"],
+  "initial": "draft",
+  "transitions": [
+    { "name": "submit", "from": "draft", "to": "submitted", "manual": true }
+  ]
+}
+```
+
+Invoke the transition on your entity:
+
+```bash
+curl -X POST http://localhost:8080/api/models/orders/entities/ORD-1/transitions/submit
+```
+
+## Read state back
+
+Fetch the current state and the transition log:
+
+```bash
+curl http://localhost:8080/api/models/orders/entities/ORD-1
+```
+
+The response shows the entity in its new `submitted` state plus a record of
+every revision it has been through. For the full request and response shapes,
+see the [API reference](/reference/api/).
+
+## Next steps
+
+- **Understand the model.** Read [Design principles](/concepts/design-principles/)
+  and [Entities and lifecycle](/concepts/entities-and-lifecycle/) for the mental
+  model behind what you just did.
+- **Build real applications.** Start with
+  [Build → working with entities](/build/working-with-entities/) for the
+  end-to-end patterns.
+- **Choose a deployment tier.** See [Run → overview](/run/) when you outgrow
+  local SQLite.
+
+<Aside type="tip" title="Testing without disk">
+If you want fast functional tests without durability, run cyoda-go in
+**in-memory** mode (`go run ./cmd/cyoda` or the `CYODA_STORAGE=memory` profile).
+See [Testing with digital twins](/build/testing-with-digital-twins/) for the
+pattern.
+</Aside>
