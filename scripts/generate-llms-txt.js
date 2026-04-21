@@ -56,10 +56,10 @@ function filePathToMarkdownUrl(filePath) {
 function getSectionName(dirName) {
   const sectionNames = {
     'getting-started': 'Getting Started',
-    'guides': 'Guides',
-    'concepts': 'Concepts',
-    'architecture': 'Architecture',
-    'platform': 'Platform'
+    'concepts':        'Concepts',
+    'build':           'Build',
+    'run':             'Run',
+    'reference':       'Reference',
   };
 
   return sectionNames[dirName] || dirName.charAt(0).toUpperCase() + dirName.slice(1);
@@ -127,7 +127,7 @@ async function generateLlmsTxt() {
   }
 
   // Add sections
-  const sectionOrder = ['Getting Started', 'Guides', 'Concepts', 'Architecture', 'Platform'];
+  const sectionOrder = ['Getting Started', 'Concepts', 'Build', 'Run', 'Reference'];
 
   for (const sectionName of sectionOrder) {
     if (sections[sectionName] && sections[sectionName].length > 0) {
