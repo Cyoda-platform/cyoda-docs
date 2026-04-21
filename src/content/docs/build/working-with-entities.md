@@ -85,14 +85,22 @@ how to declare transitions.
 
 Cyoda supports two query modes:
 
-- **Immediate** — synchronous, returns right away, good for UI lookups and
-  short operations.
-- **Background** — queued as a job, returns a handle you can poll, good for
-  large result sets and periodic reports.
+- **Immediate** (API term: `direct`) — synchronous, returns right
+  away. Good for UI lookups and short operations. Result size is
+  capped, so `direct` is best for queries that produce a bounded,
+  small result set.
+- **Background** (API term: `async`) — queued as a job, returns a
+  handle you can poll. Result size is unbounded; results are paged.
+  Good for large result sets, periodic reports, and exports. On the
+  Cassandra-backed tier (Cyoda Cloud, or a licensed Enterprise
+  install), `async` search runs distributed across the cluster and
+  scales horizontally: query throughput for a fixed shape grows
+  roughly linearly with the number of nodes.
 
 Both accept the same filter grammar over entity fields, metadata, and
-workflow state. Pick immediate by default; switch to background when a query
-would time out or hold resources you need elsewhere.
+workflow state. Pick immediate by default; switch to background when a
+query would hit the `direct` result cap, would time out, or would hold
+resources you need elsewhere.
 
 ## Temporal queries
 

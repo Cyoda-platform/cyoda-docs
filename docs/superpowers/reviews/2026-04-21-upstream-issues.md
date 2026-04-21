@@ -365,16 +365,25 @@ Trino ↔ analytics.
 ### Proposal
 Create `build/searching-entities.md` covering:
 
+- The two query modes: **Immediate** (`direct` — capped result
+  size, synchronous) and **Background** (`async` — unbounded, paged,
+  handle-based). Explain when to pick each.
+- The Cassandra tier's distributed `async` search: horizontally
+  scalable, throughput grows roughly linearly with node count
+  (available on Cyoda Cloud and licensed Enterprise installs).
 - Search predicate grammar (fields, operators, combinators).
-- Pagination and sort.
-- Historical reads with `pointTime=` and interaction with the current
-  state.
-- Worked examples against the `orders` model used elsewhere in Build.
+- Pagination and sort for `async`.
+- Historical reads with `pointTime=` and interaction with the
+  current state.
+- Worked examples against the `orders` model used elsewhere in
+  Build.
 - Pointer to the REST API reference for the machine-readable schema
   of the search payload.
 
 Update `build/working-with-entities.md` to link to the new page and
-remove the `/reference/api/#search` dead anchor.
+remove the `/reference/api/#search` dead anchor. (The basic
+direct/async framing now lives on `working-with-entities.md` as of
+2026-04-21; the new page deepens it.)
 
 ### Acceptance
 - [ ] `build/searching-entities.md` exists and is in the Build sidebar.
