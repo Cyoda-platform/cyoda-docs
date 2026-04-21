@@ -86,17 +86,13 @@
 }
 
 .sl-markdown-content h2 {
+  display: block;
+  width: 100%;
   border-bottom: 1px solid hsl(var(--cyoda-teal) / 0.35);
   padding-bottom: 0.4rem;
-  width: 100%;
 }
 
-.sl-markdown-content h3 {
-  display: inline-block;
-  border-bottom: 1px solid hsl(var(--cyoda-teal) / 0.35);
-  padding-bottom: 0.2rem;
-}
-
+.sl-markdown-content h3,
 .sl-markdown-content h4,
 .sl-markdown-content h5,
 .sl-markdown-content h6 {
