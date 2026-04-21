@@ -46,19 +46,27 @@ overwritten.
 
 ## Schema
 
-Every entity belongs to a named **model** identified by `modelName` and `modelVersion`.
-Cyoda auto-discovers the model schema from ingested samples rather than requiring it
-up front: as records flow in, Cyoda observes the fields that appear, the types they
-take, and the shape of nested arrays and objects. That observed shape is the schema.
+Every entity belongs to a named **model** identified by `modelName` and
+`modelVersion`. Cyoda auto-discovers the model schema from ingested samples
+rather than requiring it up front: as records flow in, Cyoda observes the
+fields that appear, the types they take, and the shape of nested arrays
+and objects. That observed shape is the schema.
 
-Models evolve by merging. New fields are added, types widen when a field is seen with
-more than one kind of value (e.g. `INTEGER` becoming `[INTEGER, STRING]`), and array
-widths grow. The model can be **locked** when you want to freeze evolution — after
-that, incoming data must validate against the current schema or be rejected.
+A model has two structural modes. While **unlocked**, it evolves by merging
+— new fields appear, types widen, array widths grow. When **locked**, the
+structural contract is frozen and any incoming entity that does not match
+is rejected. Lock is the right default for production systems with external
+producers, where silently accepting a widened shape would be a compliance
+or correctness failure. `modelVersion` is application-controlled; to change
+the contract after lock, the application increments the version and — if
+needed — migrates old data explicitly. Old revisions are never re-validated
+or re-cast; each remains valid under the model version active at write
+time. See [Modeling entities](/build/modeling-entities/) for when to choose
+each mode and how to plan evolutions.
 
-The wire format and field conventions for exported models (type descriptors, array
-representations, structural markers) are covered in the
-[schema reference](/reference/schemas/).
+The wire format and field conventions for exported models (type
+descriptors, array representations, structural markers) are in the
+[entity-model export reference](/reference/entity-model-export/).
 
 ## History and temporal queries
 

@@ -5,6 +5,10 @@
 restructure pivot, the three-persona content review, and the
 dropped-content audit. **Nothing here is filed yet.**
 
+**Status:** 9 issues live; #5 **dropped** after clarification that
+Confluent-style compatibility classes do not apply to the EDBMS model
+(see Issue 5 for the full explanation).
+
 **Convention:** Cross-repo documentation asks go on `Cyoda-platform/cyoda-go`
 issues with the `cyoda-docs` (or `documentation`) label per internal practice.
 Pure `cyoda-docs`-repo follow-ups (MCP server, our own inlining work) stay
@@ -150,38 +154,62 @@ section:
 
 ---
 
-## Issue 5 — Schema-evolution compatibility classes
+## Issue 5 — DROPPED (not an upstream ask)
 
-**Repo:** `Cyoda-platform/cyoda-go`
-**Labels:** `cyoda-docs`, `product-spec`
-**Title:** Document forward / backward / full schema compatibility semantics
+**Status:** Dropped — original framing mis-diagnosed the EDBMS model.
+Resolved in-branch by clarifying the existing documentation.
 
-### Context
-`concepts/entities-and-lifecycle.md` and `build/modeling-entities.md`
-describe a "widen, then lock" schema evolution model with a partial type
-hierarchy (`BYTE → SHORT → INT → LONG`, `INTEGER → [INTEGER, STRING]`).
-The three-persona review flagged that this is informal vs Confluent Schema
-Registry norms — `modelVersion` is referenced but never defined (when does
-it increment?); compatibility classes (forward / backward / full) are not
-named; historical-revision semantics under schema change are unstated;
-"migrate" is named without operational meaning; renames are addressed but
-deletes/deprecation are silent.
+### Original ask
+Document forward / backward / full compatibility classes, full widening
+lattice, reader/writer semantics, `modelVersion` definition, operational
+meaning of "migrate".
 
-### Proposal
-Produce a product spec (engineering note or design doc) that pins:
+### Why dropped
+The three-persona review (data-engineer deep-dive) pattern-matched on
+Confluent Schema Registry semantics (forward/backward/full compatibility
+classes, reader/writer schemas, registry-incremented versions). That
+taxonomy assumes the registry is the only source of structural truth for
+downstream consumers. In an EDBMS, the entity **model + workflow** is the
+contract together, and the workflow is the application logic.
+"Compatible" is therefore not a platform-generic concept: only the
+application knows whether a structural change leaves its transition
+logic valid.
 
-- `modelVersion` definition and increment rules
-- Full widening lattice (numerics, strings, booleans, enums, dates, arrays,
-  nested objects, nulls)
-- Reader/writer semantics — what happens when a consumer reads a v1
-  revision under a v2 schema
-- A forward/backward/full-compatibility statement, or an explicit
-  "we do not follow that taxonomy; here's ours"
-- Operational meaning of "migrate" when a narrowing is required
+The platform contract is actually a simpler and stricter pair than
+Confluent's:
 
-### Acceptance
-- [ ] Spec exists in a referenceable location
-- [ ] cyoda-docs can document the rules without inventing them
+| Mode | Cyoda | Confluent equivalent |
+|------|-------|----------------------|
+| Iterating | discover (widen) | approximately NONE (ad-hoc) |
+| Contract frozen | locked (reject any non-match) | backward-compatible (still accepts widened writers — weaker) |
+
+`modelVersion` is **application-controlled**, not platform-incremented —
+the app bumps it when it wants a new structural contract, and old
+revisions remain valid under their original version. Old revisions are
+never re-validated or re-cast. Renames, deletes, deprecations, and
+narrowing are all application-owned migrations against a new
+`modelVersion`, because only the application knows what they mean for
+downstream transition logic.
+
+### Resolution on this branch
+Docs clarity gap fixed in two places:
+
+- `build/modeling-entities.md` — added "Two modes: discover or lock"
+  section with an FpML-style production example; rewrote "Evolving a
+  model" to state that `modelVersion` is application-controlled, that
+  revisions are immutable, that the platform deliberately does not
+  layer a Confluent-style compatibility taxonomy, and that migration
+  is an app-owned operation.
+- `concepts/entities-and-lifecycle.md` — added a short framing of the
+  two modes in the Schema section, pointing at `modeling-entities.md`
+  for depth.
+
+### Why this matters for future reviewers
+The review mis-framing is a real gotcha: anyone pattern-matching from
+Kafka/Avro/Confluent will misread Cyoda's lock-and-reject model as
+"incomplete" when it is in fact **stricter** than Confluent's
+"backward-compatible" mode. The updated docs make the two-mode contract
+explicit and explain why compat classes are not a platform concern.
 
 ---
 
