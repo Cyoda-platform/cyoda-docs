@@ -99,6 +99,13 @@
   padding-bottom: 0.4rem;
 }
 
+/* Strip the heavy 2px aqua underline that primer.css applies directly to
+   the h2 element — we want the thin wrapper line to be the only rule. */
+.sl-markdown-content h2 {
+  border-bottom: none;
+  padding-bottom: 0;
+}
+
 /* Fallback for any H2 that isn't wrapped (shouldn't happen with Starlight's
    default `markdown.headingLinks: true`, but keeps the visual consistent
    if that ever changes). */
