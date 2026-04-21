@@ -119,8 +119,12 @@ async function exportMarkdownFiles() {
       // Ensure output directory exists
       await fs.mkdir(path.dirname(fullOutputPath), { recursive: true });
       
-      // Write processed file
-      await fs.writeFile(fullOutputPath, processedContent, 'utf-8');
+      // Write processed file. Prepend a UTF-8 BOM so browsers that fetch the
+      // .md file directly (via the "View as Markdown" link) render it as
+      // UTF-8 even when the server sends `text/markdown` without an explicit
+      // charset parameter — the default fallback of Latin-1/Windows-1252
+      // otherwise turns em-dashes and ✓ into mojibake.
+      await fs.writeFile(fullOutputPath, '\uFEFF' + processedContent, 'utf-8');
       
       exportedCount++;
       console.log(`✅ Exported: ${outputPath}`);
