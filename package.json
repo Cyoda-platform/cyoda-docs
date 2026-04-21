@@ -5,11 +5,12 @@
   "scripts": {
     "dev": "astro dev",
     "start": "astro dev",
-    "build": "npm run generate:schema-pages && astro build && npm run export:markdown && npm run generate:llms && npm run generate:llms-full && npm run package:schemas",
+    "build": "npm run generate:schema-pages && astro build && npm run export:markdown && npm run generate:llms && npm run generate:llms-full && npm run generate:md-sitemap && npm run package:schemas",
     "build:only": "astro build",
     "export:markdown": "node scripts/export-markdown.js",
     "generate:llms": "node scripts/generate-llms-txt.js",
     "generate:llms-full": "node scripts/generate-llms-full.js",
+    "generate:md-sitemap": "node scripts/generate-markdown-sitemap.js",
     "generate:schema-pages": "node scripts/generate-schema-pages.js",
     "package:schemas": "node scripts/package-schemas.js",
     "preview": "astro preview",
