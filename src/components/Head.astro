@@ -14,6 +14,19 @@ import HashRedirect from './HashRedirect.astro';
 const starlightRoute = Astro.locals.starlightRoute;
 const slug = starlightRoute?.entry?.slug ?? '';
 const mdPath = slug === '' ? '/markdown/index.md' : `/markdown/${slug}.md`;
+
+const entry = starlightRoute?.entry;
+const title = entry?.data?.title ?? 'Cyoda Documentation';
+const description = entry?.data?.description ?? '';
+const ld = {
+  '@context': 'https://schema.org',
+  '@type': 'TechnicalArticle',
+  headline: title,
+  description,
+  inLanguage: 'en',
+  isPartOf: { '@type': 'WebSite', name: 'Cyoda Documentation', url: 'https://docs.cyoda.net' },
+  dateModified: entry?.data?.lastUpdated ?? new Date().toISOString().slice(0, 10),
+};
 ---
 
 {/*
@@ -34,6 +47,8 @@ const mdPath = slug === '' ? '/markdown/index.md' : `/markdown/${slug}.md`;
 {/* Site-wide LLM indexes */}
 <link rel="alternate" type="text/markdown" href="/llms.txt" title="LLM index" />
 <link rel="alternate" type="text/markdown" href="/llms-full.txt" title="Full content for LLMs" />
+
+<script type="application/ld+json" set:html={JSON.stringify(ld)} />
 
 <link rel="preconnect" href="https://fonts.googleapis.com" />
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
