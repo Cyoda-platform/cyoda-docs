@@ -721,8 +721,10 @@ import StarlightHead from '@astrojs/starlight/components/Head.astro';
 import Analytics from './Analytics.astro';
 import HashRedirect from './HashRedirect.astro';
 
-const { entry } = Astro.props;
-const slug = entry?.slug ?? '';
+// Starlight exposes per-route data via Astro.locals.starlightRoute
+// (NOT via Astro.props). See node_modules/@astrojs/starlight/utils/routing/types.ts
+// for StarlightRouteData. entry.slug is the content-collection slug.
+const slug = Astro.locals.starlightRoute?.entry?.slug ?? '';
 const mdPath = slug === '' ? '/markdown/index.md' : `/markdown/${slug}.md`;
 ---
 
@@ -851,15 +853,12 @@ npx playwright test tests/discoverability.spec.ts -g "JSON-LD"
 
 - [ ] **Step 3: Emit JSON-LD in Head.astro**
 
-Inside the component frontmatter, build the object from Astro.props:
+Inside the component frontmatter, build the object from `Astro.locals.starlightRoute`:
 
 ```astro
 ---
-// ... existing imports
-const { entry } = Astro.props;
-const slug = entry?.slug ?? '';
-const mdPath = slug === '' ? '/markdown/index.md' : `/markdown/${slug}.md`;
-
+// ... existing imports; slug/mdPath already computed from Task 3.1
+const entry = Astro.locals.starlightRoute?.entry;
 const title = entry?.data?.title ?? 'Cyoda Documentation';
 const description = entry?.data?.description ?? '';
 const ld = {
@@ -904,8 +903,8 @@ git commit -m "feat(disco): emit TechnicalArticle JSON-LD per page"
 ```astro
 ---
 // src/components/ViewAsMarkdown.astro
-const { entry } = Astro.props;
-const slug = entry?.slug ?? '';
+// Starlight per-route data lives on Astro.locals.starlightRoute (not Astro.props).
+const slug = Astro.locals.starlightRoute?.entry?.slug ?? '';
 const mdPath = slug === '' ? '/markdown/index.md' : `/markdown/${slug}.md`;
 ---
 <a class="view-as-md" href={mdPath} data-no-hover-prefetch>
