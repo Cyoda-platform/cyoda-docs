@@ -1,0 +1,52 @@
+---
+// src/components/GrowthPathDiagram.astro — shared growth-path visual
+// Four tiers: In-Memory → SQLite → PostgreSQL → Cassandra
+import Badge from './Badge.astro';
+const tiers = [
+  { name: 'In-Memory', sub: 'local dev + AI iteration', variant: 'teal' },
+  { name: 'SQLite',    sub: 'embedded durable single node', variant: 'teal' },
+  { name: 'PostgreSQL', sub: 'durable clustered production', variant: 'teal' },
+  { name: 'Cassandra',  sub: 'enterprise distributed scale', variant: 'green' },
+];
+---
+<ol class="growth-path">
+  {tiers.map((t, i) => (
+    <li class="growth-path__tier">
+      <Badge variant={t.variant as any} size="sm">{t.name}</Badge>
+      <div class="growth-path__sub">{t.sub}</div>
+      {i < tiers.length - 1 && <span class="growth-path__arrow" aria-hidden="true">→</span>}
+    </li>
+  ))}
+</ol>
+
+<style>
+  .growth-path {
+    list-style: none;
+    display: flex;
+    gap: 0.5rem;
+    flex-wrap: wrap;
+    align-items: center;
+    padding: 1.5rem;
+    margin: 1.5rem 0;
+    background: hsl(var(--cyoda-teal) / 0.04);
+    border: 1px solid hsl(var(--cyoda-teal) / 0.2);
+    border-radius: 0.5rem;
+  }
+  .growth-path__tier {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.35rem;
+    min-width: 9rem;
+  }
+  .growth-path__sub {
+    font-size: 0.75rem;
+    color: hsl(var(--cyoda-foreground) / 0.7);
+    text-align: center;
+    max-width: 9rem;
+  }
+  .growth-path__arrow {
+    font-size: 1.5rem;
+    color: hsl(var(--cyoda-foreground) / 0.4);
+  }
+</style>
