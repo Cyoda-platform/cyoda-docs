@@ -65,3 +65,30 @@
   border-radius: 0.5rem;
   padding: 1.25rem;
 }
+
+/*
+ * Clean headings — cyodalight-style.
+ *
+ * primer.css (inherited) adds aqua underlines on h1/h2 for visual weight,
+ * but cyodalight-website relies on typography alone for hierarchy. Strip
+ * the decorative underlines and the h3 chevron ::before so every heading
+ * reads as pure type.
+ *
+ * Loaded from visual.css which is last in customCss, so these overrides
+ * win without having to edit primer.css/custom.css directly.
+ */
+.sl-markdown-content h1,
+.sl-markdown-content h2,
+.sl-markdown-content h3,
+.sl-markdown-content h4,
+.sl-markdown-content h5,
+.sl-markdown-content h6,
+.content-panel h1:first-of-type,
+.main-frame h1:first-of-type {
+  border-bottom: none;
+  padding-bottom: 0;
+}
+
+.sl-markdown-content h3::before {
+  content: none;
+}
