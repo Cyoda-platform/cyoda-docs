@@ -70,4 +70,4 @@ of an entity is always retrievable. You can ask:
 - "Which version of the model was this revision validated against?" — schema lineage.
 
 This is not an add-on audit layer bolted onto a mutable store; it is the storage model.
-See [History and audit](/concepts/history-and-audit/) for query patterns.
+See the [API reference](/reference/api/) for the temporal-query grammar.
