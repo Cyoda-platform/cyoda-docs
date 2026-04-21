@@ -1,0 +1,24 @@
+---
+title: "API reference"
+description: "REST and gRPC surfaces."
+sidebar:
+  order: 10
+---
+
+The REST API reference is rendered in a dedicated viewer so the documentation
+chrome does not compete with it for horizontal space:
+
+[Open the REST API reference](/api-reference/)
+
+The viewer works from the OpenAPI spec shipped with the site
+(`/openapi/openapi.json`) and supports the standard operations: browsing
+endpoints, inspecting request/response shapes, and try-it-out calls against
+an environment of your choice.
+
+## gRPC
+
+gRPC proto documentation is tracked upstream and will appear here once the
+generated reference is published from cyoda-go. Until then, the `.proto`
+files in
+[cyoda-go/api/grpc](https://github.com/cyoda-platform/cyoda-go/tree/main/api/grpc)
+are the authoritative source.

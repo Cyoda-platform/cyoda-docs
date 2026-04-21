@@ -15,7 +15,7 @@ async function generateSchemaPages() {
 
   const projectRoot = path.resolve(__dirname, '..');
   const schemasDir = path.join(projectRoot, 'src', 'schemas');
-  const docsDir = path.join(projectRoot, 'src', 'content', 'docs', 'schemas');
+  const docsDir = path.join(projectRoot, 'src', 'content', 'docs', 'reference', 'schemas');
 
   // Find all JSON schema files
   const schemaFiles = await glob('**/*.json', {
@@ -65,10 +65,10 @@ async function generateSchemaPages() {
     const mdxPath = path.join(outputDir, `${urlName}.mdx`);
 
     // Calculate the number of directory levels to go up
-    // MDX is in src/content/docs/schemas/[relativePath]/file.mdx
+    // MDX is in src/content/docs/reference/schemas/[relativePath]/file.mdx
     // Need to go up to src/ then into schemas/
     const depth = relativePath.split(path.sep).length; // e.g., 'common/statemachine' = 2
-    const upLevels = '../'.repeat(depth + 2); // +2 for 'docs' and 'schemas'
+    const upLevels = '../'.repeat(depth + 3); // +3 for 'docs', 'reference', 'schemas'
 
     // Build the import paths
     const componentImport = `${upLevels}../components/JsonSchemaViewer.tsx`;
@@ -267,7 +267,7 @@ function generateRelatedSchemasSection(category, schemaName) {
   // This is a placeholder - you can enhance this to detect actual references
   return `## Related Schemas
 
-See other schemas in the [${category}](/schemas/${category}/) category.
+See other schemas in the [${category}](/reference/schemas/${category}/) category.
 `;
 }
 

@@ -1,0 +1,84 @@
+---
+title: "Desktop (single binary)"
+description: "Run cyoda-go from a single binary — dev, low-volume production, in-memory and SQLite modes."
+sidebar:
+  order: 10
+---
+
+The desktop packaging is cyoda-go as it ships out of the box: a single
+binary, no orchestrator, no external database. It is the right choice for
+local development, edge deployments, small-team self-hosting, and any
+low-volume production workload where a single machine is enough.
+
+## In-memory vs SQLite
+
+The desktop binary supports two storage modes:
+
+- **In-memory** — everything lives in process memory. Sub-millisecond
+  latencies. Data is lost on restart. Use it for tests, demos, and
+  digital-twin scenario runs.
+- **SQLite (default)** — durable, single-file, zero-ops. Data survives
+  restarts; backup is a file copy. Use it for everyday persistent work.
+
+The SQLite database file is created at `~/.local/share/cyoda/cyoda.db` by
+`cyoda init`. Back it up by copying the file; migrate it by moving the file.
+
+## Install
+
+Pick the installer that suits your platform; the authoritative list lives in
+the [cyoda-go README](https://github.com/cyoda-platform/cyoda-go#install).
+
+```bash
+# macOS / Linux via Homebrew
+brew install cyoda-platform/cyoda-go/cyoda
+```
+
+Debian, RHEL, and `curl | sh` installers are available in the same
+document.
+
+## Run
+
+The Homebrew and packaged installers run `cyoda init` for you, which sets
+up the SQLite store. To start the server:
+
+```bash
+cyoda serve
+```
+
+The binary exposes REST on port **8080** and gRPC on **9090** by default.
+The full CLI reference lives at [Reference → CLI](/reference/cli/).
+
+## Configure
+
+cyoda-go reads configuration from environment variables, a config file, or
+CLI flags. The full list of options lives at
+[Reference → Configuration](/reference/configuration/); for everyday use
+the defaults are fine, and you only set a handful of variables
+(`CYODA_STORAGE`, listen ports, JWT keys) to adapt to your environment.
+
+For secrets, cyoda-go supports `*_FILE` suffixes on any credential
+environment variable so you can mount them from a secrets store rather than
+pass them on the command line.
+
+## Upgrading
+
+Upgrading is a version bump: install the new binary, restart the process.
+cyoda-go follows semantic versioning; configuration migration policy is
+documented in the
+[cyoda-go release notes](https://github.com/cyoda-platform/cyoda-go/releases).
+
+## When you outgrow desktop
+
+Three signs you've outgrown this tier:
+
+- **Concurrency.** Single-process SQLite serialises writes; if your workload
+  is write-hot you will see contention.
+- **HA requirements.** A desktop binary is a single point of failure.
+- **Operational scale.** Once you are running many instances, you want
+  orchestration.
+
+When any of those apply, move up:
+
+- **[Docker](./docker/)** — same binary, containerised.
+- **[Kubernetes](./kubernetes/)** — active-active cluster on PostgreSQL.
+- **[Cyoda Cloud](./cyoda-cloud/)** — managed service.
