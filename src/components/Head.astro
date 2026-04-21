@@ -4,6 +4,16 @@
 import StarlightHead from '@astrojs/starlight/components/Head.astro';
 import Analytics from './Analytics.astro';
 import HashRedirect from './HashRedirect.astro';
+
+// Starlight exposes per-route data via Astro.locals.starlightRoute (not Astro.props).
+// See node_modules/@astrojs/starlight/utils/routing/types.ts (StarlightRouteData).
+// `entry.slug` is the content-collection slug for the current page (e.g.
+// "getting-started/quickstart" or "" for the root index). The markdown export
+// pipeline (scripts/export-markdown.js) mirrors the file tree under /markdown/,
+// so the slug maps 1:1 to /markdown/<slug>.md.
+const starlightRoute = Astro.locals.starlightRoute;
+const slug = starlightRoute?.entry?.slug ?? '';
+const mdPath = slug === '' ? '/markdown/index.md' : `/markdown/${slug}.md`;
 ---
 
 {/*
@@ -17,6 +27,13 @@ import HashRedirect from './HashRedirect.astro';
   CSP requires fronting docs.cyoda.net with a CDN that can set headers.
 */}
 <meta name="referrer" content="strict-origin-when-cross-origin" />
+
+{/* Per-page markdown for LLM consumers */}
+<link rel="alternate" type="text/markdown" href={mdPath} title="View as Markdown" />
+
+{/* Site-wide LLM indexes */}
+<link rel="alternate" type="text/markdown" href="/llms.txt" title="LLM index" />
+<link rel="alternate" type="text/markdown" href="/llms-full.txt" title="Full content for LLMs" />
 
 <link rel="preconnect" href="https://fonts.googleapis.com" />
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
