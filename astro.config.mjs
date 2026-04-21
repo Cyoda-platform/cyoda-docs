@@ -231,6 +231,8 @@ export default defineConfig({
 				'./src/styles/primer.css',
 				// Custom styles for components
 				'./src/styles/custom.css',
+				// Visual look-and-feel utilities (dotted-grid bg, hero/separator/card helpers) — load last so utilities can layer on top
+				'./src/styles/visual.css',
 				// Non-critical CSS removed from bundle - loaded async from public directory
 			],
 			sidebar: [
