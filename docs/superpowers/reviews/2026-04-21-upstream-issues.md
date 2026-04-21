@@ -1,8 +1,9 @@
 # Upstream issues — draft for review before filing
 
 **Date:** 2026-04-21
-**Purpose:** Drafts of 9 GitHub issues arising from the cyoda-docs restructure
-pivot and the three-persona content review. **Nothing here is filed yet.**
+**Purpose:** Drafts of 10 GitHub issues arising from the cyoda-docs
+restructure pivot, the three-persona content review, and the
+dropped-content audit. **Nothing here is filed yet.**
 
 **Convention:** Cross-repo documentation asks go on `Cyoda-platform/cyoda-go`
 issues with the `cyoda-docs` (or `documentation`) label per internal practice.
@@ -20,11 +21,11 @@ Cross-links used in the bodies:
 
 ---
 
-## Issue 1 — OpenAPI as a release artefact
+## Issue 1 — OpenAPI as a versioned release asset
 
 **Repo:** `Cyoda-platform/cyoda-go`
 **Labels:** `cyoda-docs`, `enhancement`
-**Title:** Publish `openapi.json` as a versioned release artefact
+**Title:** Publish `openapi.json` as a versioned release asset
 
 ### Context
 cyoda-docs embeds the REST API reference via an iframe-rendered Scalar /
@@ -34,21 +35,27 @@ represent a specific cyoda-go release.
 
 ### Proposal
 Attach `openapi.json` (and optionally `openapi.yaml`) to every cyoda-go
-release. That lets cyoda-docs pin each doc build to a named release, and
-lets consumers download the spec for codegen against a specific version.
+release as a release asset. That lets cyoda-docs pin each doc build to a
+named release and lets consumers download the spec for codegen against a
+specific version. This is the same release-asset pattern proposed for the
+rendered gRPC proto docs (#2) and — longer term — for any automated
+docs artefact replacing the current `awaiting-upstream` banners on
+`cli.mdx`, `configuration.mdx`, `helm.mdx` (see #9).
 
 ### Acceptance
-- [ ] Release workflow attaches `openapi.json` as a release asset
-- [ ] The release tag is referenced in the asset filename or URL
-- [ ] cyoda-docs build can fetch a known-version asset
+- [ ] Release workflow attaches `openapi.json` as a release asset with
+      a predictable, version-scoped URL pattern.
+- [ ] Asset refreshes on every release (and ideally on every `main`
+      push for preview builds).
+- [ ] cyoda-docs build can fetch a known-version asset by tag.
 
 ---
 
-## Issue 2 — gRPC proto rendering
+## Issue 2 — gRPC proto docs as a versioned release asset
 
 **Repo:** `Cyoda-platform/cyoda-go`
 **Labels:** `cyoda-docs`, `enhancement`
-**Title:** Publish rendered gRPC proto docs
+**Title:** Publish rendered gRPC proto docs as a versioned release asset
 
 ### Context
 `concepts/apis-and-surfaces.md` names gRPC as a first-class surface and
@@ -59,13 +66,18 @@ values without reading the `.proto` source.
 
 ### Proposal
 Render the proto files into HTML or Markdown (buf, protoc-gen-doc, or
-similar) and either (a) publish as a release asset, or (b) commit to a
-`docs/proto/` path that cyoda-docs can import.
+similar) and attach the output as a **release asset** on every cyoda-go
+release — the same provisioning pattern as #1 (OpenAPI) so cyoda-docs has
+a single, consistent way to consume versioned artefacts. Avoid
+committing rendered docs to the cyoda-go repo; the release-asset
+pattern keeps the repo lean and gives consumers explicit version
+pinning.
 
 ### Acceptance
-- [ ] Proto docs are generated in CI
-- [ ] Output is consumable by cyoda-docs (path or release asset agreed)
-- [ ] Refresh happens on every release or main-branch change
+- [ ] CI generates rendered proto docs on every release tag.
+- [ ] Output is attached as a release asset with a predictable,
+      version-scoped URL pattern.
+- [ ] cyoda-docs build can fetch a known-version asset by tag.
 
 ---
 
@@ -95,39 +107,46 @@ suggested operator action.
 
 ---
 
-## Issue 4 — Trino surface reference
+## Issue 4 — Trino surface: fill remaining reference gaps
 
 **Repo:** `Cyoda-platform/cyoda-go`
 **Labels:** `cyoda-docs`, `documentation`
-**Title:** Canonical reference for the Trino SQL surface
+**Title:** Trino SQL surface — document dialect scope, push-down, isolation, performance envelope
 
 ### Context
-`concepts/apis-and-surfaces.md` names Trino as one of three first-class
-surfaces and `run/cyoda-cloud/index.mdx` advertises JDBC. A three-persona
-content review found the Trino surface is **7/8 UNANSWERED** for a data
-engineer trying to prototype against it — no catalogue name, no JDBC URL
-template, no supported SQL subset, no nested-type projection example, no
-`AS OF` syntax for temporal reads, no push-down matrix, no isolation/
-consistency statement, no performance envelope. Today the surface is
-marketing prose with a `/reference/trino/` page promised-but-missing
-(`concepts/apis-and-surfaces.md:70-72`).
+cyoda-docs now has a ported Trino reference page at
+[`/reference/trino/`](https://docs.cyoda.net/reference/trino/) covering
+catalogue/schema projection rules, table naming, column categories,
+primitive type mapping, polymorphic fields (including the temporal-type
+resolution hierarchy), the JSON table, a complete worked example with
+joins, and the JDBC URL template. The Build-side quickstart at
+[`/build/analytics-with-sql/`](https://docs.cyoda.net/build/analytics-with-sql/)
+links into it. What remains missing from the reference — and was flagged
+by the three-persona content review — is the surface behaviour that a
+data-platform engineer needs to size, tune, and trust production queries.
 
 ### Proposal
-Produce a canonical Trino surface spec in cyoda-go (or whichever repo owns
-the connector). At minimum:
+Produce upstream guidance that cyoda-docs can fold into
+`/reference/trino/`, replacing the current "Gaps in this reference"
+section:
 
-- Catalogue name and schema model (per-tenant? per-model?)
-- Table-naming rule for an entity type with a nested array (worked example)
-- JDBC URL template + auth recipe (OAuth 2.0 bearer → JDBC)
-- Supported SQL dialect subset (joins, window functions, CTEs; disallowed
-  DDL/DML)
-- Temporal read syntax (reconcile with REST's `pointTime=`)
-- Push-down matrix
-- Concurrency / isolation statement for long-running queries
+1. **Supported SQL dialect scope.** Which Trino features are guaranteed
+   supported versus best-effort? (ANSI joins, window functions, CTEs,
+   grouping sets, arrays, map/row types, UDFs, DDL/DML policy).
+2. **Push-down matrix.** Which predicates, projections, limits, and
+   aggregates execute in the underlying store versus requiring a full
+   scan. Especially relevant given the Cassandra backend on Cyoda Cloud.
+3. **Consistency / isolation** of a long-running query relative to
+   concurrent transition writes. Snapshot? Read-committed-at-T? Defined
+   behaviour for `point_time`?
+4. **Performance envelope** — rows/sec scan rates at a reference shape,
+   per-tenant query limits, statement timeout defaults.
 
 ### Acceptance
-- [ ] Canonical source exists
-- [ ] cyoda-docs can render or link to it as `/reference/trino/`
+- [ ] Each of the four topics is documented in a referenceable location
+      upstream.
+- [ ] cyoda-docs can remove the "Gaps in this reference" section at the
+      bottom of `/reference/trino/` and inline the content.
 
 ---
 
@@ -296,6 +315,45 @@ canonical artefacts (see Issues 1–3 and 7).
 - [ ] Three stub pages replaced with hand-curated content
 - [ ] Banners updated from `awaiting-upstream` → `evolving`
 - [ ] Review-doc item 7 (ranked fix list) marked complete
+
+---
+
+## Issue 10 — REST search grammar on `build/searching-entities.md`
+
+**Repo:** `Cyoda-platform/cyoda-docs`
+**Labels:** `documentation`, `follow-up`
+**Title:** Document REST search grammar as a dedicated Build page
+
+### Context
+`build/working-with-entities.md` gestures at search with a link to
+`/reference/api/#search` — an anchor that currently resolves to a
+launcher page, which the three-persona review flagged as a dead link.
+The REST querying story (predicates, pagination, `pointTime=` for
+historical reads, search payload shape) needs its own Build page
+mirroring the shape of `build/analytics-with-sql.md`. That matches the
+one-Build-page-per-surface-role pattern: REST ↔ search, gRPC ↔ compute,
+Trino ↔ analytics.
+
+### Proposal
+Create `build/searching-entities.md` covering:
+
+- Search predicate grammar (fields, operators, combinators).
+- Pagination and sort.
+- Historical reads with `pointTime=` and interaction with the current
+  state.
+- Worked examples against the `orders` model used elsewhere in Build.
+- Pointer to the REST API reference for the machine-readable schema
+  of the search payload.
+
+Update `build/working-with-entities.md` to link to the new page and
+remove the `/reference/api/#search` dead anchor.
+
+### Acceptance
+- [ ] `build/searching-entities.md` exists and is in the Build sidebar.
+- [ ] No build pages link to the dead `/reference/api/#search` anchor.
+- [ ] Review-doc ranked-fix-list item 5 is partially resolved (the
+      search half; the temporal-anchor half is covered by the Trino
+      port and ongoing temporal work).
 
 ---
 
