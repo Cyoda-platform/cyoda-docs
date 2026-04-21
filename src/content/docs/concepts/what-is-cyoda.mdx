@@ -1,0 +1,74 @@
+---
+title: "What is Cyoda?"
+description: "An Entity Database Management System — a database engine where the first-class abstraction is a stateful entity with schema, lifecycle, history, and transactional integrity."
+sidebar:
+  order: 0
+---
+
+import GrowthPathDiagram from '../../../components/GrowthPathDiagram.astro';
+
+Cyoda is an **Entity Database Management System (EDBMS)**. Unlike a relational
+database, where the unit is a row in a table, and unlike a document database,
+where the unit is a JSON blob, Cyoda's first-class unit is an **entity**: a
+typed document that carries a lifecycle state, a complete history of every
+change, and transactional integrity.
+
+## An EDBMS, not a database
+
+Most databases answer one question well: *what is the state of the world right
+now?* They leave you to glue in a workflow engine, a message bus, an audit
+layer, and a schema registry on top.
+
+An EDBMS answers a broader question: *how does this thing evolve, under what
+rules, and how do I ask what it looked like last Tuesday?* It folds the
+workflow engine, the audit trail, the schema registry, and the event contract
+into the storage model. Everything the entity does — transitions, rule
+evaluations, processor invocations, revisions — is a first-class, queryable
+part of the same store.
+
+Out of the box, an entity in Cyoda has:
+
+- a **schema** discovered from ingested samples, evolving over time, lockable;
+- a **lifecycle state** governed by a workflow;
+- **transactional transitions** that produce durable, addressable revisions;
+- a **temporal history** you can query at any point in the past;
+- an **audit trail** of every rule, transition, and processor that touched it.
+
+## Why this shape
+
+Cyoda targets domains where state, rules, and data must evolve together:
+financial ledgers, order management, regulatory compliance, digital twins.
+These domains share a property — "the row got updated" is not enough
+information. You need to know *why* it changed, *under what rules*, and what
+the world looked like before. That information has to be engineered into a
+normal database as an afterthought; an EDBMS makes it the default.
+
+## Two forms today
+
+Cyoda ships in two closely related forms, with the same semantics:
+
+- **cyoda-go** — an open-source Go implementation, run as a local binary or a
+  small cluster. Backends are In-Memory, SQLite, or PostgreSQL, chosen at start.
+- **Cyoda Cloud** — a managed service backed by the Cassandra-based Cyoda
+  Platform Library. Horizontally scalable, multi-tenant, with enterprise
+  identity, observability, and provisioning.
+
+Applications written against one run against the other without rewriting the
+domain model.
+
+## The growth path
+
+You can start on a laptop in minutes and graduate — on your schedule — to a
+container, to Kubernetes, or to Cyoda Cloud as scale and operational needs
+demand. The entity, workflow, and API contracts do not change as you move.
+
+<GrowthPathDiagram />
+
+## Where to go next
+
+- [Design principles](/concepts/design-principles/) — the mental model in one
+  read.
+- [Entities and lifecycle](/concepts/entities-and-lifecycle/) — the state
+  machine shape of an entity, including a worked example diagram.
+- Digital twins and the growth path — how the same application runs at every
+  tier. *(Coming as Concepts fills out.)*
