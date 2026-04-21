@@ -85,9 +85,24 @@
   padding-bottom: 0;
 }
 
-.sl-markdown-content h2 {
-  display: block;
-  width: 100%;
+/*
+ * Apply the H2 underline to the `.sl-heading-wrapper` — not the h2 itself —
+ * so Starlight's inline anchor link stays on the same line as the heading
+ * text. Starlight wraps each heading in `<div class="sl-heading-wrapper
+ * level-h2"><h2>…</h2><a class="sl-anchor-link">…</a></div>` and sets the
+ * h2 to `display: inline` via `@layer starlight.content` so the anchor can
+ * trail the final word. Styling the block-level wrapper gives us a
+ * full-width underline without clobbering that inline display.
+ */
+.sl-markdown-content .sl-heading-wrapper.level-h2 {
+  border-bottom: 1px solid hsl(var(--cyoda-teal) / 0.35);
+  padding-bottom: 0.4rem;
+}
+
+/* Fallback for any H2 that isn't wrapped (shouldn't happen with Starlight's
+   default `markdown.headingLinks: true`, but keeps the visual consistent
+   if that ever changes). */
+.sl-markdown-content h2:not(.sl-heading-wrapper > h2) {
   border-bottom: 1px solid hsl(var(--cyoda-teal) / 0.35);
   padding-bottom: 0.4rem;
 }
