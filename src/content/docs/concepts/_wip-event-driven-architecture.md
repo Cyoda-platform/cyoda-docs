@@ -1,8 +1,10 @@
 ---
 title: "Event-Driven Architectures"
 description: How Entity Workflows map to event-driven architectures
+draft: true
 sidebar:
   order: 2
+  hidden: true
 ---
 
 A condensed version of the original article by Paul Schleger [Entity Workflows for Event-Driven Architectures](https://medium.com/@paul_42036/entity-workflows-for-event-driven-architectures-4d491cf898a5). 
