@@ -1,0 +1,41 @@
+---
+// src/components/Button.astro — primary/secondary CTA aligned with launchpad
+interface Props {
+  href: string;
+  variant?: 'primary' | 'secondary';
+}
+const { href, variant = 'primary' } = Astro.props;
+---
+<a href={href} class:list={['cyoda-btn', `cyoda-btn--${variant}`]}>
+  <slot />
+</a>
+
+<style>
+  .cyoda-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+    padding: 0.6rem 1.25rem;
+    border-radius: 0.4rem;
+    font-family: var(--cyoda-font-sans);
+    font-weight: 600;
+    text-decoration: none;
+    transition: background 160ms ease, color 160ms ease, border-color 160ms ease;
+  }
+  .cyoda-btn--primary {
+    background: hsl(var(--cyoda-teal));
+    color: white;
+    border: 2px solid hsl(var(--cyoda-teal));
+  }
+  .cyoda-btn--primary:hover {
+    background: hsl(var(--cyoda-teal) / 0.85);
+  }
+  .cyoda-btn--secondary {
+    background: transparent;
+    color: hsl(var(--cyoda-teal));
+    border: 2px solid hsl(var(--cyoda-teal));
+  }
+  .cyoda-btn--secondary:hover {
+    background: hsl(var(--cyoda-teal) / 0.08);
+  }
+</style>
