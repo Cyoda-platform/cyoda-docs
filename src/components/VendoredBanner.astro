@@ -1,0 +1,46 @@
+---
+// src/components/VendoredBanner.astro — banner on pages sourced from cyoda-go
+interface Props {
+  source?: { repo?: string; path?: string; vendored_at?: string };
+  stability?: 'stable' | 'evolving' | 'awaiting-upstream';
+  issue?: string; // optional GitHub issue URL for awaiting-upstream
+}
+const { source, stability = 'stable', issue } = Astro.props;
+const showBanner = stability !== 'stable' || source;
+---
+{showBanner && (
+  <aside class="vendored-banner" data-stability={stability}>
+    {stability === 'awaiting-upstream' && (
+      <>
+        <strong>Awaiting upstream.</strong>
+        This page is a placeholder.
+        {issue && <> See <a href={issue}>{issue}</a>.</>}
+      </>
+    )}
+    {stability === 'evolving' && (
+      <><strong>Evolving.</strong> This page may change rapidly with cyoda-go releases.</>
+    )}
+    {stability === 'stable' && source && (
+      <>
+        Sourced from <a href={`https://github.com/${source.repo}/blob/${source.vendored_at ?? 'main'}/${source.path}`}>
+          {source.repo}/{source.path}
+        </a>. Edit upstream.
+      </>
+    )}
+  </aside>
+)}
+
+<style>
+  .vendored-banner {
+    border-left: 4px solid hsl(var(--cyoda-orange));
+    background: hsl(var(--cyoda-orange) / 0.08);
+    padding: 0.75rem 1rem;
+    border-radius: 0.25rem;
+    margin-block-end: 1.5rem;
+    font-size: 0.9rem;
+  }
+  .vendored-banner[data-stability='awaiting-upstream'] {
+    border-left-color: hsl(var(--cyoda-purple));
+    background: hsl(var(--cyoda-purple) / 0.08);
+  }
+</style>
