@@ -67,7 +67,9 @@ Typical uses:
 - Historical queries using the `point_time` column for as-of reads.
 
 The table generation rules, data-type mappings, and JDBC connection patterns
-are in the [Trino reference](/reference/trino/).
+are documented alongside the
+[JSON schema reference](/reference/schemas/) and will move into a dedicated
+Trino reference page once the surface stabilises.
 
 ## Which surface, when?
 

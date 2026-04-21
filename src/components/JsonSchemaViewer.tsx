@@ -3,6 +3,12 @@ import React, { useState } from 'react';
 interface JsonSchemaViewerProps {
   schema: any;
   name?: string;
+  /**
+   * Category of the current schema page (`common`, `entity`, `model`,
+   * `processing`, or `search`). Used to resolve bare `$ref: "./Foo.json"`
+   * values — they live alongside the current schema, not in `common/`.
+   */
+  category?: string;
 }
 
 interface SchemaProperty {
@@ -18,9 +24,12 @@ interface SchemaProperty {
 
 /**
  * Extract schema name and URL from $ref
- * e.g., "../../condition/QueryCondition.json" -> { name: "QueryCondition", url: "/schemas/common/condition/query-condition/" }
+ * e.g., "../../condition/QueryCondition.json" -> { name: "QueryCondition", url: "/reference/schemas/common/condition/query-condition/" }
  */
-function resolveRef(ref: string): { name: string; url: string } | null {
+function resolveRef(
+  ref: string,
+  currentCategory?: string
+): { name: string; url: string } | null {
   if (!ref) return null;
 
   // Extract the file name from the reference
@@ -38,24 +47,27 @@ function resolveRef(ref: string): { name: string; url: string } | null {
   let url = '';
 
   if (ref.includes('/condition/')) {
-    url = `/schemas/common/condition/${urlName}/`;
+    url = `/reference/schemas/common/condition/${urlName}/`;
   } else if (ref.includes('/statemachine/conf/')) {
-    url = `/schemas/common/statemachine/conf/${urlName}/`;
+    url = `/reference/schemas/common/statemachine/conf/${urlName}/`;
   } else if (ref.includes('/statemachine/')) {
-    url = `/schemas/common/statemachine/${urlName}/`;
+    url = `/reference/schemas/common/statemachine/${urlName}/`;
   } else if (ref.includes('/entity/')) {
-    url = `/schemas/entity/${urlName}/`;
+    url = `/reference/schemas/entity/${urlName}/`;
   } else if (ref.includes('/model/')) {
-    url = `/schemas/model/${urlName}/`;
+    url = `/reference/schemas/model/${urlName}/`;
   } else if (ref.includes('/search/')) {
-    url = `/schemas/search/${urlName}/`;
+    url = `/reference/schemas/search/${urlName}/`;
   } else if (ref.includes('/processing/')) {
-    url = `/schemas/processing/${urlName}/`;
+    url = `/reference/schemas/processing/${urlName}/`;
   } else if (ref.includes('/common/')) {
-    url = `/schemas/common/${urlName}/`;
+    url = `/reference/schemas/common/${urlName}/`;
+  } else if (currentCategory) {
+    // Bare `./Foo.json` — resolve alongside the current schema.
+    url = `/reference/schemas/${currentCategory}/${urlName}/`;
   } else {
-    // Default to common if we can't determine
-    url = `/schemas/common/${urlName}/`;
+    // No category hint available; fall back to common.
+    url = `/reference/schemas/common/${urlName}/`;
   }
 
   return { name: schemaName, url };
@@ -68,6 +80,7 @@ function resolveRef(ref: string): { name: string; url: string } | null {
 export const JsonSchemaViewer: React.FC<JsonSchemaViewerProps> = ({
   schema,
   name = 'Schema',
+  category,
 }) => {
   return (
     <div className="json-schema-viewer-wrapper">
@@ -77,14 +90,15 @@ export const JsonSchemaViewer: React.FC<JsonSchemaViewerProps> = ({
           <p className="schema-description">{schema.description}</p>
         )}
       </div>
-      <SchemaProperties schema={schema} level={0} />
+      <SchemaProperties schema={schema} level={0} category={category} />
     </div>
   );
 };
 
-const SchemaProperties: React.FC<{ schema: SchemaProperty; level: number }> = ({
+const SchemaProperties: React.FC<{ schema: SchemaProperty; level: number; category?: string }> = ({
   schema,
   level,
+  category,
 }) => {
   const [expanded, setExpanded] = useState(level < 2);
 
@@ -102,7 +116,7 @@ const SchemaProperties: React.FC<{ schema: SchemaProperty; level: number }> = ({
     const hasNested = propSchema.properties || propSchema.items;
 
     // Check if this property has a $ref
-    const refInfo = propSchema.$ref ? resolveRef(propSchema.$ref) : null;
+    const refInfo = propSchema.$ref ? resolveRef(propSchema.$ref, category) : null;
 
     return (
       <div key={propName} className="schema-property" style={{ marginLeft: `${level * 20}px` }}>
@@ -148,7 +162,7 @@ const SchemaProperties: React.FC<{ schema: SchemaProperty; level: number }> = ({
         {propExpanded && propSchema.items && (
           <div className="array-items">
             <div className="property-label">Array items:</div>
-            <SchemaProperties schema={propSchema.items} level={level + 1} />
+            <SchemaProperties schema={propSchema.items} level={level + 1} category={category} />
           </div>
         )}
       </div>

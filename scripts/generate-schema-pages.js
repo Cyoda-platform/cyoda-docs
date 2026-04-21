@@ -89,9 +89,10 @@ ${schemaDescription}
 
 ## Schema Viewer
 
-<JsonSchemaViewer 
-  schema={schema} 
+<JsonSchemaViewer
+  schema={schema}
   name="${schemaName}"
+  category="${category}"
   client:load
 />
 
