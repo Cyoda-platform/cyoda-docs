@@ -1,15 +1,16 @@
 ---
-layout: docs
-title: "Current Status"
-description: Current status and known issues for Cyoda Cloud services
+title: "Status and roadmap (Cyoda Cloud)"
+description: "Current status, known limitations, and upcoming work for the hosted Cyoda Cloud platform."
 sidebar:
-  order: 1
+  order: 30
 ---
 
-<!--
-ABOUTME: Quick reference guide providing a concise overview of the most critical caveats, limitations, and gotchas for Cyoda Cloud Free Tier users. For detailed information, see service-details.mdx.
+## Current status
 
-THIS PAGE NEEDS TO BE AS COMPACT AND CONCISE AS POSSIBLE, BECAUSE IT IS SHOWN AS A PANEL ON VARIOUS UIs
+<!--
+ABOUTME: Quick reference guide providing a concise overview of the most critical caveats, limitations, and gotchas for Cyoda Cloud Free Tier users. For detailed information, see the Cyoda Cloud overview.
+
+THIS SECTION NEEDS TO BE AS COMPACT AND CONCISE AS POSSIBLE, BECAUSE IT IS SHOWN AS A PANEL ON VARIOUS UIs
 
 TONE: Direct, scannable format optimized for quick reference. Focus on the most impactful limitations that users need to be aware of immediately. Use the first-person plural form in the issue descriptions and status, and keep the tone conversational and friendly.
 -->
@@ -27,3 +28,8 @@ TONE: Direct, scannable format optimized for quick reference. Focus on the most 
 | **Transactional Deletions** | Deleting large amounts of data is slow, slightly slower than data saves.                                                                                                                                                                                               | It's in the backlog, but resolution probably not before end of Alpha Phase.                                                                                                                                                             |
 
 **Reach out to us on [Discord](https://discord.com/invite/95rdAyBZr2) if you need help**.
+
+## Roadmap
+
+So many things to work on.
+We'll be putting our major roadmap items here, once we have enough feedback from the community to know what's most important.
