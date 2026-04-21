@@ -223,6 +223,8 @@ export default defineConfig({
 				// for better performance and conditional loading
 			],
 			customCss: [
+				// Design tokens - source of truth for palette + typography (load first)
+				'./src/styles/tokens.css',
 				// Critical CSS - inlined for immediate rendering
 				'./src/styles/critical.css',
 				// Primer primitives with Cyoda branding - optimized loading
