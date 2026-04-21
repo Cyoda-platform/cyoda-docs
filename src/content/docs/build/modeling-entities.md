@@ -81,12 +81,19 @@ Concretely:
   lattice, including the temporal-type resolution hierarchy.
 - **Lock.** Freeze evolution once the shape is stable. The default
   stance for anything with external producers.
-- **Bump `modelVersion` (post-lock).** When the contract truly has to
-  change, the application increments the model version and — if data
-  in older revisions needs to appear under the new contract — migrates
-  it explicitly via app code. The platform takes no stance on whether
-  the new shape is "compatible" with the old; that judgment belongs to
-  the workflow that consumes the data.
+- **Bump `modelVersion` and register the new schema (post-lock).** A
+  locked model is a frozen contract; to accommodate a changed
+  structure the application bumps `modelVersion` and **registers the
+  new schema** for that version. Registration uses the same mechanism
+  as initial discovery: submit a comprehensive set of representative
+  samples that span the intended shape, and Cyoda infers the schema
+  from them. The samples themselves are **not stored** — they exist
+  only to define the shape of the new version. Once registered, lock
+  the new version so it too is a hard contract. If data written under
+  an older version needs to appear under the new shape, migrate it
+  explicitly via app code; the platform takes no stance on whether
+  the new shape is "compatible" with the old — that judgment belongs
+  to the workflow that consumes the data.
 
 Things to plan explicitly:
 
