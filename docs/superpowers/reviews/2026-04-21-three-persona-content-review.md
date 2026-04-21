@@ -308,3 +308,47 @@ and performance envelope — are reframed as upstream issue #4 in
   `2026-04-21-upstream-issues.md`. Mirrors
   `build/analytics-with-sql.md` for the REST surface and closes the
   dead `/reference/api/#search` anchor flagged by the review.
+
+### Mis-framing correction — schema evolution
+
+The data-engineer deep-dive (DE-D3) was, on closer reading, wrong in
+its framing. It pattern-matched on Confluent Schema Registry semantics
+(forward/backward/full compatibility classes, reader/writer schemas,
+registry-incremented versions) and concluded Cyoda's schema-evolution
+story was "informal" for lacking them.
+
+In fact, Cyoda's model is **stricter and more appropriate for EDBMS**
+than Confluent's:
+
+- `modelVersion` is **application-controlled**, not
+  platform-incremented. The app bumps it when it wants a new
+  structural contract.
+- Two modes cover the spectrum: **discover** (loose, widens on new
+  samples) and **lock** (strict, rejects any non-matching entity).
+  Locked is the right default for production systems with external
+  interface contracts — e.g. a trading system whose workflow is
+  tailored to a specific FpML version would get **silent corruption**
+  under Confluent's "backward-compatible" policy, which still accepts
+  widened writers.
+- Compatibility across versions is deliberately an **application
+  concern**: only the workflow code knows whether an added field or
+  widened type leaves its transition logic valid.
+- Revisions are immutable and tagged with the model version active at
+  write time; old revisions are never re-validated or re-cast.
+
+Upstream issue #5 has been **dropped** (see
+`2026-04-21-upstream-issues.md` for the full explanation). The
+docs-clarity gap the review found is real, and is resolved on this
+branch:
+
+- `build/modeling-entities.md` — added "Two modes: discover or lock"
+  section with an FpML production example; rewrote "Evolving a model"
+  to make `modelVersion`'s app-controlled nature, revision immutability,
+  and the deliberate absence of a Confluent-style taxonomy explicit.
+- `concepts/entities-and-lifecycle.md` — added a short framing of the
+  two modes in the Schema section, pointing at `modeling-entities.md`
+  for depth.
+
+Keeping this note for future reviewers: anyone arriving from a
+Kafka/Avro/Confluent background is likely to pattern-match the same
+wrong way.

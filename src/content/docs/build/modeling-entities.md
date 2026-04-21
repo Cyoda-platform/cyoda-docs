@@ -22,36 +22,84 @@ state transitions — so they stay embedded. Fulfilment events on an order do �
 they have their own lifecycle — so they become their own entity, referenced
 by the order.
 
-## Let the schema discover itself
+## Two modes: discover or lock
 
-Cyoda auto-discovers schemas from the data you send. For a new model you do
-not write a schema file; you post a representative sample (or a batch of
-them) and Cyoda records the fields, their types, and their nested shapes.
-New samples widen the schema: a field seen as `INTEGER` once and as
-`[INTEGER, STRING]` later becomes a polymorphic field, and arrays grow to
-accommodate observed widths.
+Cyoda gives you two structural contracts for an entity model. The right
+choice depends on how exposed the model is to outside producers.
 
-This lets you start loose, iterate with real data, then **lock** the model
-when the shape is stable. After locking, incoming entities that don't match
-the current schema are rejected.
+**Discover (loose).** For a new model you do not write a schema file; you
+post a representative sample (or a batch) and Cyoda records the fields,
+their types, and the shape of nested arrays and objects. New samples
+**widen** the schema — a field seen as `INTEGER` once and as
+`[INTEGER, STRING]` later becomes polymorphic, and array widths grow to
+fit observed data. Use discover mode when you are prototyping, exploring
+a dataset, or have not yet fixed the contract with upstream producers.
+
+**Lock (strict).** Once the shape is stable, lock the model. After
+locking, any incoming entity that does not structurally match the current
+schema is **rejected**. This is the right default for production systems
+with external interface contracts — a trading system receiving FpML
+confirmations, a payments pipeline consuming an agreed message format, a
+regulated workflow whose processor logic is tailored to a specific
+shape. In those contexts a silently widened schema is a latent bug at
+best and a compliance failure at worst: if an upstream does an
+uncoordinated FpML version upgrade, you want the new-shape messages
+rejected at the door, not accepted and fed into processors that were
+built against the old shape.
+
+These two modes together cover the spectrum. Cyoda deliberately does
+**not** layer a Confluent-style forward/backward/full compatibility
+taxonomy on top: "compatible" is not a platform-generic concept when the
+workflow (your app code) is part of the contract. Only the application
+can judge whether adding an optional field, widening an integer to a
+string, or dropping a field leaves its transition logic valid. The
+platform contract is the simpler and stricter pair: loose discovery, or
+lock-and-reject.
 
 ## Evolving a model
 
-Three things you can do without surprise:
+You evolve during discover mode by sending data: fields appear, types
+widen, array widths grow. None of this is surprising until you lock.
 
-- **Add fields.** New fields appear in the next sample you send.
-- **Widen types.** Cyoda handles polymorphic fields via a type hierarchy
-  (e.g. `BYTE → SHORT → INT → LONG`; `FLOAT → DOUBLE → BIG_DECIMAL`).
-- **Lock.** Freeze evolution once the shape is stable; useful before
-  onboarding external clients against the schema.
+After lock, evolution is **application-controlled**. The model has a
+`modelVersion` that the application increments when it wants a new
+structural contract. Each revision of each entity is tagged at write
+time with the model version in force. Revisions are immutable: old
+revisions are **not** re-validated, re-cast, or rewritten when a new
+model version appears. A consumer reading an old revision reads it
+under its original version; interpretation across versions is
+application logic.
 
-Two things to treat carefully:
+Concretely:
 
-- **Renames.** Cyoda does not rename a field for you; if you rename in the
-  source, you get a new field alongside the old one. Plan the migration of
-  existing data explicitly.
-- **Narrowing types.** Once the schema has observed `STRING` in a field,
-  you cannot later restrict it to `INTEGER` without migrating.
+- **Add fields (pre-lock).** Send a sample that includes them; the
+  schema widens automatically.
+- **Widen types (pre-lock).** Cyoda handles polymorphic fields via a
+  type hierarchy (e.g. `BYTE → SHORT → INT → LONG`;
+  `FLOAT → DOUBLE → BIG_DECIMAL`). See the
+  [Trino SQL reference](/reference/trino/) for the complete primitive
+  lattice, including the temporal-type resolution hierarchy.
+- **Lock.** Freeze evolution once the shape is stable. The default
+  stance for anything with external producers.
+- **Bump `modelVersion` (post-lock).** When the contract truly has to
+  change, the application increments the model version and — if data
+  in older revisions needs to appear under the new contract — migrates
+  it explicitly via app code. The platform takes no stance on whether
+  the new shape is "compatible" with the old; that judgment belongs to
+  the workflow that consumes the data.
+
+Things to plan explicitly:
+
+- **Renames.** Cyoda does not rename a field for you; if you rename
+  in the source, you get a new field alongside the old one. Migrate
+  existing data deliberately.
+- **Deletes and deprecations.** Same story — Cyoda will not silently
+  drop or re-interpret a field across a version boundary. The
+  application owns the migration.
+- **Narrowing types.** Once the schema has observed `STRING` in a
+  field, you cannot narrow it to `INTEGER` within the same version.
+  To narrow, introduce a new `modelVersion` with the stricter type
+  and migrate the data.
 
 ## Who validates what
 
