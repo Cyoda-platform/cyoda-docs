@@ -261,6 +261,55 @@ Every current URL that changes gets a server-side redirect to its new path. A co
 
 Light Playwright coverage added: head tags emitted on representative pages; `.md` endpoint resolves 200.
 
+## Visual alignment with cyoda.com (launchpad)
+
+Scope: move the site noticeably closer to the launchpad look-and-feel without restructuring Starlight chrome. Token changes and a few small components — not a marketing re-skin.
+
+### Design tokens
+
+Source of truth: `~/dev/cyoda-launchpad` (`tailwind.config.ts` + `src/index.css`).
+
+| Token | Value | Notes |
+|---|---|---|
+| `--cyoda-teal` | `hsl(175 67% 52%)` / `#4FB8B0` | Already present as `--cyoda-aqua`; retain alias |
+| `--cyoda-orange` | `hsl(32 95% 59%)` / `#FD9E29` | New — semantic accent / icon slot |
+| `--cyoda-purple` | `hsl(258 74% 37%)` / `#5A18AC` | Already partially used |
+| `--cyoda-green` | `hsl(106 44% 60%)` / `#6BB45A` | New — success / positive |
+| Light background | `white` | |
+| Light foreground | `hsl(222 47% 11%)` | |
+| Dark background | `hsl(220 14% 8%)` | |
+| Dark foreground | `hsl(220 20% 96%)` | |
+| Border | `hsl(214 32% 91%)` (light) / `hsl(220 10% 22%)` (dark) | |
+| Primary sans | `Montserrat` 300–900 | Google Fonts, preload + `display:swap` |
+| Mono | `Monaco, Menlo, 'Ubuntu Mono', monospace` | |
+| Code syntax mapping | keys=teal, strings=green, numbers=orange, booleans=purple | Custom Shiki theme |
+
+Tokens live in `src/styles/critical.css` (already holds `--cyoda-aqua`). Starlight's `--sl-color-*` slots map onto the brand palette so accents stay consistent across the default chrome.
+
+### Look-and-feel additions
+
+1. **Subtle dotted-grid background** on `<body>` — `radial-gradient(circle at 1px 1px, hsl(var(--cyoda-foreground) / 0.08) 1px, transparent 0) 20px 20px`. Present everywhere; matches launchpad.
+2. **Pill badge component** — reusable Astro `<Badge>` (rounded-full, teal-tinted bg, small-caps) consumed by `stability: evolving | awaiting-upstream` frontmatter and by deployment-tier labels. Also used for the hero pill on the site index.
+3. **Card styling** — align Starlight asides/cards to `bg-card border rounded-md shadow-sm` proportions. Add a teal-tinted variant for the growth-path and tier-matrix callouts.
+4. **Buttons** — primary (solid teal) and secondary (outlined teal) styles available via a small MDX `<Button>` component. Used sparingly on landing and section-index pages.
+5. **Dotted section separators** — one CSS utility class, mirroring the strip under the launchpad hero.
+6. **Section-header tint** — very-light-teal wash (≤ 6% opacity) on H1/H2 blocks on landing and section-index pages only; body pages stay clean.
+7. **Site index treatment** — Montserrat headline, pill tag, brief subhead, growth-path diagram featured. Not a full marketing hero; enough to feel like a sibling of cyoda.com.
+
+### Implementation boundary
+
+- Changes live in `src/styles/` and a small set of new components in `src/components/` (Badge, Button, GrowthPathDiagram).
+- No changes to the Starlight `components` overrides in `astro.config.mjs` beyond what `Head.astro` already does (fonts, JSON-LD, discoverability link tags).
+- No custom page templates beyond the site `index.mdx` and section-index pages.
+- One Playwright visual-regression check on the homepage; other pages covered by token-level sanity checks (computed `font-family`, primary colour).
+
+### Out of scope
+
+- Restructuring Starlight header, sidebar, or table of contents.
+- Matching launchpad's nav dropdowns / mega-menu.
+- Marketing hero layouts (split layouts, animated state machines, product screenshots).
+- Icon set replacement. Existing Footer/Header icons stay unless they conflict with the new palette.
+
 ## Upstream asks (cyoda-go issues to file)
 
 Tracked in the implementation plan; each becomes a GitHub issue on `cyoda-platform/cyoda-go` (or sibling repo where appropriate). Until fulfilled, cyoda-docs keeps vendored placeholders with a banner referencing the issue.
