@@ -1,0 +1,43 @@
+/* src/styles/tokens.css — design tokens aligned with cyoda-launchpad */
+
+:root {
+  /* Cyoda brand palette (HSL triplets for hsl() composition) */
+  --cyoda-teal: 175 67% 52%;         /* #4FB8B0 */
+  --cyoda-orange: 32 95% 59%;        /* #FD9E29 */
+  --cyoda-purple: 258 74% 37%;       /* #5A18AC */
+  --cyoda-green: 106 44% 60%;        /* #6BB45A */
+
+  /* Legacy alias (do not remove — referenced across primer.css / custom.css) */
+  --cyoda-aqua: hsl(var(--cyoda-teal));
+  --cyoda-aqua-rgb: 79, 184, 176;
+  --cyoda-aqua-light: hsl(var(--cyoda-teal) / 0.1);
+  --cyoda-aqua-medium: hsl(var(--cyoda-teal) / 0.2);
+
+  /* Surfaces */
+  --cyoda-background: 0 0% 100%;
+  --cyoda-foreground: 222 47% 11%;
+  --cyoda-border: 214 32% 91%;
+  --cyoda-muted: 210 40% 96%;
+
+  /* Typography */
+  --cyoda-font-sans: 'Montserrat', system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+  --cyoda-font-mono: 'Monaco', 'Menlo', 'Ubuntu Mono', monospace;
+
+  /* Starlight slot mappings */
+  --sl-font: var(--cyoda-font-sans);
+  --sl-font-mono: var(--cyoda-font-mono);
+  --sl-color-accent: var(--cyoda-aqua);
+  --sl-color-accent-low: hsl(var(--cyoda-teal) / 0.1);
+  --sl-color-accent-high: hsl(var(--cyoda-teal) / 0.9);
+  --sl-color-border-accent: var(--cyoda-aqua);
+}
+
+:root[data-theme='dark'] {
+  --cyoda-background: 220 14% 8%;
+  --cyoda-foreground: 220 20% 96%;
+  --cyoda-border: 220 10% 22%;
+  --cyoda-muted: 220 10% 16%;
+  --sl-color-accent: var(--cyoda-aqua);
+  --sl-color-accent-low: hsl(var(--cyoda-teal) / 0.15);
+  --sl-color-border-accent: hsl(var(--cyoda-teal) / 0.5);
+}
