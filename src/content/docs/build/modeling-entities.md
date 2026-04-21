@@ -79,7 +79,10 @@ the old revision intact.
 
 - [Entities and lifecycle](/concepts/entities-and-lifecycle/) — the
   conceptual model behind an entity.
-- [JSON schema reference](/reference/schemas/) — the wire format and
-  structural rules for exported models.
-- [Workflows and events](/concepts/workflows-and-events/) — how state and
-  transitions are configured.
+- [Entity model export](/reference/entity-model-export/) — the wire
+  format of a SIMPLE_VIEW export, node descriptors, type descriptors,
+  and the JSON Schema for the response.
+- [JSON schema reference](/reference/schemas/) — the REST-API message
+  schemas generated from cyoda-go.
+- [Workflows and events](/concepts/workflows-and-events/) — how state
+  and transitions are configured.

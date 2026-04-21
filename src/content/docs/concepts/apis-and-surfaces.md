@@ -66,10 +66,11 @@ Typical uses:
 - Scheduled reports that aggregate entities across a tenant.
 - Historical queries using the `point_time` column for as-of reads.
 
-The table generation rules, data-type mappings, and JDBC connection patterns
-are documented alongside the
-[JSON schema reference](/reference/schemas/) and will move into a dedicated
-Trino reference page once the surface stabilises.
+The table generation rules, data-type mappings, JDBC connection patterns,
+and handling of polymorphic fields are in the
+[Trino SQL reference](/reference/trino/). For the Build-side quickstart —
+connection recipe, first query, performance notes — see
+[Analytics with SQL](/build/analytics-with-sql/).
 
 ## Which surface, when?
 
