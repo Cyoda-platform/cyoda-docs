@@ -1,13 +1,13 @@
 ---
-title: "Cyoda Calculation Member — Client Implementation Guide"
-description: Guide for implementing a Cyoda Calculation Member client that participates in entity workflow processing
+title: "Client compute nodes"
+description: "Patterns for processor and criteria services — implementation, registration, and lifecycle."
 sidebar:
-  order: 9
+  order: 40
 ---
 
 # 1. Architecture Overview
 
-A **calculation member** is an external gRPC client that participates in entity workflow processing on the Cyoda platform. The platform delegates work to your client over a persistent bidirectional gRPC stream, and your client returns results on the same stream.
+A **calculation member** is an external gRPC client that participates in entity workflow processing on the Cyoda platform. The platform delegates work to your client over a persistent bidirectional gRPC stream, and your client returns results on the same stream. For the rationale behind preferring gRPC over HTTP for compute nodes, see [APIs and surfaces](/concepts/apis-and-surfaces/).
 
 ```
 ┌──────────────────────┐         gRPC (bidirectional stream)         ┌─────────────────────────┐
