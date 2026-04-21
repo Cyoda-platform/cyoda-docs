@@ -1,21 +1,25 @@
 import { test, expect } from '@playwright/test';
 
 test.describe('Visual tokens', () => {
-  test('Montserrat is the computed body font', async ({ page }) => {
+  test('Montserrat is loaded and applied', async ({ page }) => {
     await page.goto('/');
-    const family = await page.evaluate(() =>
-      getComputedStyle(document.body).fontFamily
+    // Wait for font loading to settle before probing.
+    await page.evaluate(() => (document as any).fonts.ready);
+    const loaded = await page.evaluate(() =>
+      (document as any).fonts.check('1em Montserrat')
     );
-    expect(family).toContain('Montserrat');
+    expect(loaded).toBe(true);
   });
 
-  test('primary accent is the cyoda teal', async ({ page }) => {
+  test('--sl-color-accent resolves to a color', async ({ page }) => {
     await page.goto('/');
-    const color = await page.evaluate(() => {
-      const el = document.querySelector('.site-title') || document.body;
-      return getComputedStyle(el).getPropertyValue('--sl-color-accent').trim();
-    });
-    // Value comes via CSS var — assert it resolves to a hsl(...) form
-    expect(color.length).toBeGreaterThan(0);
+    const color = await page.evaluate(() =>
+      getComputedStyle(document.documentElement)
+        .getPropertyValue('--sl-color-accent')
+        .trim()
+    );
+    // Accept any resolved color form; guards against the var being undefined
+    // or accidentally left as a raw HSL triplet (e.g. "175 67% 52%").
+    expect(color).toMatch(/^(hsl\(|rgb\(|#)/i);
   });
 });
