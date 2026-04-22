@@ -88,23 +88,9 @@ Landed and pushed to PR #66:
 Draft doc `2026-04-21-upstream-issues.md` annotated with `**Filed:** <url>`
 under each issue heading.
 
-**Deferred cleanup — cyoda-go body edits.** Filed cyoda-go bodies contain
-draft-numbered cross-refs (e.g. `#1`, `#2`, `#9`) which GitHub
-auto-links to unrelated low-numbered cyoda-go issues. Patched bodies
-with real numbers are prepared in
-`.sandbox/patched-bodies/{01,02,09}-*.md`; the cyoda-docs body
-(#69/draft-#11) was already updated via `gh issue edit` in this
-session. The cyoda-go edits need a cyoda-go-scoped token. During the
-next cyoda-go token session, run:
-
-```bash
-gh issue edit 80 --repo Cyoda-platform/cyoda-go --body-file .sandbox/patched-bodies/09-help-surface.md
-gh issue edit 81 --repo Cyoda-platform/cyoda-go --body-file .sandbox/patched-bodies/01-openapi-asset.md
-gh issue edit 82 --repo Cyoda-platform/cyoda-go --body-file .sandbox/patched-bodies/02-grpc-proto-asset.md
-```
-
-(Purely cosmetic — the content is correct; only the hyperlink targets
-of inline `#N` refs are off.)
+**Deferred cleanup — DONE.** All four patched bodies (cyoda-go #80, #81,
+#82 and cyoda-docs #69) applied via `gh issue edit`. Cross-refs in
+filed issues now point at the real filed issue numbers / full URLs.
 
 ### 1-legacy (historical) — original two-phase plan
 
@@ -182,26 +168,36 @@ Mark all three `stability="evolving"` on the `VendoredBanner`.
 Leave draft-issue #9 open (or close it) depending on user
 preference.
 
-### 3. Ranked-fix-list quick wins (items 1–6 in the review doc)
+### 3. Ranked-fix-list quick wins (items 1–6 in the review doc) — DONE
 
-1. Reconcile workflow JSON shape between
-   `getting-started/install-and-first-entity.mdx` and
-   `build/workflows-and-processors.mdx`.
-2. Unify `pointTime` ↔ `point_time` spelling and add a worked
-   example per surface. (**Partly done** via the Trino port —
-   `reference/trino.mdx` now shows `point_time` in a `TIMESTAMP`
-   clause. REST side still needs a worked example.)
-3. Add a "local dev auth" note to getting-started (close the first
-   401 a self-hoster will hit).
-4. Name the licence and add a one-paragraph OSS-vs-Cloud feature
-   matrix.
-5. Rewrite dead anchors `/reference/api/#search` and
-   `/reference/api/#temporal`. (Partly addressed by planned issue
-   #10 — `build/searching-entities.md` — which also closes the
-   `/reference/api/#search` side.)
-6. Retune Cloud positioning to match reality ("hosted preview of
-   the Cassandra tier, Beta; production Cassandra via Enterprise
-   License, self-hosted").
+All six items landed on this branch:
+
+1. **DONE** (commit `04c4e2b`) — Workflow JSON shape in
+   `getting-started/install-and-first-entity.mdx` corrected to match
+   the canonical shape used in `build/workflows-and-processors.mdx`,
+   verified against cyoda-go `internal/e2e/entity_lifecycle_test.go`
+   (map-keyed `states`, `initialState`, transitions use `next`, etc.).
+2. **DONE** (commit `b59c5ab`) — REST temporal parameter unified to the
+   actual spelling: `pointInTime` (camelCase with middle "In"), as seen
+   in `cyoda-go/api/openapi.yaml` ~line 805. Trino column stays
+   `point_time` (snake-case). `working-with-entities.md` and
+   `searching-entities.md` both corrected; historical-reads section
+   now explicitly calls out the surface split.
+3. **DONE** (commit `8d86f5c`) — Local-dev auth note added to
+   getting-started. Explains mock mode default
+   (`CYODA_IAM_MODE=mock`, no token needed) and the JWT-mode flip.
+   Grounded in `cyoda-go/cmd/cyoda/main.go` env-var help.
+4. **DONE** (commit `da7120d`) — Run index now has a License and
+   editions section: cyoda-go Apache 2.0 (OSS), Cyoda Cloud (Beta),
+   Enterprise (self-hosted Cassandra, contact sales).
+5. **DONE** — `/reference/api/#search` and `/reference/api/#temporal`
+   dead anchors gone. `build/searching-entities.md` created (commit
+   `1c9d9b7`) and `working-with-entities.md` relinked to it and to
+   `analytics-with-sql` for the SQL form of historical reads.
+6. **DONE** (commit `da7120d`, same as item 4) — Cloud positioning
+   retuned in the Run index editions table. The existing
+   `run/cyoda-cloud/index.mdx` already framed Cloud as Beta; the new
+   table ties that to the edition split explicitly.
 
 ### 4. Longer-running asks (not in scope of this branch)
 
