@@ -107,9 +107,9 @@ and nesting rules; Cyoda's REST spec is published as an OpenAPI asset
 against each release, see
 [`cyoda-go#81`](https://github.com/Cyoda-platform/cyoda-go/issues/81).
 
-## Historical reads with `pointTime`
+## Historical reads with `pointInTime`
 
-Every search accepts a `pointTime` parameter to run against the world
+Every search accepts a `pointInTime` parameter to run against the world
 as it existed at a given timestamp. The result is the set of entities
 that would have matched, using the revision active at that time.
 
@@ -119,15 +119,16 @@ curl -X POST http://localhost:8080/api/models/orders/search \
   -H "Authorization: Bearer $TOKEN" \
   -d '{
     "mode": "direct",
-    "pointTime": "2026-03-01T00:00:00Z",
+    "pointInTime": "2026-03-01T00:00:00Z",
     "filter": { "state": "submitted", "customerId": "CUST-7" }
   }'
 ```
 
 This is the primary way to answer audit and regulatory questions from
 REST — *what did this customer's open orders look like at quarter
-close?* For the same question expressed as SQL, see
-[`point_time` in analytics](/build/analytics-with-sql/).
+close?* The Trino surface exposes the same capability as a column named
+`point_time` (snake-case, matching SQL convention); for the analytical
+form, see [`point_time` in analytics](/build/analytics-with-sql/).
 
 ## Paging and sort (async)
 
@@ -146,7 +147,7 @@ close?* For the same question expressed as SQL, see
 - Prefer `async` as soon as the result set might be thousands of
   entities; the distributed execution on the Cassandra tier makes it
   cheaper per entity than a series of `direct` pages.
-- Avoid open-ended `pointTime` scans across every revision — anchor
+- Avoid open-ended `pointInTime` scans across every revision — anchor
   the query at a specific timestamp or a short window.
 
 ## Where to go next
@@ -159,4 +160,4 @@ close?* For the same question expressed as SQL, see
 - [Analytics with SQL](/build/analytics-with-sql/) — heavy analytical
   work, cross-entity joins, historical scans via `point_time`.
 - [Entities and lifecycle](/concepts/entities-and-lifecycle/) — the
-  audit/history model behind `pointTime`.
+  audit/history model behind `pointInTime`.
