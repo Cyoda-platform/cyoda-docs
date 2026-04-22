@@ -52,6 +52,19 @@ curl -X POST http://localhost:8080/api/models/orders/entities \
   -d '{ "orderId": "ORD-1", "amount": 42.00, "currency": "EUR" }'
 ```
 
+<Aside type="note" title="No token? That's expected locally.">
+`cyoda serve` defaults to **mock auth** (`CYODA_IAM_MODE=mock`): every
+request is authenticated as a configurable default user, no bearer token
+required. You'll see examples elsewhere in the docs with
+`-H "Authorization: Bearer $TOKEN"`; those are written for production
+deployments running in JWT mode. On a fresh local install you can drop
+the header — or keep it and send any placeholder; mock mode ignores it.
+
+Flip to JWT mode by setting `CYODA_IAM_MODE=jwt` plus
+`CYODA_JWT_SIGNING_KEY` (RSA private key, PEM). For the full auth-mode
+configuration see [Configuration](/reference/configuration/).
+</Aside>
+
 ## Your first workflow
 
 Attach a workflow to the `orders` model with two states — `draft` and
