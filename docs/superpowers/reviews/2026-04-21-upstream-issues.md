@@ -5,9 +5,10 @@
 restructure pivot, the three-persona content review, and the
 dropped-content audit. **Nothing here is filed yet.**
 
-**Status:** 9 issues live; #5 **dropped** after clarification that
-Confluent-style compatibility classes do not apply to the EDBMS model
-(see Issue 5 for the full explanation).
+**Status:** 8 issues live; #5 **dropped** (Confluent compatibility classes
+don't apply to the EDBMS model); #3 and #7 **superseded** by the
+consolidated `help` surface (#9); #9 rewritten as the consolidated
+upstream ask; #11 added as the docs follow-up.
 
 **Convention:** Cross-repo documentation asks go on `Cyoda-platform/cyoda-go`
 issues with the `cyoda-docs` (or `documentation`) label per internal practice.
@@ -85,29 +86,17 @@ pinning.
 
 ---
 
-## Issue 3 — Error code catalogue
+## Issue 3 — SUPERSEDED by Issue 9
 
-**Repo:** `Cyoda-platform/cyoda-go`
-**Labels:** `cyoda-docs`, `documentation`
-**Title:** Canonical error-code / error-type catalogue
+**Status:** Superseded — folded into the consolidated `cyoda help` surface
+(Issue 9). The error-code catalogue ships as `cyoda help errors` (and
+`cyoda help errors <code>` for drilldown), emitted in `--format text`,
+`--format markdown`, and `--format json`. No separate error-catalogue
+artefact is needed; the help surface delivers it.
 
-### Context
-The existing `ErrorCode` schema (`reference/schemas/common/error-code.mdx`
-auto-generated) lists codes but with no explanation of when each fires, what
-the suggested client response is, or whether the code is stable. A platform
-team adopting cyoda-go needs a machine- and human-readable catalogue for SRE
-runbooks, alerting, and support escalation.
-
-### Proposal
-Maintain a single source of truth for error codes in cyoda-go — either a
-YAML/JSON manifest co-located with code, or doc-comments extracted at build
-time — that includes: code, stability, meaning, retryable-yes/no, and a
-suggested operator action.
-
-### Acceptance
-- [ ] One canonical source for error codes lives in cyoda-go
-- [ ] Rendered/structured form is consumable by cyoda-docs
-- [ ] New codes added in code are reflected without manual doc edits
+### Original ask (retained for trail)
+Canonical error-code / error-type catalogue — code, stability, meaning,
+retryable-yes/no, suggested operator action.
 
 ---
 
@@ -252,52 +241,22 @@ pseudo-code is faithful:
 
 ---
 
-## Issue 7 — Publish the ops interface surface (metrics, health, tracing)
+## Issue 7 — SUPERSEDED by Issue 9
 
-**Repo:** `Cyoda-platform/cyoda-go`
-**Labels:** `cyoda-docs`, `documentation`
-**Title:** Document the ops-facing interface surface — canonical metric names, health/readiness paths, trace header contract
+**Status:** Superseded — folded into the consolidated `cyoda help` surface
+(Issue 9). Ops interface content ships as `cyoda help telemetry` with
+drilldowns: `cyoda help telemetry metrics` (catalogue), `cyoda help
+telemetry health` (endpoints), `cyoda help telemetry tracing`
+(header contract), `cyoda help telemetry logs` (structured-log schema).
 
-### Context
-The three-persona review (platform-architect deep-dive) flagged gaps in
-`run/` coverage. Taking a step back: a platform vendor's remit stops at
-the **interface** ops teams integrate with — concrete metric names,
-health/readiness endpoints, the trace-context contract. *How* to run the
-show (PostgreSQL HA patterns, DR/RPO-RTO, sizing models, multi-AZ
-placement, capacity planning) is tightly coupled to the operator's
-infrastructure provider, app load profile, and compliance posture, and
-is not in Cyoda's remit to prescribe.
-
-What the review genuinely exposed is that the interface surface is
-under-documented: observability lacks concrete metric names or endpoint
-paths, and there is no published trace-header contract. That makes it
-impossible for an ops team to wire alerting, dashboards, or distributed
-tracing without reading the source. Fix the interface; leave the
-playbook to the operator.
-
-### Proposal
-Produce upstream guidance cyoda-docs can cite under `run/`:
-
-- **Metrics catalogue.** Canonical metric names emitted by cyoda-go, their
-  types (counter/gauge/histogram), labels, and meaning. Stable-vs-
-  evolving marker on each.
-- **Health and readiness endpoints.** Path(s), expected response shape,
-  what "ready" and "healthy" actually check.
-- **Trace-context contract.** Which headers cyoda-go propagates
-  (W3C `traceparent`/`tracestate`, B3, or other), where ids appear in
-  logs, and the correlation contract across REST, gRPC, and processor
-  invocations.
-- **Structured-log schema.** Key field names (`request_id`,
-  `entity_id`, `transition`, etc.) and their stability.
-
-Deliberately **out of scope**: Postgres HA recipes, DR targets, sizing
-models, multi-AZ placement. Those belong to the operator, not the
-platform vendor.
-
-### Acceptance
-- [ ] Metrics, health, tracing, and log-schema references exist upstream
-- [ ] cyoda-docs `run/observability.md` (and neighbours) can cite them
-      directly
+### Original framing (retained for trail)
+A platform vendor's remit is the **interface** ops teams integrate with —
+metric names, health/readiness paths, trace-context contract,
+structured-log fields. *How* to run the show (Postgres HA patterns, DR
+targets, sizing models, multi-AZ placement) is infrastructure- and
+application-specific and is not in Cyoda's remit to prescribe. Fix the
+interface; leave the playbook to the operator. That stance is
+preserved inside the `help telemetry` topic tree.
 
 ---
 
@@ -329,41 +288,335 @@ Ship as a subdirectory in cyoda-docs or a sibling repo.
 
 ---
 
-## Issue 9 — Inline awaiting-upstream reference content from cyoda-go source
+## Issue 9 — Ship a topic-structured `cyoda help` surface covering build / run / reference
+
+**Repo:** `Cyoda-platform/cyoda-go`
+**Labels:** `cyoda-docs`, `enhancement`, `developer-experience`
+**Title:** Ship a topic-structured, version-accurate `cyoda help` surface
+as the canonical reference for every build, run, and reference concern
+
+### Summary
+
+Embed a topic-organised help system in the `cyoda` binary covering every
+build/run/reference aspect of the platform. Tight, compact, precise
+prose — one focused topic per concern, drilldowns where natural. Three
+output formats (`text`, `markdown`, `json`). The binary becomes the
+**single source of truth** for anything flag-, command-, env-var-,
+metric-, endpoint-, header-, error-code-, or operation-shaped. The
+cyoda-docs website becomes the narrative/visual skin on top and cites
+each help topic as authoritative.
+
+This consolidates and supersedes earlier separate asks for an error-code
+catalogue (old #3) and an ops-facing interface surface (old #7).
+
+### Why this, and why in the binary
+
+- **Version-accurate by construction.** The help text ships with the
+  binary; an operator running `v1.4.2` sees `v1.4.2` semantics, not
+  whatever the website happens to have updated to.
+- **AI-tool friendly.** IDE agents, code assistants, and ops copilots
+  can run `cyoda help <topic> --format markdown` (or `--format json`)
+  to pull authoritative, compact context into a session. No hallucination,
+  no stale web search.
+- **Ops-friendly.** No browser required on a locked-down production
+  host. `cyoda help telemetry metrics` beats opening Confluence.
+- **Docs-leverage.** Removes from cyoda-docs the burden of mirroring
+  every flag, env var, metric, and error code — work that inevitably
+  drifts. Docs keep the narrative, conceptual framing, diagrams, and
+  worked examples; help owns the precise reference.
+- **One surface, many formats.** A structured authoring model cheaply
+  yields terminal text, markdown for LLM context, and JSON for tooling.
+
+### Topic tree (proposed)
+
+13 top-level topics. Each is a standalone page; drilldowns listed where
+the content naturally subdivides. Final wording is for the cyoda-go team
+to iterate — cyoda-docs will co-author where the topics cover content
+already drafted on the website.
+
+**API surfaces**
+- `cyoda help openapi` — REST surface overview, auth, versioning,
+  pagination conventions, error response shape
+- `cyoda help grpc` — gRPC surface, CloudEvents envelope, compute-node
+  protocol, streaming semantics
+  - `cyoda help grpc compute` — compute-node handshake, lease model,
+    request/response flow
+
+**Operations on entities**
+- `cyoda help crud` — create / read / update / delete over REST
+  - `cyoda help crud transitions` — state-driven mutations, why
+    `PATCH` is not the right primitive for lifecycle changes
+- `cyoda help search` — query modes, predicate grammar, pagination,
+  `pointTime`
+  - `cyoda help search direct` — synchronous, capped result size
+  - `cyoda help search async` — queued, unbounded, paged; distributed
+    on the Cassandra tier (linear scaling with node count)
+- `cyoda help analytics` — Trino SQL surface
+  - `cyoda help analytics tables` — catalogue/schema projection rules,
+    node/array decomposition, JSON table
+  - `cyoda help analytics jdbc` — driver, URL template, auth
+
+**Domain model**
+- `cyoda help models` — entity model overview
+  - `cyoda help models discover` — loose mode, sample-driven widening
+  - `cyoda help models lock` — strict mode, reject-on-mismatch
+  - `cyoda help models version` — `modelVersion` contract,
+    register-new-schema flow, immutability of old revisions
+  - `cyoda help models export` — `SIMPLE_VIEW` export shape, node
+    descriptors, type descriptors
+- `cyoda help workflows` — state-machine model overview
+  - `cyoda help workflows transitions` — auto vs manual, atomicity,
+    revision bump
+  - `cyoda help workflows processors` — event contract, at-least-once
+    delivery, idempotency expectations, dedup key
+  - `cyoda help workflows criteria` — gating predicates
+
+**Operate the binary**
+- `cyoda help cli` — top-level subcommand map + conventions
+  - one subtopic per subcommand (`serve`, `init`, `migrate`, …) with
+    SYNOPSIS / OPTIONS / EXAMPLES
+- `cyoda help config` — configuration model, precedence order (flag
+  beats env beats file beats default), `_FILE` secret pattern, topic
+  groupings
+  - one subtopic per env-var topic group (e.g. `cyoda help config
+    database`, `cyoda help config auth`, `cyoda help config grpc`)
+- `cyoda help run` — deployment shapes
+  - `cyoda help run docker` — single-binary / docker-compose patterns
+  - `cyoda help run kubernetes` — chart layout, readiness/liveness
+    wiring, rolling-upgrade posture
+  - `cyoda help run desktop` — local-dev shape
+- `cyoda help helm` — chart values reference, same content as rendered
+  `values.yaml` docs would carry
+
+**Ops interface surface** (supersedes old #7)
+- `cyoda help telemetry` — observability interface overview
+  - `cyoda help telemetry metrics` — canonical metric names, types
+    (counter/gauge/histogram), labels, meaning, per-metric stability
+  - `cyoda help telemetry health` — health + readiness endpoint paths,
+    expected response shape, what each actually checks
+  - `cyoda help telemetry tracing` — propagated headers
+    (`traceparent`/`tracestate` / B3 / …), trace-id placement in
+    logs, correlation contract across REST/gRPC/processor invocations
+  - `cyoda help telemetry logs` — structured-log schema, key field
+    names (`request_id`, `entity_id`, `transition`, …), field stability
+
+**Error catalogue** (supersedes old #3)
+- `cyoda help errors` — error model overview, RFC 7807 Problem Details
+  shape, gRPC status mapping
+  - `cyoda help errors <code>` — one subtopic per canonical code: what
+    triggers it, retryable yes/no, suggested operator action,
+    stability marker
+
+**Onboarding**
+- `cyoda help quickstart` — install, bootstrap, first entity, first
+  transition
+
+### Per-topic style template
+
+Each topic page follows a tight `man`-page-like template. Aim: **50–150
+lines of precise prose per topic.** Concept-heavy topics lean longer
+(`DESCRIPTION` does more work); pure CLI/config topics lean shorter
+(`OPTIONS` does the work). No marketing. No hedging.
+
+```
+NAME
+    <topic>  —  <one-line purpose>
+
+SYNOPSIS
+    <invocation pattern, URL template, or API shape>
+
+DESCRIPTION
+    1–2 paragraphs of precise prose. What this is, the contract, any
+    non-obvious behaviour. Zero redundancy with other topics — cross-
+    reference via SEE ALSO instead of re-explaining.
+
+OPTIONS / FIELDS
+    <name>       <type>       <default>    <purpose>
+    ...
+    (Use this section for flag tables, env-var tables, field schemas,
+     metric lists, error codes, etc. — whatever is structurally list-
+     shaped for this topic.)
+
+EXAMPLES
+    # 2–3 minimal, copy-pasteable invocations
+
+SEE ALSO
+    Sibling topics, release assets (OpenAPI #1, proto #2), docs URL.
+
+STABILITY
+    stable | evolving | experimental
+```
+
+### Output formats
+
+All topics ship in three formats. The source is a single structured
+representation; each format is a renderer.
+
+- **`--format text`** (default). Terminal-friendly: colour where
+  reasonable, `less`-pipeable on long topics, boxed tables.
+- **`--format markdown`**. Canonical markdown for LLM context ingestion
+  and cyoda-docs import. GitHub-flavoured. Stable heading hierarchy so
+  tooling can target sections.
+- **`--format json`**. Structured topic descriptor:
+  ```json
+  {
+    "topic": "search.async",
+    "path": ["search", "async"],
+    "name": "async — background search",
+    "synopsis": "...",
+    "description": "...",
+    "options": [ { "name": "pointTime", "type": "RFC3339", "default": null, "purpose": "..." } ],
+    "examples": [ { "title": "...", "body": "..." } ],
+    "see_also": ["search", "search.direct", "analytics"],
+    "stability": "stable"
+  }
+  ```
+
+`cyoda help` with no args (or `cyoda help --format json`) emits the
+full topic tree — path, name, one-line synopsis, stability — so tooling
+can discover what is available at a given version.
+
+### Source of truth and authoring model
+
+- **Help text lives in cyoda-go**, as structured content alongside code.
+  Concrete option: markdown files under `cmd/cyoda/help/**/*.md` with
+  YAML front-matter (topic path, stability, see_also), compiled into the
+  binary via `go:embed`. Alternative: Go-string content with a registry
+  pattern. Either works; the contract below is what matters.
+- **cyoda-docs website imports help markdown at build time** from a
+  release asset (see *Release asset contract* below). Website pages
+  become narrative/visual and cite their help topic; they do not
+  duplicate option tables or flag lists.
+- **Per-topic stability marker** (`stable` / `evolving` / `experimental`).
+  Topics may be added freely. Renaming or removing a topic requires a
+  deprecation window and a redirect entry for the previous path.
+- **Topic-tree stability** is its own contract: additions are non-
+  breaking; renames/removals require deprecation. Tooling can rely on
+  topic paths being stable for the duration of a major version.
+
+### Release asset contract
+
+On every cyoda-go release, CI attaches two artefacts (mirrors #1 and #2):
+
+- `help.tar.gz` — the full markdown tree, preserving topic-path
+  directory structure. cyoda-docs extracts this into its build.
+- `help.json` — single JSON document containing every topic descriptor
+  (the `--format json` output for the full tree).
+
+Predictable URL pattern per tag, same as #1/#2.
+
+### Confidential tier handling
+
+`cyoda-go-cassandra` is a separate, confidential repository.
+
+- **OSS cyoda-go help** describes OSS/PostgreSQL-backend behaviour only.
+  Where a topic has a Cassandra-tier delta (for example, distributed
+  `async` search), the OSS help topic notes that the behaviour differs
+  on the Cassandra-backed tier and points to Cyoda Cloud documentation.
+- **Enterprise binary** (the cyoda-go build with the Cassandra backend
+  linked in) carries additional subtopics and expanded content that
+  replaces the OSS pointers with concrete description. Ship shape
+  identical — same `cyoda help`, same formats, same release assets —
+  the tree is just richer.
+- **Nothing confidential leaks** into OSS help, the OSS release assets,
+  or the public cyoda-docs build.
+
+### Acceptance criteria
+
+- [ ] `cyoda help` lists all 13 top-level topics with one-line synopses
+- [ ] `cyoda help <topic>` renders the templated structure for each
+      topic in the tree
+- [ ] `cyoda help <topic> <subtopic>` works for every drilldown listed
+      above
+- [ ] All three output formats (`text`, `markdown`, `json`) produce
+      equivalent content from a single source
+- [ ] `cyoda help --format json` (no topic) emits the full topic-tree
+      descriptor
+- [ ] Per-topic `stability` marker is present in all formats
+- [ ] Release CI attaches `help.tar.gz` and `help.json` as release
+      assets with predictable, version-scoped URLs
+- [ ] OSS build contains no confidential content; Enterprise build
+      extends the OSS tree without overlapping topic paths that conflict
+- [ ] Topic-tree stability contract is documented in the repo
+      (additions free; renames/removals require deprecation window)
+
+### Scoping note
+
+This is a meaningful engineering effort — ~13 top-level topics × typical
+drilldowns × ~100 lines of precise prose each = a non-trivial authoring
+and tooling task. It is worth sizing as a dedicated workstream, not a
+side-quest. cyoda-docs will co-author the content for topics that cover
+concepts already drafted on the website (models, workflows, crud,
+search, analytics), to land the first tranche quickly. The tooling
+(`go:embed` + renderer + JSON descriptor + release-asset CI) can ship
+before all topic content is authored; stub topics with a
+`stability: experimental` marker are acceptable in the first release.
+
+### Related
+
+- #1 — OpenAPI as a versioned release asset (REST wire format; `help
+  openapi` is the narrative companion)
+- #2 — gRPC proto docs as a versioned release asset (gRPC wire format;
+  `help grpc` is the narrative companion)
+- #3 — SUPERSEDED by this issue
+- #4 — Trino reference gaps (content lands in `help analytics`
+  subtopics)
+- #6 — Outbox recipe delivery semantics (feeds `help workflows
+  processors`)
+- #7 — SUPERSEDED by this issue
+- #11 (cyoda-docs) — docs follow-up: reframe website pages around the
+  help surface once the release-asset contract is in place
+
+---
+
+## Issue 11 — Reframe cyoda-docs around the `cyoda help` surface
 
 **Repo:** `Cyoda-platform/cyoda-docs`
 **Labels:** `documentation`, `follow-up`
-**Title:** Replace `awaiting-upstream` stubs with hand-curated content scanned from cyoda-go
+**Title:** Reframe cyoda-docs pages around the `cyoda help` surface and import from release assets
 
 ### Context
-Three reference pages carry the `awaiting-upstream` banner:
-`reference/cli.mdx`, `reference/configuration.mdx`, `reference/helm.mdx`.
-The three-persona review (platform-architect deep-dive) found this pattern
-actively harms credibility — architects read it as "they haven't even filed
-the ticket." The underlying artefacts (CLI `--help` output, env-var
-definitions, Helm `values.yaml`) all exist in the cyoda-go repo; we can
-hand-curate summaries now and mark them `stability="evolving"` instead of
-`awaiting-upstream`.
+Once cyoda-go ships the topic-structured `cyoda help` surface (upstream
+#9) with `help.tar.gz` / `help.json` release assets, cyoda-docs should
+stop mirroring reference content and instead become the narrative +
+visual skin on top.
 
 ### Proposal
-Scan the local cyoda-go repositories (`~/go-projects/cyoda-light/cyoda-go`,
-`cyoda-go-spi`, `cyoda-go-cassandra`) and produce:
 
-- `reference/cli.mdx`: subcommand table with one-line purpose + common
-  invocations
-- `reference/configuration.mdx`: top-20 env-var table (var, type, default,
-  purpose) + `_FILE` secret example
-- `reference/helm.mdx`: commented `values.yaml` excerpt + 3-row
-  "minimum-viable overrides" table
-
-Mark all three `stability="evolving"`. File a follow-up ticket (or leave
-this one open) to automate the scan/refresh once cyoda-go publishes
-canonical artefacts (see Issues 1–3 and 7).
+1. **Import pipeline.** Add a build-pipeline step that fetches
+   `help.tar.gz` for the pinned cyoda-go release and extracts it under
+   `src/content/vendored/help/**`. Treat imported markdown as vendored
+   (gitignored-per-build, regenerated). Mirrors the schema-pages
+   generator pattern.
+2. **Per-page help callout.** Every website page that maps to one or
+   more help topics carries a "From the binary" callout at the top:
+   > Canonical reference: `cyoda help <topic>`. This page is the
+   > narrative; the binary is authoritative.
+3. **Reference pages become navigators.** `reference/cli.mdx`,
+   `reference/configuration.mdx`, `reference/helm.mdx` become thin
+   navigator/concept pages: enumerate topics, explain the model
+   (precedence rules, `_FILE` secrets, chart layout), link to the
+   help topic for the authoritative list. Drop the `awaiting-upstream`
+   banners.
+4. **Run pages stop mirroring flags.** `run/docker.md`,
+   `run/kubernetes.md`, `run/desktop.md` stay conceptual (when-it-fits,
+   deployment shape, HA posture). Any flag/value concern points at the
+   help topic.
+5. **Build pages cite their operation topic.** `working-with-entities`
+   → `help crud` + `help search`; `analytics-with-sql` → `help
+   analytics`; `workflows-and-processors` → `help workflows`; etc.
+6. **Dead-anchor cleanup.** Anchors like `/reference/api/#search` (flagged
+   in the three-persona review) get retargeted at the relevant help
+   topic or the new Build-side page (see #10).
 
 ### Acceptance
-- [ ] Three stub pages replaced with hand-curated content
-- [ ] Banners updated from `awaiting-upstream` → `evolving`
-- [ ] Review-doc item 7 (ranked fix list) marked complete
+- [ ] Build pipeline imports help content from a pinned cyoda-go release
+- [ ] All three `awaiting-upstream` stub pages reframed as navigators
+      and their banners dropped
+- [ ] Every website page that has a help-topic counterpart carries the
+      "From the binary" callout
+- [ ] Review-doc ranked-fix-list item 7 marked complete (awaiting-
+      upstream inlining resolved structurally rather than by hand-port)
 
 ---
 
