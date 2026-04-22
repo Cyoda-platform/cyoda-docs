@@ -68,18 +68,29 @@ configuration see [Configuration](/reference/configuration/).
 ## Your first workflow
 
 Attach a workflow to the `orders` model with two states — `draft` and
-`submitted` — and one manual transition. The exact request shape lives in the
-[API reference](/reference/api/); the idea is small:
+`submitted` — and one manual transition. States are keyed by name; each
+state owns its outgoing transitions:
 
 ```json
 {
-  "states": ["draft", "submitted"],
-  "initial": "draft",
-  "transitions": [
-    { "name": "submit", "from": "draft", "to": "submitted", "manual": true }
-  ]
+  "version": "1",
+  "name": "orders-wf",
+  "initialState": "draft",
+  "active": true,
+  "states": {
+    "draft": {
+      "transitions": [
+        { "name": "submit", "next": "submitted", "manual": true }
+      ]
+    },
+    "submitted": {}
+  }
 }
 ```
+
+For the full workflow schema — processors, criteria, automatic
+transitions, nested conditions — see
+[Build → workflows and processors](/build/workflows-and-processors/).
 
 Invoke the transition on your entity:
 
