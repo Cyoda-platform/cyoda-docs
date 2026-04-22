@@ -44,3 +44,24 @@ longer pays for itself.
 
 See [Digital twins and the growth path](/concepts/digital-twins-and-growth-path/)
 for the decision framework.
+
+## License and editions
+
+Cyoda ships in three editions. Pick by how you want to consume it; the
+application contract is the same across all three.
+
+| Edition | License | Storage tiers | Status |
+|---|---|---|---|
+| **cyoda-go** | Apache 2.0 (OSS) | In-memory, SQLite, PostgreSQL | Generally available |
+| **Cyoda Cloud** | Commercial (hosted service) | Cassandra-backed | Beta — test/demo only; commercial SLAs planned |
+| **Enterprise** | Commercial (self-hosted) | Cassandra-backed | Available — contact sales |
+
+The **cyoda-go** binary — everything in [Build](/build/) and
+[Reference](/reference/) works against it — is Apache 2.0 and free to
+use for development and production on the Desktop, Docker, and
+Kubernetes packagings. The **Cassandra-backed** tier (horizontal scale
+for write volume and distributed `async` search) ships two ways: as the
+hosted **Cyoda Cloud** service, and as a self-hosted **Enterprise**
+distribution under commercial license. Cyoda Cloud is currently a Beta
+for test and demonstration; production workloads on the Cassandra tier
+run under the Enterprise license today.
