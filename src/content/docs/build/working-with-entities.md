@@ -107,17 +107,17 @@ examples, see [searching entities](/build/searching-entities/).
 
 ## Temporal queries
 
-Every entity's history is queryable. Add a `pointTime` parameter to any read
+Every entity's history is queryable. Add a `pointInTime` parameter to any read
 or search request to retrieve the world as of that timestamp:
 
 ```
-GET /api/models/orders/entities/ORD-42?pointTime=2026-03-01T00:00:00Z
+GET /api/models/orders/entities/ORD-42?pointInTime=2026-03-01T00:00:00Z
 ```
 
 This is the primary way to answer regulatory and audit questions: *what did
 this customer's balance look like at quarter close?* For the same
 parameter applied to searches, see
-[searching entities → historical reads](/build/searching-entities/#historical-reads-with-pointtime);
+[searching entities → historical reads](/build/searching-entities/#historical-reads-with-pointintime);
 for analytical reads expressed as SQL, see
 [analytics with SQL](/build/analytics-with-sql/).
 
