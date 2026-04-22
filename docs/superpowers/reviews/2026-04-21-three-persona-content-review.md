@@ -352,3 +352,35 @@ branch:
 Keeping this note for future reviewers: anyone arriving from a
 Kafka/Avro/Confluent background is likely to pattern-match the same
 wrong way.
+
+### Mis-framing correction — operational production story (item 13)
+
+Ranked-fix-list item 13 ("DR, multi-region, Postgres HA, observability
+SLIs, sizing model") is **dismissed as out of scope** on the same
+shape of mis-framing as item 12. Not filed upstream, no docs work
+planned.
+
+A Cyoda deployment is a stateless cluster of cyoda-go nodes over a
+standard backing store (Postgres for OSS, Cassandra for Enterprise).
+The ops concerns the reviewer listed belong to the backing store and
+the operator, not to Cyoda:
+
+- **DR / multi-region / Postgres HA / Cassandra HA** — standard ops
+  for the chosen database. Operators running Postgres or Cassandra
+  in production already know how to do this; Cyoda has no platform-
+  specific runbook to publish that would beat the upstream docs for
+  those systems.
+- **Observability SLIs** — per-deployment. Cyoda Cloud owns its own
+  SLOs; self-hosters define theirs against their own workload. There
+  is no canonical platform SLI set.
+- **Sizing model** — workload-dependent (entity size × throughput ×
+  retention × revision-history depth). A single published table would
+  mislead more often than it would help.
+
+The cyoda-go tier is stateless, so scale-out and failover are
+commodity container-orchestration concerns, not Cyoda-specific.
+
+Future reviewers arriving from Kafka/Kubernetes-vendor-shaped
+platforms are likely to expect a vendor-owned ops story and flag
+its absence. The absence is deliberate: the platform contract
+ends at the edge of the stateless tier.

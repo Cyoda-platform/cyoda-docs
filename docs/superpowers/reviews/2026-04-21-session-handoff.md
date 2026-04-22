@@ -207,8 +207,21 @@ All six items landed on this branch:
 
 ### 4. Longer-running asks (not in scope of this branch)
 
-See ranked-fix-list items 7–13 in the review doc. Most require
-product decisions upstream.
+See ranked-fix-list items 7–13 in the review doc.
+
+- **Items 7, 8, 9, 10** — live. Items 8/9/10 are docs-only and
+  unblocked (Concepts dedup, terminology fix, compliance landing
+  page). Item 7 is superseded by the navigator reframe once #80/#69
+  land.
+- **Items 11** — partially tracked as cyoda-go #84 (CDC semantics).
+  Docs recipe waits on that.
+- **Items 12 and 13 — DISMISSED as reviewer mis-framing.** Both
+  dispositions recorded in the review doc's "Mis-framing correction"
+  sections. #12 is schema evolution (stricter than Confluent, not
+  weaker). #13 is ops homework for standard DB services and a
+  stateless cyoda-go cluster — those belong to the operator and the
+  backing-store vendor, not to Cyoda. No upstream issues, no docs
+  work planned.
 
 ### 5. Eventual merge path
 
