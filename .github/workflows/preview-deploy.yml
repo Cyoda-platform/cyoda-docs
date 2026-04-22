@@ -28,7 +28,7 @@ jobs:
       branch-name: ${{ steps.branch-info.outputs.branch-name }}
     steps:
       - name: Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
         with:
           ref: ${{ github.event.inputs.branch || github.ref }}
 
