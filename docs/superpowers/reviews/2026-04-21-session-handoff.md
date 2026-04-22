@@ -8,14 +8,20 @@ cold.
 
 - **Working directory:** `/Users/paul/dev/cyoda-docs/.worktrees/pivot`
   (git worktree of the main cyoda-docs repo).
-- **Branch:** `restructure-cyoda-go-pivot` (pushed to origin).
+- **Branch in the worktree:** `feature/cyoda-go-init` (as of 2026-04-22).
+  `restructure-cyoda-go-pivot` no longer exists — PR #66 was
+  rebase-merged into `feature/cyoda-go-init` and the branch deleted.
 - **Long-running integration branch:** `feature/cyoda-go-init`
-  (branched from `origin/main`, pushed to origin). **`main` is
-  production — do not merge to it yet.**
-- **Open PR:** #66, `restructure-cyoda-go-pivot` →
-  `feature/cyoda-go-init`. Not `main`.
-  https://github.com/Cyoda-platform/cyoda-docs/pull/66
-- **Last commit on branch:** `a631809` (two-mode schema clarification).
+  (current tip `bc26a58`; `main` + the 77 pivot/content commits).
+  **`main` is production — do not merge `feature/cyoda-go-init` to
+  it yet; still awaiting Paul's independent QA pass.**
+- **Main** is production, currently includes the full astro-6 upgrade
+  wave (PR #70) and Node-22 CI bump (PR #71), all 6 dependabot bumps
+  landed 2026-04-22.
+- **Open PRs:** none for this work stream. All 9 original dependabot
+  PRs resolved.
+- **Future pivot-style work:** open new branches off
+  `feature/cyoda-go-init`.
 
 ## Artefacts in this worktree
 
