@@ -72,23 +72,57 @@ Landed and pushed to PR #66:
 
 ## Open threads (pick up in this order)
 
-### 1. File the drafted GitHub issues (ready to proceed)
+### 1. File the drafted GitHub issues — in progress, two-phase
 
-9 issues in `2026-04-21-upstream-issues.md`, #5 dropped.
-User token already has admin on both `Cyoda-platform/cyoda-go` and
-`Cyoda-platform/cyoda-docs` — **no token swap needed**. User said
-"You file them" — pending approval on which of the 9 to file.
+**Status (2026-04-21, later in day):** 8 live issues in
+`2026-04-21-upstream-issues.md`. #5 dropped, #3 and #7 **SUPERSEDED**
+by the new #9 (topic-structured `cyoda help` surface consolidating
+their content). New #11 added as the docs-side follow-up.
 
-Filing plan (documented at the end of the drafts file):
-`gh issue create --repo <repo> --label <labels> --title <title>
---body-file <extracted body>`, then append the resulting URL under
-each issue heading.
+Bodies pre-extracted to `.sandbox/issue-bodies/` (sandbox, not
+committed). Two-phase filing script in `.sandbox/`:
 
-### 2. Awaiting-upstream inlining pass
+- **Phase A — cyoda-go** (`.sandbox/file-issues-phase-a.sh`): files
+  #9, #1, #2, #4, #6. #9 goes first because others reference it.
+  Requires a GH_TOKEN with issue-write permission on
+  `Cyoda-platform/cyoda-go`.
+- **Phase B — cyoda-docs** (`.sandbox/file-issues-phase-b.sh`): files
+  #8, #10, #11. Requires a GH_TOKEN with issue-write permission on
+  `Cyoda-platform/cyoda-docs`. Tokens are per-repo; user must token-
+  swap between phases.
 
-Replace three `awaiting-upstream` banner stubs (`reference/cli.mdx`,
-`reference/configuration.mdx`, `reference/helm.mdx`) with hand-curated
-content scanned from the local cyoda-go repos.
+Both scripts record URLs to `.sandbox/filed-urls.txt` as they go.
+**First attempted filing of #9 returned** `GraphQL: Resource not
+accessible by personal access token (createIssue)` — the default
+session token is read-only on cyoda-go. User exited to re-auth.
+
+**After both phases run:**
+
+1. Read `.sandbox/filed-urls.txt` and append each URL under its
+   issue heading in `2026-04-21-upstream-issues.md` as
+   `**Filed:** <url>`.
+2. Cross-refs inside filed issue bodies use **draft** numbers
+   (e.g. `#9` in #1's body means draft-#9, not a live GitHub
+   reference). Post-filing, run a single pass of
+   `gh issue edit --body-file` on each issue to replace draft-#N
+   refs with the real URL/number, using `.sandbox/filed-urls.txt`
+   as the map. This is only cosmetic — the draft file remains the
+   authoritative cross-ref map.
+3. Commit the URL-annotated draft file to the branch.
+
+### 2. Awaiting-upstream inlining pass — obsoleted
+
+**Status:** This thread was superseded by the new #9 / #11 structure.
+
+Instead of hand-curating `reference/cli.mdx`,
+`reference/configuration.mdx`, `reference/helm.mdx` from local
+cyoda-go sources, the plan is now to reframe those pages as
+navigators once the `cyoda help` surface ships (#9) and cyoda-docs
+imports help markdown from a release asset (#11). Leave the
+`awaiting-upstream` banners in place; retarget them at filed #9
+after Phase A.
+
+(Original plan preserved below for reference — do not execute.)
 
 **Local cyoda-go sources** (per user's auto-memory):
 
@@ -101,7 +135,7 @@ content scanned from the local cyoda-go repos.
 (`cyoda-go-cassandra` is confidential — do not expose its design
 in public cyoda-docs.)
 
-Targets (per PA-D4 review finding):
+Former targets:
 
 - `reference/cli.mdx`: subcommand table with one-line purpose +
   common invocations.
