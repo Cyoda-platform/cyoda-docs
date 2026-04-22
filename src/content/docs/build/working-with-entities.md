@@ -55,12 +55,14 @@ curl http://localhost:8080/api/models/orders/entities/ORD-42 \
   -H "Authorization: Bearer $TOKEN"
 ```
 
-List with a filter — exact syntax in the
-[API reference](/reference/api/#search), but the shape is compact:
+List with a filter — a short equality query returns the matching set:
 
 ```
 GET /api/models/orders/entities?state=submitted&customerId=CUST-7
 ```
+
+For anything beyond a bounded lookup — result caps, pagination,
+predicates, historical reads — see [searching entities](/build/searching-entities/).
 
 ## Update
 
@@ -100,7 +102,8 @@ Cyoda supports two query modes:
 Both accept the same filter grammar over entity fields, metadata, and
 workflow state. Pick immediate by default; switch to background when a
 query would hit the `direct` result cap, would time out, or would hold
-resources you need elsewhere.
+resources you need elsewhere. For predicates, pagination, and worked
+examples, see [searching entities](/build/searching-entities/).
 
 ## Temporal queries
 
@@ -112,8 +115,11 @@ GET /api/models/orders/entities/ORD-42?pointTime=2026-03-01T00:00:00Z
 ```
 
 This is the primary way to answer regulatory and audit questions: *what did
-this customer's balance look like at quarter close?* See the
-[API reference](/reference/api/#temporal) for the full grammar.
+this customer's balance look like at quarter close?* For the same
+parameter applied to searches, see
+[searching entities → historical reads](/build/searching-entities/#historical-reads-with-pointtime);
+for analytical reads expressed as SQL, see
+[analytics with SQL](/build/analytics-with-sql/).
 
 ## From a compute node
 
