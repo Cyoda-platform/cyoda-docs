@@ -30,13 +30,6 @@ export default defineConfig({
 			cssCodeSplit: true,
 			target: 'es2022', // Modern browsers for better tree-shaking
 			rollupOptions: {
-				output: {
-					manualChunks: {
-						'vendor': ['@astrojs/starlight'],
-						'mermaid': ['rehype-mermaid']
-						// Removed api-reference chunk to allow dynamic imports
-					}
-				},
 				treeshake: {
 					preset: 'recommended',
 					moduleSideEffects: false
