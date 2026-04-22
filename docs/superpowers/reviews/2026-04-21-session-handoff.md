@@ -72,7 +72,41 @@ Landed and pushed to PR #66:
 
 ## Open threads (pick up in this order)
 
-### 1. File the drafted GitHub issues — in progress, two-phase
+### 1. File the drafted GitHub issues — DONE (one cleanup deferred)
+
+**Status (2026-04-21, end of day):** All 8 live issues filed.
+
+- Cyoda-go: #9→[#80](https://github.com/Cyoda-platform/cyoda-go/issues/80),
+  #1→[#81](https://github.com/Cyoda-platform/cyoda-go/issues/81),
+  #2→[#82](https://github.com/Cyoda-platform/cyoda-go/issues/82),
+  #4→[#83](https://github.com/Cyoda-platform/cyoda-go/issues/83),
+  #6→[#84](https://github.com/Cyoda-platform/cyoda-go/issues/84).
+- Cyoda-docs: #8→[#67](https://github.com/Cyoda-platform/cyoda-docs/issues/67),
+  #10→[#68](https://github.com/Cyoda-platform/cyoda-docs/issues/68),
+  #11→[#69](https://github.com/Cyoda-platform/cyoda-docs/issues/69).
+
+Draft doc `2026-04-21-upstream-issues.md` annotated with `**Filed:** <url>`
+under each issue heading.
+
+**Deferred cleanup — cyoda-go body edits.** Filed cyoda-go bodies contain
+draft-numbered cross-refs (e.g. `#1`, `#2`, `#9`) which GitHub
+auto-links to unrelated low-numbered cyoda-go issues. Patched bodies
+with real numbers are prepared in
+`.sandbox/patched-bodies/{01,02,09}-*.md`; the cyoda-docs body
+(#69/draft-#11) was already updated via `gh issue edit` in this
+session. The cyoda-go edits need a cyoda-go-scoped token. During the
+next cyoda-go token session, run:
+
+```bash
+gh issue edit 80 --repo Cyoda-platform/cyoda-go --body-file .sandbox/patched-bodies/09-help-surface.md
+gh issue edit 81 --repo Cyoda-platform/cyoda-go --body-file .sandbox/patched-bodies/01-openapi-asset.md
+gh issue edit 82 --repo Cyoda-platform/cyoda-go --body-file .sandbox/patched-bodies/02-grpc-proto-asset.md
+```
+
+(Purely cosmetic — the content is correct; only the hyperlink targets
+of inline `#N` refs are off.)
+
+### 1-legacy (historical) — original two-phase plan
 
 **Status (2026-04-21, later in day):** 8 live issues in
 `2026-04-21-upstream-issues.md`. #5 dropped, #3 and #7 **SUPERSEDED**

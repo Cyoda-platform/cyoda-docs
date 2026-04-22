@@ -31,6 +31,7 @@ Cross-links used in the bodies:
 **Repo:** `Cyoda-platform/cyoda-go`
 **Labels:** `cyoda-docs`, `enhancement`
 **Title:** Publish `openapi.json` as a versioned release asset
+**Filed:** https://github.com/Cyoda-platform/cyoda-go/issues/81
 
 ### Context
 cyoda-docs embeds the REST API reference via an iframe-rendered Scalar /
@@ -61,6 +62,7 @@ docs artefact replacing the current `awaiting-upstream` banners on
 **Repo:** `Cyoda-platform/cyoda-go`
 **Labels:** `cyoda-docs`, `enhancement`
 **Title:** Publish rendered gRPC proto docs as a versioned release asset
+**Filed:** https://github.com/Cyoda-platform/cyoda-go/issues/82
 
 ### Context
 `concepts/apis-and-surfaces.md` names gRPC as a first-class surface and
@@ -105,6 +107,7 @@ retryable-yes/no, suggested operator action.
 **Repo:** `Cyoda-platform/cyoda-go`
 **Labels:** `cyoda-docs`, `documentation`
 **Title:** Trino SQL surface — document dialect scope, push-down, isolation, performance envelope
+**Filed:** https://github.com/Cyoda-platform/cyoda-go/issues/83
 
 ### Context
 cyoda-docs now has a ported Trino reference page at
@@ -207,6 +210,7 @@ explicit and explain why compat classes are not a platform concern.
 **Repo:** `Cyoda-platform/cyoda-go`
 **Labels:** `cyoda-docs`, `documentation`
 **Title:** Confirm delivery semantics for outbox-via-processor so the docs recipe matches runtime behaviour
+**Filed:** https://github.com/Cyoda-platform/cyoda-go/issues/84
 
 ### Context
 The three-persona review (data-engineer deep-dive) found **no non-gRPC,
@@ -265,6 +269,7 @@ preserved inside the `help telemetry` topic tree.
 **Repo:** `Cyoda-platform/cyoda-docs`
 **Labels:** `documentation`, `tooling`
 **Title:** Ship an MCP server for cyoda-docs
+**Filed:** https://github.com/Cyoda-platform/cyoda-docs/issues/67
 
 ### Context
 An MCP server over cyoda-docs would let IDE/LLM tooling pull authoritative
@@ -294,6 +299,7 @@ Ship as a subdirectory in cyoda-docs or a sibling repo.
 **Labels:** `cyoda-docs`, `enhancement`, `developer-experience`
 **Title:** Ship a topic-structured, version-accurate `cyoda help` surface
 as the canonical reference for every build, run, and reference concern
+**Filed:** https://github.com/Cyoda-platform/cyoda-go/issues/80
 
 ### Summary
 
@@ -574,6 +580,7 @@ before all topic content is authored; stub topics with a
 **Repo:** `Cyoda-platform/cyoda-docs`
 **Labels:** `documentation`, `follow-up`
 **Title:** Reframe cyoda-docs pages around the `cyoda help` surface and import from release assets
+**Filed:** https://github.com/Cyoda-platform/cyoda-docs/issues/69
 
 ### Context
 Once cyoda-go ships the topic-structured `cyoda help` surface (upstream
@@ -625,6 +632,7 @@ visual skin on top.
 **Repo:** `Cyoda-platform/cyoda-docs`
 **Labels:** `documentation`, `follow-up`
 **Title:** Document REST search grammar as a dedicated Build page
+**Filed:** https://github.com/Cyoda-platform/cyoda-docs/issues/68
 
 ### Context
 `build/working-with-entities.md` gestures at search with a link to
