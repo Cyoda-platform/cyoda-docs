@@ -246,15 +246,19 @@ reviews), `sections/*.md` (5 section summaries),
 **Spec:** `docs/superpowers/specs/2026-04-22-cyoda-docs-correctness-review-design.md`
 **Plan:** `docs/superpowers/plans/2026-04-22-cyoda-docs-correctness-review.md`
 
-**Headline site totals:** 23 Fix now, 5 Reframe post-#80, 6 Delete
-post-#80, 32 clarity suggestions across 29 in-scope pages.
+**Headline site totals:** 20 Fix now, 5 Reframe post-#80, 1 Delete
+post-#80, 36 clarity suggestions across 29 in-scope pages. (Paul's
+post-review note: Trino is on the roadmap and will become available
+shortly — Trino-bearing pages now take an "upcoming / roadmap"
+clarity banner rather than correctness deletions.)
 
 **Site-wide sweeps surfaced** (see cross-cutting.md for detail):
 
-1. **Scope contamination** — Cloud-only features (Trino,
-   time/message workflow triggers) presented as OSS on six pages.
-   Largest signal, confirmed by three independent section agents +
-   ledger.
+1. **Trino upcoming banner** — one roadmap banner applied to four
+   Trino-bearing pages (concepts/apis-and-surfaces,
+   build/analytics-with-sql, build/testing-with-digital-twins,
+   reference/trino). Correctness of specifics deferred until Trino
+   ships.
 2. **`/api/models/...` endpoint path drift** on three pages;
    canonical is `/api/entity/...` and `/api/search/...`.
 3. **Phantom `cyoda serve`** on four pages; binary starts with
@@ -262,6 +266,12 @@ post-#80, 32 clarity suggestions across 29 in-scope pages.
 4. **`CYODA_STORAGE` → `CYODA_STORAGE_BACKEND`** on three pages
    (silent misconfiguration: wrong var ignored, app falls back to
    in-memory).
+
+**Plus one Delete post-#80:** time/message-based workflow trigger
+paragraph in `concepts/workflows-and-events.md` — the workflow
+engine runs only manual + automatic-cascade paths today; no timer,
+no message bus. Confirm with product whether these are roadmap
+before deletion.
 
 **Next:**
 

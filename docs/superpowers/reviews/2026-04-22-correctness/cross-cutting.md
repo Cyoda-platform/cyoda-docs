@@ -8,25 +8,31 @@ The Wave 2 section subagents independently surfaced four patterns that span the 
 
 ---
 
-## 1. Scope contamination — Cloud-only features presented as OSS
+## 1. Trino content is for an upcoming (roadmap) feature — add an "upcoming" banner
 
-The largest cross-cutting signal. Three section agents independently flagged the same category of mistake: content describing features that live in Cyoda Cloud / the confidential Cassandra tier has been written into OSS-path pages without a scope boundary. The ledger (§"Analytics / Trino") verified these features are absent from cyoda-go at the pinned commit.
+Trino is on the roadmap and is expected to become available shortly. At the pinned cyoda-go commit, `grep -ril "trino" ~/go-projects/cyoda-light/cyoda-go` returns zero matches, so the documented specifics (JDBC URL pattern, catalog layout, `AS OF` spelling, projection rules) cannot be verified today. Correctness of those specifics is **out of scope for this review** and will be re-checked once Trino ships. The actionable signal today is **clarity**: readers must know the feature is forthcoming and not callable at this release.
 
 **Pages affected:**
 - `concepts/apis-and-surfaces.md` — "three distinct API surfaces" framing with ~18-line Trino section
-- `build/analytics-with-sql.md` — entire page describes Trino/JDBC/SQL analytics as a Cyoda feature
-- `reference/trino.mdx` — Trino surface spec with Cloud-specific JDBC hostnames (`*.eu.cyoda.net`)
-- `build/testing-with-digital-twins.md` — "same API contracts (REST, gRPC, Trino)"
-- `concepts/workflows-and-events.md` — time-based and message-based workflow triggers (no timer or message bus in OSS)
-- `concepts/design-principles.mdx` — "clock tick" as event-trigger example (parallel error to above)
+- `build/analytics-with-sql.md` — full page describes Trino/JDBC/SQL analytics
+- `reference/trino.mdx` — Trino surface spec with JDBC hostnames and type-mapping detail
+- `build/testing-with-digital-twins.md` — inline "same API contracts (REST, gRPC, Trino)"
 
-**Ground truth:**
-- Trino: `grep -ril "trino" ~/go-projects/cyoda-light/cyoda-go` → zero matches.
-- Workflow triggers: `internal/domain/workflow/engine.go` implements only manual + automatic-cascade paths; no timer scheduler, no message bus.
+**Remediation bucket (site-wide): Clarity — add an "upcoming / roadmap" banner.** One banner template, applied consistently at the top of each Trino-bearing page or section:
 
-**Remediation bucket (site-wide):** Mixed. Heaviest items are **Delete post-#80** (analytics-with-sql, trino.mdx). Narrative Trino mentions in concepts/apis-and-surfaces and build/testing-with-digital-twins are **Fix now** (trim to "two surfaces" or add Cloud-only scope caveat). Time/message trigger claims are **Delete post-#80**.
+> *Trino SQL is on the roadmap and not yet available in cyoda-go at this release. This content documents the planned surface; names and shapes may change before release.*
 
-**Root-cause hypothesis:** these pages appear to have been written against Cyoda Cloud's feature set and copied to the OSS-path docs without re-scoping. Recommend establishing a rule: any feature described in `src/content/docs/{concepts,build,run,reference}/**` without an explicit Cloud-only banner must be verifiable against OSS cyoda-go.
+Drop the banner when Trino ships and re-review the specifics against the implementation. The ledger's Analytics/Trino section has been revised to note the roadmap status.
+
+## 1b. Workflow-trigger copy that doesn't match the engine
+
+Separate from Trino: `concepts/workflows-and-events.md` and `concepts/design-principles.mdx` describe time-based (scheduler) and message-based (ingest event / bus) workflow triggers. These are not implemented in the current workflow engine — `internal/domain/workflow/engine.go` runs only manual + automatic-cascade paths; no timer, no message bus. Unlike Trino, there is no known roadmap signal here, so the finding stands.
+
+**Pages affected:**
+- `concepts/workflows-and-events.md` — time-based and message-based trigger descriptions
+- `concepts/design-principles.mdx` — "clock tick" as event-trigger example
+
+**Remediation bucket:** **Delete post-#80** for the explicit trigger types in workflows-and-events (or reframe as forthcoming if the roadmap actually includes them — confirm with product before deletion). The design-principles "clock tick" example is a clarity-level tweak (replace with an implemented-today example).
 
 ---
 
@@ -118,14 +124,14 @@ Clarity suggestions that two or more section agents independently proposed, sugg
 | Section | Fix now | Reframe post-#80 | Delete post-#80 | Clarity |
 |---------|---------|------------------|-----------------|---------|
 | getting-started + root | 4 | 1 | 0 | 3 |
-| concepts | 1 | 0 | 2 | 4 |
-| build | 11 | 2 | 3 | 10 |
+| concepts | 0 | 0 | 1 | 5 |
+| build | 10 | 2 | 0 | 12 |
 | run | 3 | 1 | 0 | 8 |
-| reference | 4 | 1 | 1 | 7 |
-| **Total** | **23** | **5** | **6** | **32** |
+| reference | 3 | 1 | 0 | 8 |
+| **Total** | **20** | **5** | **1** | **36** |
 
 **Strategy implication:**
-- The 23 Fix-now items land in a single remediation PR cut off `feature/cyoda-go-init`.
-- The 5 Reframe + 6 Delete post-#80 items are the pre-enumerated worklist for the post-#80 reframe PR (see cyoda-docs #69).
-- The 32 clarity suggestions fold into the Fix-now PR with a lighter review bar.
-- The site-wide sweeps (sections 2–4 above) are the most efficient fix vector — one grep-and-replace addresses issues across many pages.
+- The 20 Fix-now items land in a single remediation PR cut off `feature/cyoda-go-init`. The four site-wide sweeps (§2–4 above, plus the Trino-banner sweep from §1) are the most efficient fix vector — one grep-and-replace per sweep addresses issues across many pages.
+- The 5 Reframe + 1 Delete post-#80 items are the pre-enumerated worklist for the post-#80 reframe PR (see cyoda-docs #69).
+- The 36 clarity suggestions fold into the Fix-now PR with a lighter review bar.
+- Trino correctness will be re-reviewed once the feature ships; the "upcoming" banners let the existing content stay in place without misleading readers in the interim.

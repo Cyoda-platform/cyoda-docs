@@ -4,7 +4,7 @@
 **cyoda-go ref:** 6442de4696854ee8aa3b6d2ea9345b9c96eb6aad
 
 ## Posture
-The reference section is a mix of awaiting-upstream placeholders (CLI, Configuration, Helm) and fuller specifications (Trino, Entity Model Export, Schemas). The awaiting-upstream placeholders are appropriate and correctly signal the pre-#80 holding pattern. However: (a) the Trino page describes a Cloud-only feature as if general Cyoda, (b) the Configuration page claims TOML/YAML and a `--config` flag that do not exist, (c) the CLI page references a `cyoda serve` subcommand that does not exist. Fix-now count is moderate but the three items are material.
+The reference section is a mix of awaiting-upstream placeholders (CLI, Configuration, Helm) and fuller specifications (Trino, Entity Model Export, Schemas). The awaiting-upstream placeholders are appropriate and correctly signal the pre-#80 holding pattern. Two concrete fix-nows: (a) the Configuration page claims TOML/YAML and a `--config` flag that do not exist; (b) the CLI page references a `cyoda serve` subcommand that does not exist. The Trino page is a roadmap feature and needs an explicit "upcoming" banner rather than correctness edits against unshipped specifics.
 
 ## Per-page bucket counts
 
@@ -15,14 +15,14 @@ The reference section is a mix of awaiting-upstream placeholders (CLI, Configura
 | reference__cli | 1 | 0 | 0 | 1 |
 | reference__configuration | 2 | 0 | 0 | 2 |
 | reference__helm | 0 | 1 | 0 | 0 |
-| reference__trino | 1 | 0 | 1 | 1 |
+| reference__trino | 0 | 0 | 0 | 2 |
 | reference__entity-model-export | 0 | 0 | 0 | 3 |
 | reference__schemas | 0 | 0 | 0 | 0 |
-| **Total** | **4** | **1** | **1** | **7** |
+| **Total** | **3** | **1** | **0** | **8** |
 
 ## Cross-section issues noticed
 
-1. **Scope boundary violation (Trino).** The Trino page describes a feature that does not exist in OSS cyoda-go. Third confirmation of Cloud-docs bleed into OSS-path pages (after concepts/apis-and-surfaces and build/analytics-with-sql).
+1. **Trino as roadmap feature.** The Trino page documents a surface that is on the roadmap and not yet callable at the pinned cyoda-go commit. Site-wide remedy: an "upcoming / roadmap" banner on this page and on its sibling Trino-bearing pages (concepts/apis-and-surfaces, build/analytics-with-sql, build/testing-with-digital-twins). Correctness of the documented specifics will be reviewed once Trino ships.
 
 2. **Configuration format misunderstanding.** The Configuration page claims TOML/YAML support and `--config` flag override; neither exists. `.env` is the only file format cyoda-go loads. This is a category-1 fix regardless of #80.
 

@@ -249,11 +249,11 @@ Envelope: CloudEvent (proto/cloudevents/cloudevents.proto) with attributes map a
 
 ## Analytics / Trino
 
-**Status: not implemented in OSS cyoda-go.**
+**Status at pinned commit:** not yet present in OSS cyoda-go. Verified absent: `grep -ril "trino"` across `~/go-projects/cyoda-light/cyoda-go` (`.go`, `.yaml`, `.md`) returns zero matches; no `trino/` or `analytics/` directories exist in the OSS tree. No JDBC surface, no Trino catalog, no `AS OF` SQL equivalent ships at this SHA.
 
-Verified absent: `grep -ril "trino"` across `~/go-projects/cyoda-light/cyoda-go` (`.go`, `.yaml`, `.md`) returns zero matches; no `trino/` or `analytics/` directories exist in the OSS tree. No JDBC surface, no Trino catalog, no `AS OF` SQL equivalent ships in OSS as of the pinned SHA.
+**Roadmap:** Trino is on the roadmap and is expected to become available shortly. Docs correctness against the implemented shape (endpoint names, catalog layout, `AS OF` spelling, JDBC URL pattern) cannot be verified at this SHA and is out of scope for this ledger.
 
-**Implication for docs:** Any cyoda-docs page claiming a Trino JDBC URL, Trino catalog layout, or SQL `AS OF` equivalent as a feature of cyoda-go OSS is **ungrounded**. Trino integration is a Cassandra-tier surface (cyoda-go-cassandra, confidential) and therefore belongs to Cyoda Cloud documentation, not OSS-path cyoda-docs pages.
+**Implication for docs:** Trino-related pages should carry an "upcoming" / roadmap banner making clear that the feature is forthcoming and not yet callable at the pinned cyoda-go commit. Ledger will be revised once Trino ships and the OSS surface is observable.
 
 ## Error Model
 
