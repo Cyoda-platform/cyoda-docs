@@ -37,8 +37,20 @@
 .sl-markdown-content .expressive-code {
   --ec-frm-trmTtbBg: var(--cyoda-aqua-light);
   --ec-frm-edTabBarBg: var(--cyoda-aqua-light);
-  --ec-frm-trmTtbBrdBtmCol: var(--cyoda-aqua-medium);
+  --ec-frm-trmTtbBrdBtmCol: transparent;
   --ec-brdCol: var(--cyoda-aqua-medium);
+}
+
+/* When expressive-code renders a chromed frame (terminal three-dots
+ * header, or an editor tab bar), drop our own pre border / border-
+ * radius / border-left so the panel reads as one unified frame
+ * rather than frame-within-frame. The outer EC frame provides the
+ * rounded border; inner pre sits flush. */
+.sl-markdown-content .expressive-code .frame.is-terminal pre,
+.sl-markdown-content .expressive-code .frame.has-title pre {
+  border: none;
+  border-left: none;
+  border-radius: 0;
 }
 
 /* Starlight asides (note / tip / caution / danger) — desaturated
