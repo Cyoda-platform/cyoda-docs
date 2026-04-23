@@ -30,7 +30,7 @@ Post an entity to its model. The first time you post, Cyoda discovers the
 schema from what you send:
 
 ```bash
-curl -X POST http://localhost:8080/api/models/orders/entities \
+curl -X POST http://localhost:8080/api/entity/JSON/orders/1 \
   -H 'Content-Type: application/json' \
   -H "Authorization: Bearer $TOKEN" \
   -d '{
@@ -44,32 +44,40 @@ curl -X POST http://localhost:8080/api/models/orders/entities \
   }'
 ```
 
-The response carries the entity's id, current state, and the revision number.
+The path is `/api/entity/{format}/{entityName}/{modelVersion}` — here `JSON`,
+`orders`, and version `1`. The response carries an array whose first element
+contains `entityIds[0]`, the **system-assigned UUID** of the new entity, plus
+its current state and revision number. Capture the UUID — downstream reads,
+updates, and transitions address the entity by that UUID, not by the business
+key `orderId`.
 
 ## Read
 
-Fetch the current revision by id:
+Fetch the current revision by id. The `{entityId}` in these URLs is the UUID
+returned in `entityIds[0]` from the create response, not a business key like
+`orderId`:
 
 ```bash
-curl http://localhost:8080/api/models/orders/entities/ORD-42 \
+curl http://localhost:8080/api/entity/${ENTITY_ID} \
   -H "Authorization: Bearer $TOKEN"
 ```
 
-List with a filter — a short equality query returns the matching set:
+List every entity in a model with `GET /api/entity/{entityName}/{modelVersion}`:
 
 ```
-GET /api/models/orders/entities?state=submitted&customerId=CUST-7
+GET /api/entity/orders/1
 ```
 
-For anything beyond a bounded lookup — result caps, pagination,
-predicates, historical reads — see [searching entities](/build/searching-entities/).
+For filtered reads — predicates, pagination, result caps, historical reads —
+see [searching entities](/build/searching-entities/). The list endpoint does
+not accept ad-hoc field filters; those belong to search.
 
 ## Update
 
 Direct field updates go through `PATCH`:
 
 ```
-PATCH /api/models/orders/entities/ORD-42
+PATCH /api/entity/JSON/{entityId}
 ```
 
 However, **mutations that move the entity between lifecycle states should go
@@ -77,7 +85,7 @@ through a transition**, not a patch. Invoking the `submit` transition records
 it in the audit trail and runs any attached processors:
 
 ```
-POST /api/models/orders/entities/ORD-42/transitions/submit
+POST /api/entity/JSON/{entityId}/submit
 ```
 
 See [Build → workflows and processors](/build/workflows-and-processors/) for
@@ -111,7 +119,7 @@ Every entity's history is queryable. Add a `pointInTime` parameter to any read
 or search request to retrieve the world as of that timestamp:
 
 ```
-GET /api/models/orders/entities/ORD-42?pointInTime=2026-03-01T00:00:00Z
+GET /api/entity/{entityId}?pointInTime=2026-03-01T00:00:00Z
 ```
 
 This is the primary way to answer regulatory and audit questions: *what did

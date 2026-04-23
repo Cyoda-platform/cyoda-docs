@@ -47,10 +47,17 @@ Define a minimal model and push an entity. Cyoda discovers the schema from the
 sample you send, so you do not need to declare it up front:
 
 ```bash
-curl -X POST http://localhost:8080/api/models/orders/entities \
+ENTITY_ID=$(curl -s -X POST http://localhost:8080/api/entity/JSON/orders/1 \
   -H 'Content-Type: application/json' \
-  -d '{ "orderId": "ORD-1", "amount": 42.00, "currency": "EUR" }'
+  -d '{ "orderId": "ORD-1", "amount": 42.00, "currency": "EUR" }' \
+  | jq -r '.[0].entityIds[0]')
+echo "$ENTITY_ID"
 ```
+
+The create response is an array; `entityIds[0]` on the first element is the
+**system-assigned UUID** of the new entity. Subsequent reads and transitions
+address the entity by that UUID (`${ENTITY_ID}` here), not by the business
+key `orderId`.
 
 <Aside type="note" title="No token? That's expected locally.">
 Running `cyoda` (no subcommand) defaults to **mock auth** (`CYODA_IAM_MODE=mock`): every
@@ -92,10 +99,12 @@ For the full workflow schema — processors, criteria, automatic
 transitions, nested conditions — see
 [Build → workflows and processors](/build/workflows-and-processors/).
 
-Invoke the transition on your entity:
+Invoke the transition on your entity. `{entityId}` (here `${ENTITY_ID}`) is
+the system-assigned UUID captured from the create response, not the business
+key `orderId`:
 
 ```bash
-curl -X POST http://localhost:8080/api/models/orders/entities/ORD-1/transitions/submit
+curl -X POST http://localhost:8080/api/entity/JSON/${ENTITY_ID}/submit
 ```
 
 ## Read state back
@@ -103,7 +112,7 @@ curl -X POST http://localhost:8080/api/models/orders/entities/ORD-1/transitions/
 Fetch the current state and the transition log:
 
 ```bash
-curl http://localhost:8080/api/models/orders/entities/ORD-1
+curl http://localhost:8080/api/entity/${ENTITY_ID}
 ```
 
 The response shows the entity in its new `submitted` state plus a record of
