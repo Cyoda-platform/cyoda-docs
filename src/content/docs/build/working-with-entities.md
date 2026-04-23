@@ -82,10 +82,15 @@ PATCH /api/entity/JSON/{entityId}
 
 However, **mutations that move the entity between lifecycle states should go
 through a transition**, not a patch. Invoking the `submit` transition records
-it in the audit trail and runs any attached processors:
+it in the audit trail and runs any attached processors. The transition is a
+`PUT` whose body carries the new entity JSON (the platform stores the updated
+entity and records the named transition in one call):
 
-```
-POST /api/entity/JSON/{entityId}/submit
+```bash
+curl -X PUT http://localhost:8080/api/entity/JSON/${ENTITY_ID}/submit \
+  -H 'Content-Type: application/json' \
+  -H "Authorization: Bearer $TOKEN" \
+  -d '{ "orderId": "ORD-42", "status": "submitted" }'
 ```
 
 See [Build → workflows and processors](/build/workflows-and-processors/) for
@@ -95,20 +100,20 @@ how to declare transitions.
 
 Cyoda supports two query modes:
 
-- **Immediate** (API term: `direct`) — synchronous, returns right
-  away. Good for UI lookups and short operations. Result size is
-  capped, so `direct` is best for queries that produce a bounded,
-  small result set.
-- **Background** (API term: `async`) — queued as a job, returns a
-  handle you can poll. Result size is unbounded; results are paged.
-  Good for large result sets, periodic reports, and exports. On the
-  Cassandra-backed tier (Cyoda Cloud, or a licensed Enterprise
-  install), `async` search runs distributed across the cluster and
-  scales horizontally: query throughput for a fixed shape grows
-  roughly linearly with the number of nodes.
+- **Direct** (synchronous, capped result size) — API term `direct`.
+  Returns right away. Good for UI lookups and short operations.
+  Result size is capped, so `direct` is best for queries that produce
+  a bounded, small result set.
+- **Async** (background, unbounded, paged) — API term `async`.
+  Queued as a job, returns a handle you can poll. Result size is
+  unbounded; results are paged. Good for large result sets, periodic
+  reports, and exports. On the Cassandra-backed tier (Cyoda Cloud, or
+  a licensed Enterprise install), `async` search runs distributed
+  across the cluster and scales horizontally: query throughput for a
+  fixed shape grows roughly linearly with the number of nodes.
 
 Both accept the same filter grammar over entity fields, metadata, and
-workflow state. Pick immediate by default; switch to background when a
+workflow state. Pick `direct` by default; switch to `async` when a
 query would hit the `direct` result cap, would time out, or would hold
 resources you need elsewhere. For predicates, pagination, and worked
 examples, see [searching entities](/build/searching-entities/).

@@ -124,8 +124,11 @@ against each release, see
 ## Historical reads with `pointInTime`
 
 Every search accepts a `pointInTime` parameter to run against the world
-as it existed at a given timestamp. The result is the set of entities
-that would have matched, using the revision active at that time.
+as it existed at a given timestamp. Each entity maintains a history of
+revisions; point-in-time queries return results using the entity state
+that was current at the specified timestamp. The result is the set of
+entities that would have matched, using the revision active at that
+time.
 
 ```bash
 curl -X POST http://localhost:8080/api/search/direct/orders/1 \
@@ -145,10 +148,11 @@ form, see [`point_time` in analytics](/build/analytics-with-sql/).
 
 ## Paging and sort (async)
 
-- `pageSize` and `pageNumber` are query parameters on the results
-  endpoint; `pageNumber` is zero-indexed.
-- Sort keys go in the submission body; the reference lists the
-  permitted keys per model.
+- `pageSize` and `pageNumber` are query parameters on
+  `/search/async/{jobId}/results`; they apply at result-fetch time,
+  not at job submission. `pageNumber` is zero-indexed.
+- Sort is not documented on the REST async surface at this release;
+  results are returned in insertion order.
 - A completed `jobId` is stable for its retention window — page
   reads are idempotent.
 
