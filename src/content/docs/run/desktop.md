@@ -54,7 +54,7 @@ cyoda-go reads configuration from environment variables, a config file, or
 CLI flags. The full list of options lives at
 [Reference → Configuration](/reference/configuration/); for everyday use
 the defaults are fine, and you only set a handful of variables
-(`CYODA_STORAGE`, listen ports, JWT keys) to adapt to your environment.
+(`CYODA_STORAGE_BACKEND`, listen ports, JWT keys) to adapt to your environment.
 
 For secrets, cyoda-go supports `*_FILE` suffixes on any credential
 environment variable so you can mount them from a secrets store rather than

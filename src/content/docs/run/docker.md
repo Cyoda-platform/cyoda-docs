@@ -38,7 +38,7 @@ cyoda-go release and we link whichever is current.
 
 ## PostgreSQL backend
 
-Point cyoda-go at a PostgreSQL instance by setting `CYODA_STORAGE=postgres`
+Point cyoda-go at a PostgreSQL instance by setting `CYODA_STORAGE_BACKEND=postgres`
 and the usual connection variables (or `*_FILE` forms for secrets). The
 Docker compose example wires this up end-to-end; for production you will
 run PostgreSQL separately and pass only the DSN.
