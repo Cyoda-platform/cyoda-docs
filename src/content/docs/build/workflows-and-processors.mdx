@@ -41,7 +41,7 @@ You can find the workflow schema in the [API reference](/reference/api/). See th
 
 ```json
 {
-  "version": "1.0",
+  "version": "1",
   "name": "Workflow Name",
   "desc": "Workflow description",
   "initialState": "StateName",
@@ -63,7 +63,7 @@ You can find the workflow schema in the [API reference](/reference/api/). See th
 
 ### Multiple Workflows per Model
 
-An entity model can have multiple workflows, each with its own `criterion` at the workflow level. When an entity is created, the platform evaluates each active workflow's criterion to select the applicable workflow. This allows different processing paths for different categories of entities within the same model.
+An entity model can have multiple workflows, each with its own `criterion` at the workflow level. When an entity is created, the platform evaluates each active workflow's criterion to select the applicable workflow. The platform evaluates active workflows in the order they are defined and uses the first whose criterion matches (or the first with no criterion, which matches unconditionally). This allows different processing paths for different categories of entities within the same model.
 
 ## Import and Export
 
@@ -123,7 +123,7 @@ Transitions define allowed movements between states, optionally gated by conditi
 
 ### Manual vs Automated Transitions
 
-Transitions may be either **manual** or **automated**, and are guarded by criteria that determine their eligibility. When an entity enters a new state, the first eligible automated transition is executed immediately within the same transaction. This continues recursively until no further **automated** transitions are applicable, resulting in a stable state. Each transition may trigger one or more attached processes, which can run synchronously or asynchronously, either within the current transaction or in a separate one. This forms the foundation for event flow automation, where processors may create or mutate entities in response, allowing a single transition to initiate a cascade of events and function executions across the system.
+Transitions may be either **manual** or **automated**, and are guarded by criteria that determine their eligibility. When an entity enters a new state, the first eligible automated transition is executed immediately within the same transaction. This continues recursively until no further **automated** transitions are applicable, resulting in a stable state. Each transition may trigger one or more attached processes, which can run synchronously or asynchronously, either within the current transaction or in a separate one. This forms the foundation for event flow automation, where processors may create or mutate entities in response, allowing a single transition to initiate a cascade of events and function executions across the system. `CYODA_MAX_STATE_VISITS` configures the per-state visit limit within a single cascade (default 10). A separate hard-coded safety cap of 100 steps limits total cascade depth across all states, preventing runaway automatic-transition chains.
 
 ## Criteria
 
@@ -314,6 +314,8 @@ Externalized processors delegate execution to a calculation node via gRPC. This 
 - `ASYNC_SAME_TX`: Deferred within the current transaction. Commits or rolls back atomically with the triggering transition.
 - `ASYNC_NEW_TX`: Deferred execution in a separate, independent transaction. Default mode.
 
+Processors should be idempotent; failed ASYNC_NEW_TX processors may be retried.
+
 Synchronous executions run immediately and block the current processing thread on the same node, making them local and non-distributed. In contrast, asynchronous executions are scheduled for deferred processing and can be handled by any node in the cluster, enabling horizontal scalability and workload distribution, albeit with possibly somewhat higher latency.
 
 ### Scheduled Transition Processors
@@ -365,7 +367,7 @@ The following section walks through the configuration step by step.
 
 ```json
 {
-  "version": "1.0",
+  "version": "1",
   "name": "Payment Request Workflow",
   "desc": "Payment request processing workflow with validation, approval, and notification states",
   "initialState": "INVALID",
@@ -379,7 +381,7 @@ Start by defining the overall structure of states and transitions.
 
 ```json
 {
-  "version": "1.0",
+  "version": "1",
   "name": "Payment Request Workflow",
   "desc": "Payment request processing workflow with validation, approval, and notification states",
   "initialState": "INVALID",
@@ -464,7 +466,7 @@ We add criteria to the `VALIDATE` and `MATCH` transitions:
 
 ```json
 {
-  "version": "1.0",
+  "version": "1",
   "name": "Payment Request Workflow",
   "desc": "Payment request processing workflow with validation, approval, and notification states",
   "initialState": "INVALID",
@@ -567,7 +569,7 @@ We add two processors to the `APPROVE` transition in the `SUBMITTED` state, resp
 
 ```json
 {
-  "version": "1.0",
+  "version": "1",
   "name": "Payment Request Workflow",
   "desc": "Payment request processing workflow with validation, approval, and notification states",
   "initialState": "INVALID",
