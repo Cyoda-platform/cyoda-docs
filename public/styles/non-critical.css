@@ -125,39 +125,41 @@
 
 /* Links - Non-critical
  *
- * :not(.cyoda-btn) excludes button-styled anchors so their own
- * border declarations aren't clobbered on the bottom edge.
+ * Exclusions:
+ *   :not(.cyoda-btn)       — button-styled anchors keep their own border
+ *   :not(.sl-anchor-link)  — Starlight heading-anchor chain icons have an
+ *                            absolutely-positioned ::after used as a click-
+ *                            target overlay; we mustn't stretch a glyph
+ *                            across it.
  *
- * [href] bumps specificity to 0,2,1 so we win against Starlight's
- * own `.sl-markdown-content a:not(:where(.not-content *))` rule
- * (0,1,1) that otherwise paints links in the generic body-text
- * accent colour, making them indistinguishable from prose.
+ * Specificity: `[href]` bumps the selector to 0,3,1 so we win against
+ * Starlight's own `.sl-markdown-content a:not(:where(.not-content *))`
+ * (0,1,1, layered) which otherwise paints links in the generic body
+ * accent colour.
  *
- * Default state shows a purple underline (not transparent) so the
- * link affordance is visible without hover. Hover swaps to aqua.
+ * Default state: darkened teal colour (hsl(178 40% 30%) ≈ 5.5:1 on
+ * white — passes WCAG AA 4.5:1 for body text), no underline. Hover
+ * reveals a matching underline via `border-bottom-color`.
+ *
+ * Trailing-arrow affordance is OPT-IN via the `cta` class — keep it
+ * sparing. Inline body-text references shouldn't sprout arrows mid-
+ * sentence; arrows are for links that genuinely read as "follow me
+ * somewhere" (read-more callouts, section-level links, external CTAs).
  */
 .sl-markdown-content a[href]:not(.cyoda-btn):not(.sl-anchor-link) {
-  color: var(--cyoda-aqua);
+  color: hsl(178 40% 30%);
   text-decoration: none;
   border-bottom: 1px solid transparent;
   transition: all 0.2s ease;
 }
 
-/* Affordance: trailing arrow signals "goes somewhere" without an
- * underline. Non-breaking space keeps the arrow attached to the
- * last word of the link when wrapping.
- *
- * `:not(.sl-anchor-link)` excludes Starlight's heading anchor icons:
- * they have their own absolutely-positioned `::after` used as an
- * invisible click-target overlay, and overriding its `content`
- * would stretch the arrow across the heading area.
- */
-.sl-markdown-content a[href]:not(.cyoda-btn):not(.sl-anchor-link)::after {
+.sl-markdown-content a[href]:not(.cyoda-btn):not(.sl-anchor-link).cta::after {
+  /* Non-breaking space keeps the arrow glued to the last word when wrapping */
   content: "\00a0→";
 }
 
 .sl-markdown-content a[href]:not(.cyoda-btn):not(.sl-anchor-link):hover {
-  border-bottom-color: var(--cyoda-aqua);
+  border-bottom-color: hsl(178 40% 30%);
 }
 
 /* Button and interactive elements - Non-critical */
