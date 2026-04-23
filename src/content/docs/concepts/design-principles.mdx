@@ -50,7 +50,7 @@ logs, and schema-lineage queries are all native operations.
 
 ## Events drive the machine
 
-Events — "file uploaded", "payment received", "clock tick" — trigger transitions.
+Events — "file uploaded", "payment received", "a manual transition issued by an operator" — trigger transitions.
 Transitions invoke processors. Processors can be synchronous or asynchronous, and
 can run inside or alongside the transition's transaction. The platform keeps the
 whole chain observable and replayable.
