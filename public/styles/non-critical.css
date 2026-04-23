@@ -123,15 +123,19 @@
   color: var(--cyoda-aqua);
 }
 
-/* Links - Non-critical */
-.sl-markdown-content a {
+/* Links - Non-critical
+ *
+ * :not(.cyoda-btn) excludes button-styled anchors so their own
+ * border declarations aren't clobbered on the bottom edge.
+ */
+.sl-markdown-content a:not(.cyoda-btn) {
   color: var(--cyoda-purple);
   text-decoration: none;
   border-bottom: 1px solid transparent;
   transition: all 0.2s ease;
 }
 
-.sl-markdown-content a:hover {
+.sl-markdown-content a:not(.cyoda-btn):hover {
   color: var(--cyoda-aqua);
   border-bottom-color: var(--cyoda-aqua);
 }
