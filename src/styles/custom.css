@@ -94,6 +94,23 @@
   background-color: hsl(0 55% 55% / 0.08);
 }
 
+/* Landing-page hero image — fills the content column width with the
+ * natural aspect preserved, gets a subtle rounded corner so it sits
+ * comfortably between the page title and the hero panel.
+ *
+ * Pair with `class="landing-hero"` on an Astro <Image /> in the
+ * landing MDX (src/content/docs/index.mdx). No explicit width/height
+ * on the Image tag — Astro reads natural dimensions from the import
+ * and produces optimised variants.
+ */
+.sl-markdown-content img.landing-hero {
+  max-width: 100%;
+  height: auto;
+  min-height: 0;
+  margin-block: 1.25rem 1.5rem;
+  border-radius: 0.5rem;
+}
+
 /* UI-screenshot images — cap at 600px wide, natural aspect preserved.
  * Pair with `class="screenshot"` on an Astro <Image /> tag in MDX.
  * Prevents life-size banner rendering of app screenshots when the
