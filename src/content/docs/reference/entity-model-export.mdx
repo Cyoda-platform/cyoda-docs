@@ -111,6 +111,11 @@ Array fields within an object node have keys ending in `[*]`:
 }
 ```
 
+The `(TYPE x WIDTH)` form is an array descriptor, where `TYPE` is the
+element type and `WIDTH` is the array length; e.g., `(INT x 4)` is a
+four-element integer array. See [Array type descriptors](#array-type-descriptors)
+for the full syntax.
+
 #### b) Structural fields — keys starting with `#`
 
 Structural fields are metadata markers prefixed with `#`. They indicate
@@ -136,6 +141,12 @@ Fields are sorted alphabetically within the object (data fields first,
 then structural fields, both sorted by key).
 
 ### 2. Array node (detached array)
+
+Arrays of arrays (multidimensional arrays beyond the first dimension)
+create detached array nodes — each inner array becomes its own node in
+the export tree, keyed by the path to that inner array (e.g.
+`$.matrix[*]`). Likewise, arrays of objects create a separate node for
+the element shape (see Examples 1 and 3).
 
 When a node path points to a pure array (no object fields at this
 level), the value is the array's **type descriptor** directly — either a
@@ -338,8 +349,7 @@ notation:
 
 Plain nested objects (non-array) are **inlined** into the parent node
 using dot-path notation (e.g., `.address.city`). They do not produce
-separate node entries or `#.fieldName` structural markers. Only arrays
-of objects create separate node entries (see Examples 1 and 3).
+separate node entries or `#.fieldName` structural markers.
 
 ### Example 3: Multi-dimensional array
 
@@ -599,9 +609,12 @@ arrays of integers.
    SIMPLE_VIEW always reflects the cumulative model.
 
 4. **Polymorphic types** use bracket notation `[TYPE1, TYPE2]` within a
-   single string. Types within the brackets are sorted by the internal
-   `ComparableDataType` ordering (roughly: more specific types first,
-   `STRING` last).
+   single string. Types within the brackets are sorted by the
+   `DataType` enum ordering defined in cyoda-go (see
+   `internal/domain/model/schema/types.go` for the authoritative rule):
+   numeric types first (integer families, then decimal families), then
+   text types (`STRING`, `CHARACTER`), then temporal, identifier,
+   binary, boolean, and `NULL` last.
 
 5. **UniTypeArray vs MultiTypeArray:** If all array elements have the
    same type, you get `(TYPE x N)`. If different positions have

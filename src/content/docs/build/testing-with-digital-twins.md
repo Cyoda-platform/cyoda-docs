@@ -5,6 +5,11 @@ sidebar:
   order: 50
 ---
 
+In Cyoda, a "digital twin" means the same application code — workflows,
+criteria, processors — runs identically on every storage tier. Non-functional
+properties (persistence, latency, concurrency model) differ; business logic
+does not.
+
 cyoda-go's **in-memory mode** is the built-in test harness. It runs the entire
 platform — entity store, workflow engine, API surfaces — in a single process
 with no external dependencies and no disk writes. It is the fastest way to
@@ -14,8 +19,10 @@ scenario simulations against your application logic.
 ## In-memory mode as a test harness
 
 Start cyoda-go with the in-memory profile (or `go run ./cmd/cyoda` against the
-default in-memory config). Point your tests at it; tear it down between
-cases; no database to seed, no files to clean up.
+default in-memory config). Concretely: set `CYODA_STORAGE_BACKEND=memory`, or
+leave it unconfigured — memory is the application default until `cyoda init`
+is run. Point your tests at it; tear it down between cases; no database to
+seed, no files to clean up.
 
 Properties that matter for testing:
 
