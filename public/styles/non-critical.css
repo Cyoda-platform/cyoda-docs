@@ -136,7 +136,7 @@
  * Default state shows a purple underline (not transparent) so the
  * link affordance is visible without hover. Hover swaps to aqua.
  */
-.sl-markdown-content a[href]:not(.cyoda-btn) {
+.sl-markdown-content a[href]:not(.cyoda-btn):not(.sl-anchor-link) {
   color: var(--cyoda-aqua);
   text-decoration: none;
   border-bottom: 1px solid transparent;
@@ -145,12 +145,18 @@
 
 /* Affordance: trailing arrow signals "goes somewhere" without an
  * underline. Non-breaking space keeps the arrow attached to the
- * last word of the link when wrapping. */
-.sl-markdown-content a[href]:not(.cyoda-btn)::after {
+ * last word of the link when wrapping.
+ *
+ * `:not(.sl-anchor-link)` excludes Starlight's heading anchor icons:
+ * they have their own absolutely-positioned `::after` used as an
+ * invisible click-target overlay, and overriding its `content`
+ * would stretch the arrow across the heading area.
+ */
+.sl-markdown-content a[href]:not(.cyoda-btn):not(.sl-anchor-link)::after {
   content: "\00a0→";
 }
 
-.sl-markdown-content a[href]:not(.cyoda-btn):hover {
+.sl-markdown-content a[href]:not(.cyoda-btn):not(.sl-anchor-link):hover {
   border-bottom-color: var(--cyoda-aqua);
 }
 
