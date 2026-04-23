@@ -74,6 +74,17 @@ Site-wide sweeps (see [`cross-cutting.md`](cross-cutting.md) §1–4) are the mo
 
 See [`cross-cutting.md`](cross-cutting.md) — scope contamination, endpoint path drift, `cyoda serve` phantom, `CYODA_STORAGE_BACKEND` typo, terminology drift, coverage gaps, clarity-suggestion synthesis.
 
+## Remediation status
+
+As of the `docs/correctness-fixes-2026-04-22` PR (pending merge to `feature/cyoda-go-init`):
+
+- **Fix-now findings actioned:** 20 / 20. Four site-wide sweeps (`CYODA_STORAGE_BACKEND` typo · `cyoda serve` phantom · `/api/models/...` endpoint drift · Trino "upcoming" banner) plus per-page residuals.
+- **Clarity suggestions actioned:** 36 / 36. Plus a follow-on correction (transition endpoint is `PUT`, not `POST`) that was caught during the endpoint-sweep implementation.
+- **Reframe post-#80:** 5 enumerated; deferred to the post-#80 reframe PR (cyoda-docs #69).
+- **Delete post-#80:** 1 enumerated (`concepts/workflows-and-events.md` time/message trigger paragraphs); deferred.
+
+Per-page review files under `pages/` are historical records of what the review found — they do **not** get updated to reflect applied fixes. The authoritative "is it fixed?" answer lives in the commits on the correctness-fixes branch and in the current content of `src/content/docs/`.
+
 ## Next steps
 
 1. **Fix-now remediation PR** — cut a branch off `feature/cyoda-go-init`, action every **Fix now** finding (20) and every accepted clarity suggestion (36). Site-wide sweeps first (single grep-and-replace across pages), then per-page fixes for content that doesn't fit a sweep. Review, merge.
