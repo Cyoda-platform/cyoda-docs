@@ -127,15 +127,23 @@
  *
  * :not(.cyoda-btn) excludes button-styled anchors so their own
  * border declarations aren't clobbered on the bottom edge.
+ *
+ * [href] bumps specificity to 0,2,1 so we win against Starlight's
+ * own `.sl-markdown-content a:not(:where(.not-content *))` rule
+ * (0,1,1) that otherwise paints links in the generic body-text
+ * accent colour, making them indistinguishable from prose.
+ *
+ * Default state shows a purple underline (not transparent) so the
+ * link affordance is visible without hover. Hover swaps to aqua.
  */
-.sl-markdown-content a:not(.cyoda-btn) {
-  color: var(--cyoda-purple);
+.sl-markdown-content a[href]:not(.cyoda-btn) {
+  color: hsl(var(--cyoda-purple));
   text-decoration: none;
-  border-bottom: 1px solid transparent;
+  border-bottom: 1px solid hsl(var(--cyoda-purple));
   transition: all 0.2s ease;
 }
 
-.sl-markdown-content a:not(.cyoda-btn):hover {
+.sl-markdown-content a[href]:not(.cyoda-btn):hover {
   color: var(--cyoda-aqua);
   border-bottom-color: var(--cyoda-aqua);
 }
