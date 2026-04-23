@@ -62,22 +62,6 @@ For secrets, cyoda-go supports `*_FILE` suffixes on any credential
 environment variable so you can mount them from a secrets store rather than
 pass them on the command line.
 
-## When you outgrow desktop
-
-Three signs you've outgrown this tier:
-
-- **Concurrency.** Single-process SQLite serialises writes; if your workload
-  is write-hot you will see contention.
-- **HA requirements.** A desktop binary is a single point of failure.
-- **Operational scale.** Once you are running many instances, you want
-  orchestration.
-
-When any of those apply, move up:
-
-- **[Docker](./docker/)** — same binary, containerised.
-- **[Kubernetes](./kubernetes/)** — active-active cluster on PostgreSQL.
-- **[Cyoda Cloud](./cyoda-cloud/)** — managed service.
-
 ## Upgrading
 
 Upgrading is a version bump: install the new binary, restart the process.

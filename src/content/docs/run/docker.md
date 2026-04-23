@@ -69,7 +69,3 @@ correct ownership for the non-root `65532:65532` user). Mount it as a named
 volume if you want SQLite data or any plugin state to persist across
 container restarts.
 
-## When you outgrow a single node
-
-A single Docker host is a single point of failure. Production HA wants
-Kubernetes; see [Kubernetes](./kubernetes/).
