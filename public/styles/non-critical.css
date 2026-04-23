@@ -137,14 +137,20 @@
  * link affordance is visible without hover. Hover swaps to aqua.
  */
 .sl-markdown-content a[href]:not(.cyoda-btn) {
-  color: hsl(var(--cyoda-purple));
+  color: var(--cyoda-aqua);
   text-decoration: none;
-  border-bottom: 1px solid hsl(var(--cyoda-purple));
+  border-bottom: 1px solid transparent;
   transition: all 0.2s ease;
 }
 
+/* Affordance: trailing arrow signals "goes somewhere" without an
+ * underline. Non-breaking space keeps the arrow attached to the
+ * last word of the link when wrapping. */
+.sl-markdown-content a[href]:not(.cyoda-btn)::after {
+  content: "\00a0→";
+}
+
 .sl-markdown-content a[href]:not(.cyoda-btn):hover {
-  color: var(--cyoda-aqua);
   border-bottom-color: var(--cyoda-aqua);
 }
 
