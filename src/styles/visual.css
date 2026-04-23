@@ -44,6 +44,24 @@
   margin-block-end: 2rem;
 }
 
+/* Tighten the vertical rhythm inside the hero.
+ *
+ * Starlight's default h1 margin-top is ~4rem which leaves a gaping
+ * void between the badge and the heading. And the buttons have no
+ * default margin at all, so they collide with the paragraph above.
+ * Re-balance so the flow is: badge -> heading -> paragraph -> buttons
+ * with consistent 1-1.25rem gaps.
+ */
+.section-hero .sl-heading-wrapper {
+  margin-top: 1.25rem;
+}
+.section-hero .cyoda-btn {
+  margin-top: 1.25rem;
+}
+.section-hero .cyoda-btn + .cyoda-btn {
+  margin-left: 0.5rem;
+}
+
 /* Dotted divider */
 .section-separator {
   height: 1rem;
