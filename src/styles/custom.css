@@ -159,6 +159,13 @@
   border-bottom: 2px solid var(--cyoda-aqua);
 }
 
+.footer-links a:focus-visible,
+.footer-link-button:focus-visible {
+  outline: 2px solid hsl(var(--cyoda-teal));
+  outline-offset: 3px;
+  border-radius: 2px;
+}
+
 .footer-link-button {
   background: none;
   border: none;

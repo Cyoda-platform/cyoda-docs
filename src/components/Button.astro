@@ -40,4 +40,8 @@ const { href, variant = 'primary' } = Astro.props;
   .cyoda-btn--secondary:hover {
     background: hsl(var(--cyoda-teal) / 0.08);
   }
+  .cyoda-btn:focus-visible {
+    outline: 2px solid hsl(var(--cyoda-teal));
+    outline-offset: 2px;
+  }
 </style>
