@@ -24,6 +24,17 @@
   background-color: transparent;
 }
 
+/* UI-screenshot images — cap at 600px wide, natural aspect preserved.
+ * Pair with `class="screenshot"` on an Astro <Image /> tag in MDX.
+ * Prevents life-size banner rendering of app screenshots when the
+ * content column is wider than the screenshot makes sense to be. */
+.sl-markdown-content img.screenshot {
+  max-width: 600px;
+  height: auto;
+  /* min-height from img[loading="lazy"] doesn't help narrow screenshots */
+  min-height: 0;
+}
+
 /* Footer styling */
 .footer {
   border-top: 1px solid var(--cyoda-aqua-medium);
