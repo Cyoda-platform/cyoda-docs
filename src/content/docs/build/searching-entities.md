@@ -42,11 +42,10 @@ The decision tree is short:
 Filter by a combination of entity fields and workflow state:
 
 ```bash
-curl -X POST http://localhost:8080/api/models/orders/search \
+curl -X POST http://localhost:8080/api/search/direct/orders/1 \
   -H 'Content-Type: application/json' \
   -H "Authorization: Bearer $TOKEN" \
   -d '{
-    "mode": "direct",
     "filter": {
       "state": "submitted",
       "customerId": "CUST-7"
@@ -54,34 +53,49 @@ curl -X POST http://localhost:8080/api/models/orders/search \
   }'
 ```
 
-The response is the list of matching entities, each with its current
-state, revision, and timestamps.
+The path is `/api/search/direct/{entityName}/{modelVersion}`. The response is
+the list of matching entities, each with its current state, revision, and
+timestamps.
 
 ## An async search
 
-Submit the search and capture the handle:
+Submit the search to `/api/search/async/{entityName}/{modelVersion}` and
+capture the handle:
 
 ```bash
-curl -X POST http://localhost:8080/api/models/orders/search \
+curl -X POST http://localhost:8080/api/search/async/orders/1 \
   -H 'Content-Type: application/json' \
   -H "Authorization: Bearer $TOKEN" \
   -d '{
-    "mode": "async",
-    "filter": { "state": "submitted" },
-    "pageSize": 1000
+    "filter": { "state": "submitted" }
   }'
 ```
 
-Poll the returned `searchId` until the job is ready, then fetch pages:
+Poll the returned `jobId` until the job is ready, then fetch pages
+(`pageNumber` is zero-indexed; `pageSize` caps the page):
 
 ```
-GET /api/search/{searchId}/status
-GET /api/search/{searchId}/results?page=0
-GET /api/search/{searchId}/results?page=1
+GET /api/search/async/{jobId}/status
+GET /api/search/async/{jobId}/results?pageNumber=0&pageSize=1000
+GET /api/search/async/{jobId}/results?pageNumber=1&pageSize=1000
 ```
 
-A single `searchId` can be paged repeatedly until the result is
+A single `jobId` can be paged repeatedly until the result is
 expired; expiry is controlled per deployment.
+
+### Cancelling a job
+
+If a job is no longer needed — the user navigated away, a replacement
+query was submitted, the deployment is shutting down — cancel it rather
+than letting it run to completion:
+
+```bash
+curl -X DELETE http://localhost:8080/api/search/async/{jobId}/cancel \
+  -H "Authorization: Bearer $TOKEN"
+```
+
+Cancellation is cooperative: in-flight work is stopped at the next safe
+point and any partial results for that `jobId` are discarded.
 
 ## Filter shape
 
@@ -114,11 +128,10 @@ as it existed at a given timestamp. The result is the set of entities
 that would have matched, using the revision active at that time.
 
 ```bash
-curl -X POST http://localhost:8080/api/models/orders/search \
+curl -X POST http://localhost:8080/api/search/direct/orders/1 \
   -H 'Content-Type: application/json' \
   -H "Authorization: Bearer $TOKEN" \
   -d '{
-    "mode": "direct",
     "pointInTime": "2026-03-01T00:00:00Z",
     "filter": { "state": "submitted", "customerId": "CUST-7" }
   }'
@@ -132,11 +145,11 @@ form, see [`point_time` in analytics](/build/analytics-with-sql/).
 
 ## Paging and sort (async)
 
-- `pageSize` is set at submission time; `page` is zero-indexed at read
-  time.
+- `pageSize` and `pageNumber` are query parameters on the results
+  endpoint; `pageNumber` is zero-indexed.
 - Sort keys go in the submission body; the reference lists the
   permitted keys per model.
-- A completed `searchId` is stable for its retention window — page
+- A completed `jobId` is stable for its retention window — page
   reads are idempotent.
 
 ## Performance notes
