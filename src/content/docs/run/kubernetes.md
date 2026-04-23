@@ -45,6 +45,11 @@ election, no ZooKeeper, no etcd. Coordination happens through PostgreSQL's
 SERIALIZABLE isolation for writes and a gossip protocol (HMAC-authenticated)
 for membership, so concurrent writers never silently corrupt data.
 
+The stateful backend is pluggable: PostgreSQL (OSS default) or the
+commercial Cassandra storage engine. The pod topology and the application
+contract are identical either way — only the storage plugin configuration
+differs.
+
 ## Helm chart
 
 cyoda-go ships a Helm chart under
@@ -102,8 +107,9 @@ Qualitative guide:
   transitions per second.
 - **Medium.** 5–7 pods, dedicated PostgreSQL, low thousands of
   transitions per second.
-- **Large.** 10 pods with PostgreSQL scaled up; you are usually at a point
-  where Cyoda Cloud's Cassandra backend is worth evaluating.
+- **Large.** 10 pods with PostgreSQL scaled up; at this point consider
+  swapping to the commercial Cassandra storage engine (still on
+  Kubernetes), or handing operations to Cyoda Cloud as a SaaS.
 
 ## Observability
 
@@ -112,9 +118,20 @@ the admin endpoints for log-level and tracing control. Standard
 OpenTelemetry configuration applies; wire OTLP exporters via environment
 variables in the Helm values.
 
-## When you outgrow Kubernetes
+## Scaling past PostgreSQL
 
-At the upper end of the sizing guide, operating PostgreSQL at cyoda-go's
-write volume becomes the bottleneck. That is where the Cassandra backend
-(today via Cyoda Cloud) makes sense. See
-[Cyoda Cloud](./cyoda-cloud/).
+At the upper end of the sizing guide, PostgreSQL's write throughput
+becomes the bottleneck. Two paths past it — the application contract
+is identical in both:
+
+- **Swap to the commercial Cassandra storage engine, still on
+  Kubernetes.** The licensable plugin replaces the PostgreSQL backend
+  with a horizontally-scaling Cassandra-backed tier. The Helm chart,
+  the pod topology, and the application code are unchanged — only the
+  storage plugin configuration changes.
+- **Hand operations to Cyoda Cloud.** A SaaS that runs either the
+  PostgreSQL or Cassandra stack for you. Same application contract,
+  different operational model.
+
+See [Cyoda Cloud](./cyoda-cloud/) for the SaaS option; contact sales
+for the commercial Cassandra plugin.
