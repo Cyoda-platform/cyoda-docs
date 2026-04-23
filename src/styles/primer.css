@@ -112,10 +112,10 @@
 }
 
 .sl-link-button:hover {
-  background: var(--cyoda-purple);
-  border-color: var(--cyoda-purple);
+  background: hsl(var(--cyoda-purple));
+  border-color: hsl(var(--cyoda-purple));
   transform: translateY(-1px);
-  box-shadow: 0 4px 8px rgba(var(--cyoda-purple-rgb), 0.2);
+  box-shadow: 0 4px 8px hsl(var(--cyoda-purple) / 0.2);
 }
 
 /* Table styling */
