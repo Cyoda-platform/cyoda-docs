@@ -18,6 +18,16 @@ cyoda <subcommand> --help
 ```
 
 The CLI exposes subcommands for initialising a store (`cyoda init`), serving
-(run `cyoda` with no subcommand — the default), and administration. Each subcommand's flags mirror the
-configuration environment variables; see
-[Configuration](/reference/configuration/) for the cross-reference.
+(run `cyoda` with no subcommand — the default), and administration.
+
+## Subcommands
+
+| Command | Purpose |
+|---------|---------|
+| `cyoda` | Start the server (default; no subcommand). |
+| `cyoda --help` / `-h` | Print help and exit. |
+| `cyoda init [--force]` | Write starter user config (SQLite default). Idempotent unless `--force`. |
+| `cyoda health` | Probe `/readyz` on the admin port; exit 0 on 200, 1 otherwise. |
+| `cyoda migrate [--timeout <duration>]` | Run storage-plugin migrations (no-op for memory / sqlite; Postgres runs plugin migrations). |
+
+Subcommand flags are operation-specific; they do not override server-runtime configuration (which comes from environment variables and `.env` files — see [Reference → Configuration](/reference/configuration/)).

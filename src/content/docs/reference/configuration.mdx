@@ -9,13 +9,17 @@ import VendoredBanner from '../../../components/VendoredBanner.astro';
 
 <VendoredBanner stability="awaiting-upstream" issue="https://github.com/Cyoda-platform/cyoda-go/issues/80" />
 
-cyoda-go reads configuration from three sources, with this precedence (later
-overrides earlier):
+cyoda-go reads configuration from the following sources:
 
-1. **Config file** — TOML/YAML at a default path, or passed via `--config`.
+1. **Config files** — `.env`-format only (godotenv-parsed). Loaded from system path, user path, and `.env` / `.env.{profile}` in the project directory. No TOML/YAML and no `--config` flag.
 2. **Environment variables** — prefixed `CYODA_`. Secrets support a `_FILE`
    suffix to read the value from a mounted file.
-3. **CLI flags** — the highest-precedence override for any single run.
+
+Configuration precedence (highest to lowest): shell environment > `.env.{profile}` > `.env` > user config > system config > hardcoded defaults. (Subcommands like `cyoda init` accept operation-specific flags that do NOT override server-runtime configuration.)
+
+`CYODA_PROFILES` is comma-separated and evaluated in declaration order; later profiles override earlier ones (within a profile, regular `.env` precedence applies).
+
+User config paths vary by OS: Linux/macOS `~/.config/cyoda/cyoda.env` (XDG), Windows `%AppData%\cyoda\cyoda.env`. System config lives at `/etc/cyoda/cyoda.env` on POSIX.
 
 The full reference — every key, its type, its default, and its environment
 variable form — will be generated from cyoda-go source. Until it is
