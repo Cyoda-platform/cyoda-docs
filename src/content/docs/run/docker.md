@@ -39,9 +39,11 @@ cyoda-go release and we link whichever is current.
 ## PostgreSQL backend
 
 Point cyoda-go at a PostgreSQL instance by setting `CYODA_STORAGE_BACKEND=postgres`
-and the usual connection variables (or `*_FILE` forms for secrets). The
-Docker compose example wires this up end-to-end; for production you will
-run PostgreSQL separately and pass only the DSN.
+and the usual connection variables (or `*_FILE` forms for secrets). The DSN
+goes in `CYODA_POSTGRES_URL` (or `CYODA_POSTGRES_URL_FILE` for a file-mounted
+secret per Docker conventions). The Docker compose example wires this up
+end-to-end; for production you will run PostgreSQL separately and pass only
+the DSN.
 
 ## Observability
 
@@ -56,6 +58,16 @@ The observability example demonstrates a full loop:
 Tune sampling and log level at runtime via the admin endpoints;
 see the
 [cyoda-go observability reference](https://github.com/cyoda-platform/cyoda-go#observability).
+
+Health probes live on the admin port (default 9091): `/livez` (liveness) and
+`/readyz` (readiness). Both are unauthenticated.
+
+## Data directory
+
+The container pre-stages `/var/lib/cyoda` as the data directory (with the
+correct ownership for the non-root `65532:65532` user). Mount it as a named
+volume if you want SQLite data or any plugin state to persist across
+container restarts.
 
 ## When you outgrow a single node
 
