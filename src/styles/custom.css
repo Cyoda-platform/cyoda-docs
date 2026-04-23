@@ -24,6 +24,37 @@
   background-color: transparent;
 }
 
+/* Starlight asides (note / tip / caution / danger) — desaturated
+ * Cyoda-adjacent palette. Starlight's defaults use vivid lavender /
+ * neon-tip purple that clashes with the Cyoda voice; we re-tint to
+ * muted teal (tip), muted orange (caution), desaturated red (danger),
+ * and cool grey (note). Title/icon colours are a darker variant of
+ * the border hue so they hit WCAG AA on the pale background.
+ *
+ * Unlayered overrides beat Starlight's @layer starlight.components
+ * rules, so no !important needed.
+ */
+.starlight-aside--note {
+  --sl-color-asides-text-accent: hsl(220 10% 35%);
+  --sl-color-asides-border: hsl(220 10% 55%);
+  background-color: hsl(220 10% 55% / 0.06);
+}
+.starlight-aside--tip {
+  --sl-color-asides-text-accent: hsl(175 40% 32%);
+  --sl-color-asides-border: hsl(175 40% 50%);
+  background-color: hsl(175 40% 50% / 0.08);
+}
+.starlight-aside--caution {
+  --sl-color-asides-text-accent: hsl(33 55% 38%);
+  --sl-color-asides-border: hsl(33 55% 55%);
+  background-color: hsl(33 55% 55% / 0.10);
+}
+.starlight-aside--danger {
+  --sl-color-asides-text-accent: hsl(0 50% 40%);
+  --sl-color-asides-border: hsl(0 55% 55%);
+  background-color: hsl(0 55% 55% / 0.08);
+}
+
 /* UI-screenshot images — cap at 600px wide, natural aspect preserved.
  * Pair with `class="screenshot"` on an Astro <Image /> tag in MDX.
  * Prevents life-size banner rendering of app screenshots when the
