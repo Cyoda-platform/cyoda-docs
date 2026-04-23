@@ -229,6 +229,53 @@ Once `feature/cyoda-go-init` is fully ready (all planned work
 landed, reviewed, tested), open a second PR: `feature/cyoda-go-init`
 → `main`. Separate review cycle.
 
+### 6. 2026-04-22 correctness & alignment review — COMPLETE
+
+Deep citation-grounded review of every in-scope cyoda-docs page
+against cyoda-go OSS at the pinned commit
+`6442de4696854ee8aa3b6d2ea9345b9c96eb6aad`, framed around the
+assumption that cyoda-go #80 (`cyoda help` surface) ships as
+proposed.
+
+**Artefacts:** `docs/superpowers/reviews/2026-04-22-correctness/`
+— `README.md` (index with per-page bucket counts), `ledger.md`
+(ground truth across 12 surfaces), `pages/*.md` (29 per-page
+reviews), `sections/*.md` (5 section summaries),
+`cross-cutting.md` (site-wide synthesis).
+
+**Spec:** `docs/superpowers/specs/2026-04-22-cyoda-docs-correctness-review-design.md`
+**Plan:** `docs/superpowers/plans/2026-04-22-cyoda-docs-correctness-review.md`
+
+**Headline site totals:** 23 Fix now, 5 Reframe post-#80, 6 Delete
+post-#80, 32 clarity suggestions across 29 in-scope pages.
+
+**Site-wide sweeps surfaced** (see cross-cutting.md for detail):
+
+1. **Scope contamination** — Cloud-only features (Trino,
+   time/message workflow triggers) presented as OSS on six pages.
+   Largest signal, confirmed by three independent section agents +
+   ledger.
+2. **`/api/models/...` endpoint path drift** on three pages;
+   canonical is `/api/entity/...` and `/api/search/...`.
+3. **Phantom `cyoda serve`** on four pages; binary starts with
+   bare `cyoda` (no recognized `serve` subcommand).
+4. **`CYODA_STORAGE` → `CYODA_STORAGE_BACKEND`** on three pages
+   (silent misconfiguration: wrong var ignored, app falls back to
+   in-memory).
+
+**Next:**
+
+- Cut a new branch off `feature/cyoda-go-init`. Action every
+  **Fix now** finding (23) plus accepted clarity suggestions (32).
+  Do the four site-wide sweeps first (single grep-and-replace
+  across pages), then per-page fixes for content that doesn't fit
+  a sweep. Review, merge.
+- When cyoda-go #80 ships: run the post-#80 alignment test per
+  spec §"Post-#80 alignment test" — (a) ledger ↔ `help.json` diff
+  per surface (green/amber/red); (b) per-page Reframe/Delete
+  dispatch against the 11 pre-enumerated items. This feeds
+  cyoda-docs #69 (reframe PR).
+
 ## Sandbox gotchas (will bite next session)
 
 - **SSH is blocked.** `/Users/paul/.ssh/id_ed25519` is not readable
