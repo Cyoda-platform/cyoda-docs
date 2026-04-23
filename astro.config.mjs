@@ -31,8 +31,13 @@ export default defineConfig({
 			target: 'es2022', // Modern browsers for better tree-shaking
 			rollupOptions: {
 				treeshake: {
-					preset: 'recommended',
-					moduleSideEffects: false
+					preset: 'recommended'
+					// Do NOT set moduleSideEffects: false here. It strips
+					// CSS-only side-effect imports (e.g. Starlight's
+					// `import '../style/anchor-links.css'` in Page.astro
+					// via virtual:starlight/optional-css), producing
+					// broken rendering for heading anchor links and
+					// other styled Starlight features.
 				}
 			},
 			// Optimize CSS delivery
