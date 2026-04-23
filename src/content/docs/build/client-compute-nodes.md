@@ -287,6 +287,8 @@ You may also send **client-initiated keep-alive** messages to confirm your own l
 | Max idle interval | 3,000 ms | How long before a member is marked as not alive |
 | Keep-alive check timeout | 1,000 ms | How long the server waits for a probe response |
 
+A member is marked not alive when a probe times out (keep-alive check timeout, default 1,000 ms) **and** the max idle interval (default 3,000 ms) has been exceeded since the last successful probe response. Both conditions must hold — a single slow probe within the idle window does not mark the member dead.
+
 **If your member is marked as not alive, the platform will not route requests to it.** The member remains registered but idle. Responding to a subsequent keep-alive probe restores the alive status.
 
 > ⚠️ **Critical**: Failing to respond to keep-alive probes will cause your member to be marked as dead. Ensure your keep-alive response handler is fast and non-blocking.
@@ -492,6 +494,8 @@ if (authClaimsJson != null) {
     List<String> roles = (List<String>) claims.get("roles");  // may be null for plain IUser
 }
 ```
+
+The exact accessor depends on your gRPC tooling — in Go, use the generated message's `GetAttributes()` method; in Python, dict-like indexing on `.attributes`. See your language's generated proto bindings.
 
 ## 8.4 Example Claims JSON
 
