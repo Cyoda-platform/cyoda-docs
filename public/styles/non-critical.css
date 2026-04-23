@@ -149,7 +149,9 @@
 .sl-markdown-content a[href]:not(.cyoda-btn):not(.sl-anchor-link) {
   color: hsl(178 40% 30%);
   text-decoration: none;
-  border-bottom: 1px solid transparent;
+  /* Default underline is the non-colour link affordance (WCAG 1.4.1).
+   * Since the arrow is opt-in, links need a visible cue without hover. */
+  border-bottom: 1px solid hsl(178 40% 30%);
   transition: all 0.2s ease;
 }
 
@@ -159,7 +161,9 @@
 }
 
 .sl-markdown-content a[href]:not(.cyoda-btn):not(.sl-anchor-link):hover {
-  border-bottom-color: hsl(178 40% 30%);
+  /* Hover pops to the brand aqua for interactive feedback */
+  color: var(--cyoda-aqua);
+  border-bottom-color: var(--cyoda-aqua);
 }
 
 /* Button and interactive elements - Non-critical */
