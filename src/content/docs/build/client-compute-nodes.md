@@ -534,7 +534,7 @@ Your calculation member does not exist in isolation — it is invoked by workflo
 ```json
 {
   "workflows": [{
-    "version": "1.0",
+    "version": "1",
     "name": "my-workflow",
     "initialState": "start",
     "states": {
