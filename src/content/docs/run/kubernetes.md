@@ -41,8 +41,9 @@ stateful dependency.
 ```
 
 Every pod is identical; any pod can serve any request. There is no leader
-election, no ZooKeeper, no etcd. Writes are coordinated through PostgreSQL's
-`SERIALIZABLE` isolation so concurrent writers never silently corrupt data.
+election, no ZooKeeper, no etcd. Coordination happens through PostgreSQL's
+SERIALIZABLE isolation for writes and a gossip protocol (HMAC-authenticated)
+for membership, so concurrent writers never silently corrupt data.
 
 ## Helm chart
 
@@ -52,9 +53,13 @@ The chart provisions the cyoda-go Deployment, a Service, a ConfigMap for
 non-sensitive configuration, and Secret references for credentials.
 
 The authoritative values reference lives under
-[Reference → Helm values](/reference/helm/) (awaiting upstream at the time of
-writing); the chart's own `values.yaml` is the source of truth until that
-reference is published.
+[Reference → Helm values](/reference/helm/); the chart's own `values.yaml`
+remains the runtime source of truth.
+
+The Helm chart auto-generates the HMAC secret unless
+`cluster.hmacSecret.existingSecret` is provided. GitOps deployments should
+always set `existingSecret` to avoid Helm rendering a fresh secret on every
+reconcile, which would cause inter-node auth to drift.
 
 ## High availability
 
@@ -83,7 +88,9 @@ cyoda-go releases follow semantic versioning. For production:
   capacity never drops.
 - **Schema migration ordering.** Check the release notes for whether a
   release requires a PostgreSQL schema migration step before the new binary
-  starts serving.
+  starts serving. The Helm chart runs schema migrations as a
+  pre-install/pre-upgrade hook; pod startup is blocked until migrations
+  complete.
 
 ## Sizing
 

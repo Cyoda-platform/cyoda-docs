@@ -19,6 +19,8 @@ The desktop binary supports two storage modes:
   digital-twin scenario runs.
 - **SQLite (default)** — durable, single-file, zero-ops. Data survives
   restarts; backup is a file copy. Use it for everyday persistent work.
+  SQLite is single-writer; all writes serialize through the database file,
+  which limits concurrent write throughput.
 
 The SQLite database file is created at `~/.local/share/cyoda/cyoda.db` by
 `cyoda init`. Back it up by copying the file; migrate it by moving the file.
@@ -60,13 +62,6 @@ For secrets, cyoda-go supports `*_FILE` suffixes on any credential
 environment variable so you can mount them from a secrets store rather than
 pass them on the command line.
 
-## Upgrading
-
-Upgrading is a version bump: install the new binary, restart the process.
-cyoda-go follows semantic versioning; configuration migration policy is
-documented in the
-[cyoda-go release notes](https://github.com/cyoda-platform/cyoda-go/releases).
-
 ## When you outgrow desktop
 
 Three signs you've outgrown this tier:
@@ -82,3 +77,10 @@ When any of those apply, move up:
 - **[Docker](./docker/)** — same binary, containerised.
 - **[Kubernetes](./kubernetes/)** — active-active cluster on PostgreSQL.
 - **[Cyoda Cloud](./cyoda-cloud/)** — managed service.
+
+## Upgrading
+
+Upgrading is a version bump: install the new binary, restart the process.
+cyoda-go follows semantic versioning; configuration migration policy is
+documented in the
+[cyoda-go release notes](https://github.com/cyoda-platform/cyoda-go/releases).
