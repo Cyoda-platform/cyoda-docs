@@ -40,7 +40,7 @@ you need active-active HA; see [Run → overview](/run/)).
 Start the server with the defaults:
 
 ```bash
-cyoda serve
+cyoda
 ```
 
 Define a minimal model and push an entity. Cyoda discovers the schema from the
@@ -53,7 +53,7 @@ curl -X POST http://localhost:8080/api/models/orders/entities \
 ```
 
 <Aside type="note" title="No token? That's expected locally.">
-`cyoda serve` defaults to **mock auth** (`CYODA_IAM_MODE=mock`): every
+Running `cyoda` (no subcommand) defaults to **mock auth** (`CYODA_IAM_MODE=mock`): every
 request is authenticated as a configurable default user, no bearer token
 required. You'll see examples elsewhere in the docs with
 `-H "Authorization: Bearer $TOKEN"`; those are written for production

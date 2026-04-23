@@ -42,7 +42,7 @@ The Homebrew and packaged installers run `cyoda init` for you, which sets
 up the SQLite store. To start the server:
 
 ```bash
-cyoda serve
+cyoda
 ```
 
 The binary exposes REST on port **8080** and gRPC on **9090** by default.
