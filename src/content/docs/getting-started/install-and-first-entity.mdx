@@ -35,13 +35,72 @@ latency matters more than durability (use **in-memory** mode — see the callout
 below), and teams building production services (graduate to **PostgreSQL** when
 you need active-active HA; see [Run → overview](/run/)).
 
-## Your first entity
+## Start the server
 
 Start the server with the defaults:
 
 ```bash
 cyoda
 ```
+
+<Aside type="note" title="No token? That's expected locally.">
+Running `cyoda` (no subcommand) defaults to **mock auth** (`CYODA_IAM_MODE=mock`): every
+request is authenticated as a configurable default user, no bearer token
+required. You'll see examples elsewhere in the docs with
+`-H "Authorization: Bearer $TOKEN"`; those are written for production
+deployments running in JWT mode. On a fresh local install you can drop
+the header — or keep it and send any placeholder; mock mode ignores it.
+
+Flip to JWT mode by setting `CYODA_IAM_MODE=jwt` plus
+`CYODA_JWT_SIGNING_KEY` (RSA private key, PEM). For the full auth-mode
+configuration see [Configuration](/reference/configuration/).
+</Aside>
+
+## Import a workflow
+
+Before creating an entity, import a workflow so the platform knows which
+state machine to apply. Save this as `workflow.json` — two states
+(`draft` and `submitted`) with one manual transition. States are keyed by
+name; each state owns its outgoing transitions:
+
+```json
+{
+  "workflows": [
+    {
+      "version": "1",
+      "name": "orders-wf",
+      "initialState": "draft",
+      "active": true,
+      "states": {
+        "draft": {
+          "transitions": [
+            { "name": "submit", "next": "submitted", "manual": true }
+          ]
+        },
+        "submitted": {}
+      }
+    }
+  ]
+}
+```
+
+Post it to the import endpoint for the `orders` model at version `1`:
+
+```bash
+curl -X POST http://localhost:8080/api/model/orders/1/workflow/import \
+  -H 'Content-Type: application/json' \
+  -d @workflow.json
+```
+
+Without this step, cyoda-go applies its default workflow (`NONE` →
+`CREATED` → `DELETED` with a single automatic transition), and the
+`submit` transition used below will not exist.
+
+For the full workflow schema — processors, criteria, automatic
+transitions, nested conditions — see
+[Build → workflows and processors](/build/workflows-and-processors/).
+
+## Create your first entity
 
 Define a minimal model and push an entity. Cyoda discovers the schema from the
 sample you send, so you do not need to declare it up front:
@@ -59,49 +118,17 @@ The create response is an array; `entityIds[0]` on the first element is the
 address the entity by that UUID (`${ENTITY_ID}` here), not by the business
 key `orderId`.
 
-<Aside type="note" title="No token? That's expected locally.">
-Running `cyoda` (no subcommand) defaults to **mock auth** (`CYODA_IAM_MODE=mock`): every
-request is authenticated as a configurable default user, no bearer token
-required. You'll see examples elsewhere in the docs with
-`-H "Authorization: Bearer $TOKEN"`; those are written for production
-deployments running in JWT mode. On a fresh local install you can drop
-the header — or keep it and send any placeholder; mock mode ignores it.
+Automatic transitions (`manual: false`) fire immediately on creation,
+cascading the entity through applicable states until it reaches one with
+no outgoing auto transitions. The `orders-wf` workflow you just imported
+has none, so the entity settles in `draft` and waits for the manual
+`submit` transition below.
 
-Flip to JWT mode by setting `CYODA_IAM_MODE=jwt` plus
-`CYODA_JWT_SIGNING_KEY` (RSA private key, PEM). For the full auth-mode
-configuration see [Configuration](/reference/configuration/).
-</Aside>
+## Invoke a manual transition
 
-## Your first workflow
-
-Attach a workflow to the `orders` model with two states — `draft` and
-`submitted` — and one manual transition. States are keyed by name; each
-state owns its outgoing transitions:
-
-```json
-{
-  "version": "1",
-  "name": "orders-wf",
-  "initialState": "draft",
-  "active": true,
-  "states": {
-    "draft": {
-      "transitions": [
-        { "name": "submit", "next": "submitted", "manual": true }
-      ]
-    },
-    "submitted": {}
-  }
-}
-```
-
-For the full workflow schema — processors, criteria, automatic
-transitions, nested conditions — see
-[Build → workflows and processors](/build/workflows-and-processors/).
-
-Invoke the transition on your entity. `{entityId}` (here `${ENTITY_ID}`) is
-the system-assigned UUID captured from the create response, not the business
-key `orderId`:
+Trigger the `submit` transition on your entity. `{entityId}` (here
+`${ENTITY_ID}`) is the system-assigned UUID captured from the create
+response, not the business key `orderId`:
 
 ```bash
 curl -X PUT http://localhost:8080/api/entity/JSON/${ENTITY_ID}/submit
