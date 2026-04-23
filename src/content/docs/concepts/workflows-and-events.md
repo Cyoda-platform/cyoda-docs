@@ -60,6 +60,13 @@ Two flavours:
 Processors can run synchronously within the transition's transaction, or
 asynchronously alongside it.
 
+Processors run in one of three modes: **SYNC** (inline, shares the
+transition's transaction — failure aborts the transition), **ASYNC_SAME_TX**
+(runs asynchronously but in the same transaction context — failure still
+aborts), or **ASYNC_NEW_TX** (runs in a separate transaction via savepoint
+isolation — failure is logged and the transition succeeds). Choose the mode
+based on how atomically the side-effect must compose with the state change.
+
 ## Audit trail is the storage model
 
 Because every transition produces a revision and every processor invocation is

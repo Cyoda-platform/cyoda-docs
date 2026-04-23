@@ -20,6 +20,17 @@ matters; the surfaces are not equivalent, and each carries different guarantees.
   JDBC connections, BI tools. Queries run against a Trino catalogue that
   projects entities into virtual SQL tables.
 
+## Which surface, when?
+
+- Building a UI, an admin tool, or a sync integration? **REST.**
+- Writing a processor or criterion that runs against transitions? **gRPC.**
+- Running analytics, reports, or ad-hoc queries across many entities?
+  **Trino SQL.**
+
+All three surfaces are backed by the same entity store. A transition recorded
+via REST is visible to gRPC compute nodes and queryable through Trino, with
+the same audit trail behind it.
+
 ## REST: humans and services that speak to the platform
 
 Use REST when the call represents *a user or service interacting with the
@@ -75,14 +86,3 @@ and handling of polymorphic fields are in the
 [Trino SQL reference](/reference/trino/). For the Build-side quickstart —
 connection recipe, first query, performance notes — see
 [Analytics with SQL](/build/analytics-with-sql/).
-
-## Which surface, when?
-
-- Building a UI, an admin tool, or a sync integration? **REST.**
-- Writing a processor or criterion that runs against transitions? **gRPC.**
-- Running analytics, reports, or ad-hoc queries across many entities?
-  **Trino SQL.**
-
-All three surfaces are backed by the same entity store. A transition recorded
-via REST is visible to gRPC compute nodes and queryable through Trino, with
-the same audit trail behind it.

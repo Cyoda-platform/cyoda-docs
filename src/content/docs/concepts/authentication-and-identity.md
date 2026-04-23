@@ -38,7 +38,10 @@ When one service calls another on a user's behalf — a web app calling an API
 that calls a processor, for example — Cyoda supports **token exchange**. The
 calling service presents its own token plus the user's token and receives a
 new token scoped to the downstream call. This preserves the user identity
-through the chain without passing the original bearer token around.
+through the chain without passing the original bearer token around. In
+practice, the calling service includes the user's JWT as the `subject_token`
+in a token-exchange request; the issued token carries both identities for
+downstream authorization.
 
 The result: the audit trail records who the original user was at every hop,
 and each service still only sees a token scoped to what it is allowed to do.
