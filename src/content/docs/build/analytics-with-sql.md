@@ -5,6 +5,10 @@ sidebar:
   order: 45
 ---
 
+:::caution[Upcoming]
+Trino SQL is on the roadmap and not yet available in cyoda-go at this release. This page documents the planned surface; names and shapes may change before release.
+:::
+
 Cyoda projects every entity model into a set of virtual SQL tables and
 exposes them through a Trino connector. Use this surface for cross-entity
 analytics: joins across entity types, aggregates, reporting, time-series,

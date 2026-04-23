@@ -55,6 +55,10 @@ For how to implement a compute node, see
 
 ## Trino SQL: cross-entity analytics
 
+:::caution[Upcoming]
+Trino SQL is on the roadmap and not yet available in cyoda-go at this release. The section below documents the planned surface; names and shapes may change before release.
+:::
+
 Use Trino when the question is *analytical* — joins across entity types,
 aggregates, reporting, time-series. Every entity model is projected into a
 set of virtual SQL tables; nested arrays and objects expand into separate

@@ -51,7 +51,7 @@ makes the in-memory run a useful twin of the durable one.
 ## What stays the same, what changes
 
 Same:
-- API contracts (REST, gRPC, Trino).
+- API contracts (REST, gRPC today; Trino upcoming — see the [Trino reference](/reference/trino/)).
 - Workflow semantics: states, transitions, criteria, processors.
 - Event ordering within a transition.
 - Audit-trail shape.
