@@ -58,7 +58,6 @@
 }
 
 .footer-links a:hover {
-  text-decoration: underline;
   border-bottom: 2px solid var(--cyoda-aqua);
 }
 
@@ -76,7 +75,6 @@
 }
 
 .footer-link-button:hover {
-  text-decoration: underline;
   border-bottom: 2px solid var(--cyoda-aqua);
 }
 
