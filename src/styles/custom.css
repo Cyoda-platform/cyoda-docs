@@ -24,33 +24,43 @@
   background-color: transparent;
 }
 
-/* Expressive-code code panels — tint the chrome so terminal/editor
- * frames read as a single unified Cyoda-aqua panel instead of
- * grey-chrome-over-teal-code.
+/* Code panels — clean and minimal.
  *
- * The body of the pre is already tinted via `.sl-markdown-content pre`
- * (cyoda-aqua-light). Expressive-code's terminal title bar and editor
- * tab bar default to `--sl-color-gray-6`, producing a two-tone look.
- * Override the three EC variables that paint the chrome + its bottom
- * divider so the frame unifies.
+ * Hide expressive-code's decorative chrome (macOS-style three dots
+ * on `is-terminal` blocks, tab-style header on `has-title` blocks).
+ * Keep just what matters: a thin Cyoda-aqua border around the pre,
+ * a small language label in the top-left (read from
+ * `pre[data-language]`), the copy button in the top-right (EC-
+ * provided), and syntax-highlighted code in between.
  */
-.sl-markdown-content .expressive-code {
-  --ec-frm-trmTtbBg: var(--cyoda-aqua-light);
-  --ec-frm-edTabBarBg: var(--cyoda-aqua-light);
-  --ec-frm-trmTtbBrdBtmCol: transparent;
-  --ec-brdCol: var(--cyoda-aqua-medium);
+.sl-markdown-content .expressive-code .frame.is-terminal .header,
+.sl-markdown-content .expressive-code .frame.has-title .header {
+  display: none;
 }
 
-/* When expressive-code renders a chromed frame (terminal three-dots
- * header, or an editor tab bar), drop our own pre border / border-
- * radius / border-left so the panel reads as one unified frame
- * rather than frame-within-frame. The outer EC frame provides the
- * rounded border; inner pre sits flush. */
-.sl-markdown-content .expressive-code .frame.is-terminal pre,
-.sl-markdown-content .expressive-code .frame.has-title pre {
-  border: none;
-  border-left: none;
-  border-radius: 0;
+.sl-markdown-content .expressive-code .frame {
+  position: relative;
+}
+
+.sl-markdown-content .expressive-code .frame pre {
+  border: 1px solid var(--cyoda-aqua-medium);
+  border-radius: 6px;
+  padding-top: 1.75rem;
+}
+
+.sl-markdown-content .expressive-code .frame pre::before {
+  content: attr(data-language);
+  position: absolute;
+  top: 0.4rem;
+  left: 0.75rem;
+  font-size: 0.7rem;
+  font-family: var(--__sl-font-mono, ui-monospace, monospace);
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: hsl(var(--cyoda-teal) / 0.75);
+  font-weight: 600;
+  pointer-events: none;
+  z-index: 1;
 }
 
 /* Starlight asides (note / tip / caution / danger) — desaturated
