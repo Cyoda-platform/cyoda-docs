@@ -255,7 +255,7 @@
 
 .json-schema-viewer-wrapper .schema-header h3 {
   margin: 0 0 var(--base-size-8, 0.5rem) 0;
-  color: var(--cyoda-aqua);
+  color: var(--sl-color-accent);
   font-size: var(--base-text-size-20, 1.25rem);
 }
 
@@ -293,11 +293,11 @@
 }
 
 .json-schema-viewer-wrapper .expand-button:hover {
-  color: var(--cyoda-aqua);
+  color: var(--sl-color-accent);
 }
 
 .json-schema-viewer-wrapper .property-name {
-  color: var(--cyoda-aqua);
+  color: var(--sl-color-accent);
   font-weight: var(--base-text-weight-semibold, 600);
   font-family: var(--sl-font-mono);
 }
@@ -312,7 +312,7 @@
 }
 
 .json-schema-viewer-wrapper .property-ref-link {
-  color: var(--cyoda-aqua);
+  color: var(--sl-color-accent);
   text-decoration: none;
   font-weight: var(--base-text-weight-semibold, 600);
   transition: all 0.2s ease;
