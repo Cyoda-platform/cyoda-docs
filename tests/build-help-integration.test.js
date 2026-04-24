@@ -6,6 +6,7 @@ import { test } from 'node:test';
 import assert from 'node:assert/strict';
 import { spawnSync } from 'node:child_process';
 import fs from 'node:fs';
+import os from 'node:os';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 
@@ -36,12 +37,15 @@ test('astro build fails with DanglingHelpTopic when FromTheBinary gets a bad top
   // but we still require a clean starting state for the fixture.
   assert.ok(!fs.existsSync(fixturePath), 'stale fixture from a previous run; clean it up manually');
 
+  // Use a temp outDir so this deliberately-failing build does not clobber dist/.
+  const tempOutDir = fs.mkdtempSync(path.join(os.tmpdir(), 'astro-integration-test-'));
   fs.writeFileSync(fixturePath, FIXTURE_CONTENT);
   t.after(() => {
     if (fs.existsSync(fixturePath)) fs.rmSync(fixturePath);
+    fs.rmSync(tempOutDir, { recursive: true, force: true });
   });
 
-  const result = spawnSync('npx', ['astro', 'build'], {
+  const result = spawnSync('npx', ['astro', 'build', '--outDir', tempOutDir], {
     cwd: projectRoot,
     encoding: 'utf8',
     env: { ...process.env, CI: '1', ASTRO_TELEMETRY_DISABLED: '1' },
