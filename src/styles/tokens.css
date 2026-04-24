@@ -13,6 +13,7 @@
   --cyoda-aqua-rgb: 79, 184, 176;
   --cyoda-aqua-light: hsl(var(--cyoda-teal) / 0.1);
   --cyoda-aqua-medium: hsl(var(--cyoda-teal) / 0.2);
+  --cyoda-aqua-dark: hsl(var(--cyoda-teal-accent));
 
   /* Surfaces */
   --cyoda-background: 0 0% 100%;
