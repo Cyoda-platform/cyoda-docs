@@ -56,6 +56,28 @@ Flip to JWT mode by setting `CYODA_IAM_MODE=jwt` plus
 configuration see [Configuration](/reference/configuration/).
 </Aside>
 
+## Discover everything else with `cyoda help`
+
+Every flag, environment variable, endpoint, error code, metric, and operation
+is documented in the binary. Browse the topic tree:
+
+```bash
+cyoda help
+```
+
+Drill in on anything:
+
+```bash
+cyoda help config        # configuration model and precedence
+cyoda help crud          # entity CRUD over REST
+cyoda help search        # query predicates and search modes
+cyoda help errors        # the error catalogue
+cyoda help telemetry     # metrics, health, tracing, logs
+```
+
+`cyoda help <topic> --format=json` emits a machine-readable shape suitable
+for tools; `--format=markdown` is the default off a TTY.
+
 ## Import a workflow
 
 Before creating an entity, import a workflow so the platform knows which
