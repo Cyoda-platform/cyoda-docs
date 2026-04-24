@@ -1,33 +1,55 @@
 ---
 title: "CLI"
-description: "cyoda-go CLI reference — awaiting upstream artefact."
+description: "cyoda-go command-line interface — narrative navigator over `cyoda help cli`."
 sidebar:
   order: 30
 ---
 
-import VendoredBanner from '../../../components/VendoredBanner.astro';
+import FromTheBinary from '../../../components/FromTheBinary.astro';
+import helpIndex from '../../../data/cyoda-help-index.json';
 
-<VendoredBanner stability="awaiting-upstream" issue="https://github.com/Cyoda-platform/cyoda-go/issues/80" />
+export const cliTopics = (() => {
+  const found = helpIndex.topics.filter(t => t.path[0] === 'cli');
+  if (found.length === 0) {
+    throw new Error(`EmptyNavigator: reference/cli.mdx filtered helpIndex to zero topics under prefix "cli" (pinned v${helpIndex.pinnedVersion}). Likely a topic rename upstream.`);
+  }
+  return found;
+})();
 
-Until the CLI help dump is published from cyoda-go, the authoritative command
-list is:
+<FromTheBinary topic="cli" />
 
-```bash
-cyoda --help
-cyoda <subcommand> --help
-```
+The `cyoda` binary is the server and its own control surface. It runs as a
+single long-lived process by default, with a small number of subcommands
+for bootstrapping, health, and migration. Every flag, subcommand, and env
+var is documented in-binary via `cyoda help <topic>` and is version-
+accurate to whatever binary you are running.
 
-The CLI exposes subcommands for initialising a store (`cyoda init`), serving
-(run `cyoda` with no subcommand — the default), and administration.
+## Output formats
 
-## Subcommands
+Every help topic supports three output formats via `--format`:
 
-| Command | Purpose |
-|---------|---------|
-| `cyoda` | Start the server (default; no subcommand). |
-| `cyoda --help` / `-h` | Print help and exit. |
-| `cyoda init [--force]` | Write starter user config (SQLite default). Idempotent unless `--force`. |
-| `cyoda health` | Probe `/readyz` on the admin port; exit 0 on 200, 1 otherwise. |
-| `cyoda migrate [--timeout <duration>]` | Run storage-plugin migrations (no-op for memory / sqlite; Postgres runs plugin migrations). |
+- `text` (default on a TTY) — human reading.
+- `markdown` (default off-TTY) — paste into docs, PRs, chat.
+- `json` — machine-readable, stable schema; consumed by tools like
+  cyoda-docs' own build pipeline.
 
-Subcommand flags are operation-specific; they do not override server-runtime configuration (which comes from environment variables and `.env` files — see [Reference → Configuration](/reference/configuration/)).
+## Drilldowns
+
+Topics that naturally subdivide take a multi-word path on the CLI: `cyoda
+help search async`, `cyoda help grpc compute`, and so on. The same path
+appears in the JSON surface as an array.
+
+## Related topics
+
+The subset of `cyoda help` topics directly relevant to the CLI surface
+itself is below. Topic enumeration stable across cyoda-go 0.6.x.
+
+<ul>
+  {cliTopics.map((t) => (
+    <li>
+      <strong><code>cyoda help {t.path.join(' ')}</code></strong> — {t.title.replace(/^[^—]*—\s*/, '')}
+      <br />
+      <span style="opacity: 0.8;">{t.synopsis}</span>
+    </li>
+  ))}
+</ul>
