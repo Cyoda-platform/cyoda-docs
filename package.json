@@ -17,6 +17,7 @@
     "preview": "astro preview",
     "astro": "astro",
     "test": "playwright test",
+    "test:scripts": "node --test scripts/*.test.js",
     "test:ui": "playwright test --ui",
     "test:headed": "playwright test --headed",
     "test:manual": "playwright test tests/cookie-consent-manual.spec.ts --headed --workers=1",
