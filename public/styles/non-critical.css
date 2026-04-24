@@ -166,6 +166,12 @@
   border-bottom-color: var(--cyoda-aqua);
 }
 
+.sl-markdown-content a[href]:not(.cyoda-btn):not(.sl-anchor-link):focus-visible {
+  outline: 2px solid hsl(var(--cyoda-teal));
+  outline-offset: 2px;
+  border-radius: 2px;
+}
+
 /* Button and interactive elements - Non-critical */
 .sl-link-button {
   background: var(--cyoda-aqua);

@@ -18,7 +18,10 @@ async function main() {
                  `Generated: ${new Date().toISOString()}\n\n---\n\n`];
   for (const file of files) {
     const rel = path.relative(MARKDOWN_DIR, file);
-    const body = await fs.readFile(file, 'utf-8');
+    const raw = await fs.readFile(file, 'utf-8');
+    // Strip UTF-8 BOM — some exporters prepend one and it ends up in the
+    // middle of the concatenated blob, where it renders as a stray glyph.
+    const body = raw.replace(/^﻿/, '');
     parts.push(`## ${rel}\n\n${body.trim()}\n\n---\n\n`);
   }
   await fs.writeFile(OUTPUT_FILE, parts.join(''), 'utf-8');
