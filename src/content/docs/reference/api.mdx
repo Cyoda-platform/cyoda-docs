@@ -5,15 +5,24 @@ sidebar:
   order: 10
 ---
 
+import FromTheBinary from '../../../components/FromTheBinary.astro';
+import helpIndex from '../../../data/cyoda-help-index.json';
+
+<FromTheBinary topic="openapi" />
+
 The REST API reference is rendered in a dedicated viewer so the documentation
 chrome does not compete with it for horizontal space:
 
 [Open the REST API reference](/api-reference/)
 
-The viewer works from the OpenAPI spec shipped with the site
-(`/openapi/openapi.json`) and supports the standard operations: browsing
-endpoints, inspecting request/response shapes, and try-it-out calls against
-an environment of your choice.
+The viewer works from the OpenAPI spec shipped with this site
+(`/openapi/openapi.json`), which was extracted from **cyoda-go v{helpIndex.pinnedVersion}**.
+For the version you are running, `cyoda help openapi` on your own binary is
+authoritative.
+
+The viewer supports the standard operations: browsing endpoints, inspecting
+request/response shapes, and try-it-out calls against an environment of your
+choice.
 
 ## gRPC
 
