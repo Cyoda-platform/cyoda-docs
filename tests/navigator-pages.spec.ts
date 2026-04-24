@@ -22,9 +22,10 @@ for (const { path, topic } of pages) {
 
     test('has at least one related-topic bullet', async ({ page }) => {
       await page.goto(path);
-      // Starlight wraps each h2 in a div.sl-heading-wrapper; the UL is a
-      // sibling of that wrapper div, not of the h2 itself.
-      const bullets = page.locator('div.sl-heading-wrapper:has(h2#related-topics) ~ ul li');
+      // Root on the stable heading id; the two selectors handle Starlight's
+      // current wrapper-div sibling structure AND a future layout where the
+      // <ul> is a direct sibling of the <h2>.
+      const bullets = page.locator('h2#related-topics + * ~ ul li, h2#related-topics ~ ul li');
       await expect(bullets.first()).toBeVisible();
     });
 

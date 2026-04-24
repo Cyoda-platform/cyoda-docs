@@ -19,7 +19,7 @@ const match = helpIndex.topics.find(
 
 if (!match) {
   throw new Error(
-    `DanglingHelpTopic: <FromTheBinary topic="${topic}" /> — no such topic in pinned cyoda-go v${helpIndex.pinnedVersion}. ` +
+    `DanglingHelpTopic: <FromTheBinary topic="${topic}" /> on page ${Astro.url.pathname} — no such topic in pinned cyoda-go v${helpIndex.pinnedVersion}. ` +
       `Either fix the prop or bump cyoda-go-version.json.`
   );
 }

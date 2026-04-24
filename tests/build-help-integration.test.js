@@ -1,6 +1,7 @@
 // tests/build-help-integration.test.js
-// Spawns `astro build` with a temporary dangling-topic fixture page;
-// asserts the build fails fast with the DanglingHelpTopic class.
+// Spawns `astro build` to test FromTheBinary integration:
+//   1. Failure case: a dangling topic fixture causes the build to fail with DanglingHelpTopic.
+//   2. Positive case: a clean build succeeds and the three navigator pages appear in dist/.
 
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
@@ -59,4 +60,51 @@ test('astro build fails with DanglingHelpTopic when FromTheBinary gets a bad top
     /this-topic-absolutely-does-not-exist/,
     'expected the bad topic string in build output'
   );
+  assert.match(
+    combined,
+    /\/ftb-integration-fixture\//,
+    'expected the page URL path in the DanglingHelpTopic error message'
+  );
+});
+
+test('astro build produces the three reference navigator pages', { timeout: 180_000 }, async (t) => {
+  const tempOutDir = fs.mkdtempSync(path.join(os.tmpdir(), 'astro-integration-positive-'));
+  t.after(() => {
+    fs.rmSync(tempOutDir, { recursive: true, force: true });
+  });
+
+  // Ensure the help-index artefact exists; generate it if absent (same as `predev`).
+  const helpIndexPath = path.join(projectRoot, 'src', 'data', 'cyoda-help-index.json');
+  if (!fs.existsSync(helpIndexPath)) {
+    const fetchResult = spawnSync(
+      'node',
+      ['scripts/fetch-cyoda-help-index.js', '--if-missing'],
+      {
+        cwd: projectRoot,
+        encoding: 'utf8',
+        env: { ...process.env },
+      }
+    );
+    assert.equal(fetchResult.status, 0, `fetch-cyoda-help-index.js failed:\n${fetchResult.stderr}`);
+  }
+
+  const result = spawnSync('npx', ['astro', 'build', '--outDir', tempOutDir], {
+    cwd: projectRoot,
+    encoding: 'utf8',
+    env: { ...process.env, CI: '1', ASTRO_TELEMETRY_DISABLED: '1' },
+  });
+
+  assert.equal(result.status, 0, `expected astro build to succeed, but it exited ${result.status}:\n${result.stderr}`);
+
+  const navigatorPages = [
+    path.join(tempOutDir, 'reference', 'cli', 'index.html'),
+    path.join(tempOutDir, 'reference', 'configuration', 'index.html'),
+    path.join(tempOutDir, 'reference', 'helm', 'index.html'),
+  ];
+
+  for (const pagePath of navigatorPages) {
+    assert.ok(fs.existsSync(pagePath), `expected navigator page to exist: ${pagePath}`);
+    const stat = fs.statSync(pagePath);
+    assert.ok(stat.size > 0, `expected navigator page to be non-empty: ${pagePath}`);
+  }
 });

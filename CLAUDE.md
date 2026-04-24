@@ -13,7 +13,7 @@ npm run dev           # Astro dev server on http://localhost:4321
 npm run build         # Full production build (see pipeline below)
 npm run build:only    # Astro build without the generate/export/package steps
 npm run preview       # Preview the built site
-npm test              # Playwright tests (GDPR + GA)
+npm test              # node:test (fetch script + build integration) + Playwright (GDPR, GA, navigators)
 npm run test:ui       # Playwright interactive runner
 npx playwright test tests/cookie-consent-test.spec.ts   # run a single test file
 npx playwright test -g "Modal Display"                   # run a single test by name

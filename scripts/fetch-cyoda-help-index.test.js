@@ -115,6 +115,7 @@ test('InvalidVersionPin: version starts with "v"', async () => {
   }).catch(e => e);
   assert.match(err.message, /InvalidVersionPin/);
   assert.match(err.message, /must not start with "v"/);
+  assert.ok(err.message.includes(versionFile), `expected pin-file path in message; got: ${err.message}`);
   fs.rmSync(versionFile);
 });
 

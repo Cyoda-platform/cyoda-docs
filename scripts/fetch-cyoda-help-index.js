@@ -33,7 +33,7 @@ function parsePinFile(versionFilePath) {
     throw err('InvalidVersionPin', `${versionFilePath}: missing string "version". Expected { "version": "<semver>" }.`);
   }
   if (parsed.version.startsWith('v')) {
-    throw err('InvalidVersionPin', `version must not start with "v" (e.g. '0.6.1', not 'v0.6.1'). Got: ${parsed.version}`);
+    throw err('InvalidVersionPin', `${versionFilePath}: version must not start with "v" (e.g. '0.6.1', not 'v0.6.1'). Got: ${parsed.version}`);
   }
   return parsed.version;
 }
