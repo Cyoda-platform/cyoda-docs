@@ -6,7 +6,7 @@
     "dev": "astro dev",
     "predev": "node scripts/fetch-cyoda-help-index.js --if-missing && node scripts/fetch-cyoda-openapi.js --if-missing",
     "start": "astro dev",
-    "build": "npm run sync:vendored && npm run generate:schema-pages && npm run fetch:help-index && npm run fetch:openapi && astro build && npm run export:markdown && npm run generate:llms && npm run generate:llms-full && npm run generate:md-sitemap && npm run package:schemas",
+    "build": "npm run sync:vendored && npm run fetch:help-index && npm run fetch:openapi && npm run generate:schema-pages && astro build && npm run export:markdown && npm run generate:llms && npm run generate:llms-full && npm run generate:md-sitemap && npm run package:schemas",
     "build:only": "astro build",
     "export:markdown": "node scripts/export-markdown.js",
     "generate:llms": "node scripts/generate-llms-txt.js",

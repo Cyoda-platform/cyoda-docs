@@ -185,6 +185,19 @@ ${schemaLinks}
 async function generateMainIndex(docsDir, schemaFiles) {
   const indexPath = path.join(docsDir, 'index.mdx');
 
+  // Read pinned cyoda-go version from the help index.
+  // Generator runs AFTER the help-index fetch in the build pipeline, so the
+  // file is expected to be present; we degrade gracefully if it isn't
+  // (generator can still be run standalone for dev iteration).
+  const helpIndexPath = path.resolve(__dirname, '..', 'src', 'data', 'cyoda-help-index.json');
+  let pinnedVersion = null;
+  try {
+    const helpIndex = JSON.parse(fs.readFileSync(helpIndexPath, 'utf-8'));
+    pinnedVersion = helpIndex.pinnedVersion;
+  } catch {
+    // no-op — version paragraph is skipped below
+  }
+
   // Get top-level categories
   const categories = new Set();
   for (const file of schemaFiles) {
@@ -192,10 +205,14 @@ async function generateMainIndex(docsDir, schemaFiles) {
     categories.add(parts[0]);
   }
 
-  const categoryLinks = Array.from(categories).sort().map(cat => {
-    const displayName = cat.charAt(0).toUpperCase() + cat.slice(1);
-    return `  - [${displayName}](./${cat}/)`;
-  }).join('\n');
+  const versionParagraph = pinnedVersion
+    ? `The schemas shown here were captured against **cyoda-go v${pinnedVersion}**.
+For the version you are running, \`cyoda help\` on your own binary is the
+authoritative source — the binary ships its own schema descriptions and always
+matches its own code.
+
+`
+    : '';
 
   const mainIndexContent = `---
 title: JSON Schemas
@@ -206,9 +223,11 @@ import { Card, CardGrid } from '@astrojs/starlight/components';
 
 # JSON Schemas
 
-This section provides complete documentation for all JSON schemas used in the Cyoda platform.
+This section documents the JSON schemas used by the Cyoda platform — CloudEvent
+payloads exchanged over the gRPC processing stream, plus the entity and model
+structures that travel over REST and gRPC.
 
-## Download Schemas
+${versionParagraph}## Download Schemas
 
 You can download all schemas as a ZIP file: [schemas.zip](/schemas.zip)
 
@@ -236,7 +255,7 @@ Navigate to any category above to explore the available schemas.
 `;
 
   fs.writeFileSync(indexPath, mainIndexContent, 'utf-8');
-  console.log(`✅ Generated main schemas index page`);
+  console.log(`✅ Generated main schemas index page${pinnedVersion ? ` (pinned v${pinnedVersion})` : ''}`);
 }
 
 /**
