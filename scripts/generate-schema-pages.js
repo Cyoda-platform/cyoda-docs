@@ -207,9 +207,10 @@ async function generateMainIndex(docsDir, schemaFiles) {
 
   const versionParagraph = pinnedVersion
     ? `The schemas shown here were captured against **cyoda-go v${pinnedVersion}**.
-For the version you are running, \`cyoda help\` on your own binary is the
-authoritative source — the binary ships its own schema descriptions and always
-matches its own code.
+For the version you are running, \`cyoda help cloudevents\` (narrative) and
+\`cyoda help cloudevents json\` (machine-readable) on your own binary are
+authoritative — the binary ships its own schema tree and always matches its
+own code.
 
 `
     : '';
