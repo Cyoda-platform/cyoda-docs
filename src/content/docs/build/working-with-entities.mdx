@@ -5,6 +5,10 @@ sidebar:
   order: 20
 ---
 
+import FromTheBinary from '../../../components/FromTheBinary.astro';
+
+<FromTheBinary topic="crud" />
+
 This page shows the patterns for interacting with entities through the
 platform API. Examples assume a local cyoda-go instance running on the default
 port with SQLite persistence; the same requests work against Cyoda Cloud with
@@ -74,16 +78,12 @@ not accept ad-hoc field filters; those belong to search.
 
 ## Update
 
-Direct field updates go through `PATCH`:
+Direct updates use `PUT /api/entity/{format}/{entityId}` (loopback update — stores a new revision without a named transition) or `PUT /api/entity/{format}/{entityId}/{transition}` (update with a named transition). There is no `PATCH` endpoint — all writes are full-payload PUTs.
 
-```
-PATCH /api/entity/JSON/{entityId}
-```
-
-However, **mutations that move the entity between lifecycle states should go
-through a transition**, not a patch. Invoking the `submit` transition records
-it in the audit trail and runs any attached processors. The transition is a
-`PUT` whose body carries the new entity JSON (the platform stores the updated
+**Mutations that move the entity between lifecycle states should go through a
+named transition**, not a bare loopback update. Invoking the `submit` transition
+records it in the audit trail and runs any attached processors. The transition
+carries the new entity JSON in the request body (the platform stores the updated
 entity and records the named transition in one call):
 
 ```bash

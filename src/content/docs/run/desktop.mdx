@@ -5,6 +5,10 @@ sidebar:
   order: 10
 ---
 
+import FromTheBinary from '../../../components/FromTheBinary.astro';
+
+<FromTheBinary topic="config database" />
+
 The desktop packaging is cyoda-go as it ships out of the box: a single
 binary, no orchestrator, no external database. It is the right choice for
 local development, edge deployments, small-team self-hosting, and any
@@ -17,7 +21,7 @@ The desktop binary supports two storage modes:
 - **In-memory** — everything lives in process memory. Sub-millisecond
   latencies. Data is lost on restart. Use it for tests, demos, and
   digital-twin scenario runs.
-- **SQLite (default)** — durable, single-file, zero-ops. Data survives
+- **SQLite (default after `cyoda init`)** — durable, single-file, zero-ops. Data survives
   restarts; backup is a file copy. Use it for everyday persistent work.
   SQLite is single-writer; all writes serialize through the database file,
   which limits concurrent write throughput.

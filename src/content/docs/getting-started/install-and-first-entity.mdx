@@ -6,6 +6,7 @@ sidebar:
 ---
 
 import { Aside } from '@astrojs/starlight/components';
+import FromTheBinary from '../../../components/FromTheBinary.astro';
 
 This page takes you from nothing installed to a persisted entity you can query,
 running entirely on your own machine. The default backend is **SQLite** — zero
@@ -22,9 +23,13 @@ authoritative list of installers lives in the
 brew install cyoda-platform/cyoda-go/cyoda
 ```
 
-The Homebrew formula runs `cyoda init` for you, enabling SQLite persistence with
-data stored in `~/.local/share/cyoda/cyoda.db`. A `curl | sh` installer, Debian
+The Homebrew formula is expected to run `cyoda init` automatically, enabling
+SQLite persistence with data at `~/.local/share/cyoda/cyoda.db` on macOS/Linux.
+If it didn't (or if you installed another way), run `cyoda init` yourself — see
+`cyoda help cli init` for what it does. A `curl | sh` installer, Debian
 packages, and Fedora RPMs are available for other environments.
+
+<FromTheBinary topic="cli init" />
 
 ## Why SQLite is the default
 

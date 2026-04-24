@@ -5,6 +5,10 @@ sidebar:
   order: 25
 ---
 
+import FromTheBinary from '../../../components/FromTheBinary.astro';
+
+<FromTheBinary topic="search" />
+
 Cyoda exposes search over REST for any query that returns a set of
 entities. Use it when you need more than one entity back, when the filter
 goes beyond a single id lookup, or when you want to scope by workflow
@@ -116,10 +120,7 @@ the full object form when you need operators:
 }
 ```
 
-Treat the reference as the source of truth for the exact operator names
-and nesting rules; Cyoda's REST spec is published as an OpenAPI asset
-against each release, see
-[`cyoda-go#81`](https://github.com/Cyoda-platform/cyoda-go/issues/81).
+For the full predicate grammar — every operator, nesting rule, and function — run `cyoda help search` against your binary.
 
 ## Historical reads with `pointInTime`
 
