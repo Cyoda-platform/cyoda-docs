@@ -1,10 +1,12 @@
 ---
 import type { Props } from '@astrojs/starlight/props';
 import Default from '@astrojs/starlight/components/TableOfContents.astro';
+import ViewAsMarkdown from './ViewAsMarkdown.astro';
 ---
 
 <div class="toc-wrapper">
   <div class="default-toc">
     <Default {...Astro.props} />
   </div>
+  <ViewAsMarkdown />
 </div>

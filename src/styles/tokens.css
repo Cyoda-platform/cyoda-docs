@@ -39,6 +39,8 @@
   --cyoda-border: 220 10% 22%;
   --cyoda-muted: 220 10% 16%;
   --sl-color-accent: var(--cyoda-aqua);              /* original teal #4FB8B0 — ~7:1 on dark */
+  --sl-color-accent-high: var(--cyoda-aqua);         /* explicit: keep accent-high readable on dark */
   --sl-color-accent-low: hsl(var(--cyoda-teal) / 0.15);
   --sl-color-border-accent: hsl(var(--cyoda-teal) / 0.5);
+  --sl-color-text-accent: var(--cyoda-aqua);         /* explicit: link color in dark mode stays teal */
 }

@@ -63,6 +63,11 @@
   z-index: 1;
 }
 
+/* Dark-mode code-block language label uses full-strength teal for visual coherence. */
+:root[data-theme='dark'] .sl-markdown-content .expressive-code .frame pre::before {
+  color: hsl(var(--cyoda-teal));
+}
+
 /* Starlight asides (note / tip / caution / danger) — desaturated
  * Cyoda-adjacent palette. Starlight's defaults use vivid lavender /
  * neon-tip purple that clashes with the Cyoda voice; we re-tint to
