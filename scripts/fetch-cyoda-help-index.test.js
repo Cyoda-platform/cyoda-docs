@@ -93,6 +93,19 @@ test('InvalidVersionPin: malformed pin file', async () => {
   fs.rmSync(versionFile);
 });
 
+test('InvalidVersionPin: parse-error message includes pin-file path', async () => {
+  const versionFile = path.join(os.tmpdir(), `pin-path-check-${Date.now()}-${Math.random()}.json`);
+  fs.writeFileSync(versionFile, '{ not json }');
+  const err = await run({
+    fetch: makeFetch({}),
+    versionFilePath: versionFile,
+    outputPath: tmpOutputFile(),
+  }).catch(e => e);
+  assert.match(err.message, /InvalidVersionPin/);
+  assert.ok(err.message.includes(versionFile), `expected pin-file path in message; got: ${err.message}`);
+  fs.rmSync(versionFile);
+});
+
 test('InvalidVersionPin: version starts with "v"', async () => {
   const versionFile = tmpVersionFile('v0.6.1');
   const err = await run({
@@ -181,6 +194,27 @@ test('HelpJsonMalformed: missing topics array', async () => {
   const err = await run({
     fetch: makeFetch({
       [JSON_URL]: { status: 200, text: malformedJson },
+      [SUMS_URL]: { status: 200, text: `${sha}  cyoda_help_test.json\n` },
+    }),
+    versionFilePath: versionFile,
+    outputPath: tmpOutputFile(),
+  }).catch(e => e);
+  assert.match(err.message, /HelpJsonMalformed/);
+  fs.rmSync(versionFile);
+});
+
+test('HelpJsonMalformed: topic with empty path array', async () => {
+  const versionFile = tmpVersionFile('test');
+  const malformed = JSON.stringify({
+    schema: 1,
+    version: 'x',
+    topics: [{ path: [], title: 'no path', synopsis: 's' }],
+  });
+  const { createHash } = await import('node:crypto');
+  const sha = createHash('sha256').update(malformed).digest('hex');
+  const err = await run({
+    fetch: makeFetch({
+      [JSON_URL]: { status: 200, text: malformed },
       [SUMS_URL]: { status: 200, text: `${sha}  cyoda_help_test.json\n` },
     }),
     versionFilePath: versionFile,

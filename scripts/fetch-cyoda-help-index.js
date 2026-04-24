@@ -27,10 +27,10 @@ function parsePinFile(versionFilePath) {
   try {
     parsed = JSON.parse(raw);
   } catch (cause) {
-    throw err('InvalidVersionPin', `not valid JSON: ${cause.message}. Expected { "version": "<semver>" }.`);
+    throw err('InvalidVersionPin', `${versionFilePath}: not valid JSON: ${cause.message}. Expected { "version": "<semver>" }.`);
   }
   if (!parsed || typeof parsed.version !== 'string' || !parsed.version) {
-    throw err('InvalidVersionPin', `missing string "version". Expected { "version": "<semver>" }.`);
+    throw err('InvalidVersionPin', `${versionFilePath}: missing string "version". Expected { "version": "<semver>" }.`);
   }
   if (parsed.version.startsWith('v')) {
     throw err('InvalidVersionPin', `version must not start with "v" (e.g. '0.6.1', not 'v0.6.1'). Got: ${parsed.version}`);
@@ -72,7 +72,7 @@ function stripAndSort(helpJson) {
     throw err('HelpJsonMalformed', `expected { schema, version, topics: [...] }; got ${JSON.stringify(Object.keys(helpJson || {}))}`);
   }
   const stripped = helpJson.topics.map((t) => {
-    if (!t || typeof t !== 'object' || !Array.isArray(t.path) || typeof t.title !== 'string') {
+    if (!t || typeof t !== 'object' || !Array.isArray(t.path) || t.path.length === 0 || typeof t.title !== 'string') {
       throw err('HelpJsonMalformed', `topic entry missing required fields path/title: ${JSON.stringify(t)}`);
     }
     return {
