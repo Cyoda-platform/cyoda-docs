@@ -1,0 +1,55 @@
+---
+// src/components/FromTheBinary.astro
+// Callout pointing readers at a specific `cyoda help <topic>` invocation.
+// Throws DanglingHelpTopic at build time if `topic` isn't in the pinned index.
+
+import helpIndex from '../data/cyoda-help-index.json';
+
+interface Props {
+  topic: string;
+}
+
+const { topic } = Astro.props;
+const pathParts = topic.trim().split(/\s+/);
+const match = helpIndex.topics.find(
+  (t) =>
+    t.path.length === pathParts.length &&
+    t.path.every((segment, i) => segment === pathParts[i])
+);
+
+if (!match) {
+  throw new Error(
+    `DanglingHelpTopic: <FromTheBinary topic="${topic}" /> on page ${Astro.url.pathname} — no such topic in pinned cyoda-go v${helpIndex.pinnedVersion}. ` +
+      `Either fix the prop or bump cyoda-go-version.json.`
+  );
+}
+---
+<aside class="from-the-binary" aria-label="Canonical reference in the cyoda-go binary">
+  <p class="ftb-line">
+    <strong>Canonical reference:</strong> <code>cyoda help {topic}</code>
+  </p>
+  <p class="ftb-line ftb-secondary">
+    This page is the narrative; the binary is authoritative.
+  </p>
+</aside>
+
+<style>
+  .from-the-binary {
+    border-left: 4px solid hsl(var(--cyoda-orange));
+    background: hsl(var(--cyoda-orange) / 0.08);
+    padding: 0.75rem 1rem;
+    border-radius: 0.25rem;
+    margin-block-end: 1.5rem;
+    font-size: 0.9rem;
+  }
+  .from-the-binary .ftb-line {
+    margin: 0;
+  }
+  .from-the-binary .ftb-secondary {
+    margin-top: 0.25rem;
+    opacity: 0.85;
+  }
+  .from-the-binary code {
+    font-size: 0.95em;
+  }
+</style>

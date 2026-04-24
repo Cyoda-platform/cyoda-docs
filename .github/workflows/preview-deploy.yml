@@ -88,16 +88,15 @@ jobs:
           SITE_URL: ${{ env.SURGE_URL }}
           CI: true
 
-      # Temporarily disabled for deployment
-      # - name: Run GDPR compliance and Google Analytics tests
-      #   run: |
-      #     echo "🧪 Running GDPR compliance and Google Analytics tests"
-      #     npm test
-      #   env:
-      #     NODE_ENV: production
-      #     GA_MEASUREMENT_ID: ${{ secrets.GA_MEASUREMENT_ID }}
-      #     SITE_URL: ${{ env.SURGE_URL }}
-      #     CI: true
+      - name: Run node:test + Playwright (GDPR, GA, navigators, build integration)
+        run: |
+          echo "🧪 Running node:test + Playwright"
+          npm test
+        env:
+          NODE_ENV: production
+          GA_MEASUREMENT_ID: ${{ secrets.GA_MEASUREMENT_ID }}
+          SITE_URL: ${{ env.SURGE_URL }}
+          CI: true
 
 
 

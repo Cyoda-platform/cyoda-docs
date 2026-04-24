@@ -1,17 +1,42 @@
 ---
 title: Reference
-description: Technical references — mostly sourced from cyoda-go at build time.
+description: Technical references — mostly generated from cyoda-go at build time.
 sidebar:
   order: 0
 ---
 
-Reference content here is either generated from cyoda-go artefacts or
-embedded from live resources. When an artefact isn't yet available
-upstream, you'll see an **Awaiting upstream** banner with a link to
-the tracking issue.
+import helpIndex from '../../../data/cyoda-help-index.json';
 
-- [API](./api/) — REST (embedded) and gRPC (when available).
-- [JSON Schemas](./schemas/) — auto-generated from `vendored/schemas/`.
-- [CLI](./cli/) — awaiting upstream.
-- [Configuration](./configuration/) — awaiting upstream.
-- [Helm values](./helm/) — awaiting upstream.
+Reference content on this site is a narrative skin over the cyoda-go
+binary. The binary is self-documenting — every flag, environment
+variable, endpoint, error code, metric, header, and operation ships with
+its own help topic. This section points you at the right topics, shows
+you the REST/gRPC surfaces, and documents the CloudEvent JSON Schemas.
+
+The material here was captured against **cyoda-go v{helpIndex.pinnedVersion}**.
+For whatever version you are running, `cyoda help` on your own binary
+is the authoritative source.
+
+## Start here
+
+- **[cyoda help](./cyoda-help/)** — navigator over the full topic tree. Every
+  top-level topic and its drilldowns, with synopses. The best first stop.
+
+## Surfaces
+
+- **[API](./api/)** — REST OpenAPI 3.1 reference, interactive viewer.
+- **[gRPC](./api/#grpc)** — gRPC CloudEventsService (cross-linked from the API page).
+- **[JSON Schemas](./schemas/)** — CloudEvent payload schemas, extracted from the
+  pinned binary at build time.
+- **[Trino SQL](./trino/)** — SQL analytics surface (Cyoda Cloud; upcoming).
+
+## Navigators over specific topics
+
+- **[CLI](./cli/)** — command-line entry points and global flags.
+- **[Configuration](./configuration/)** — configuration model, precedence,
+  profiles, `_FILE` secrets.
+- **[Helm values](./helm/)** — chart layout, values model, secret provisioning.
+- **[Entity model export](./entity-model-export/)** — SIMPLE_VIEW export shape.
+
+Each navigator page carries a "Canonical reference" callout pointing at
+the corresponding `cyoda help <topic>` for the authoritative contract.

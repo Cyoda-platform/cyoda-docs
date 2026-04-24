@@ -2,7 +2,8 @@
 
 :root {
   /* Cyoda brand palette (HSL triplets for hsl() composition) */
-  --cyoda-teal: 175 67% 52%;         /* #4FB8B0 */
+  --cyoda-teal: 175 67% 52%;         /* #4FB8B0 — brand base, used for decorative fills */
+  --cyoda-teal-accent: 175 70% 30%;  /* #17857C — darker variant for text/icons, passes WCAG AA on white (~5.5:1) */
   --cyoda-orange: 32 95% 59%;        /* #FD9E29 */
   --cyoda-purple: 258 74% 37%;       /* #5A18AC */
   --cyoda-green: 106 44% 60%;        /* #6BB45A */
@@ -12,6 +13,7 @@
   --cyoda-aqua-rgb: 79, 184, 176;
   --cyoda-aqua-light: hsl(var(--cyoda-teal) / 0.1);
   --cyoda-aqua-medium: hsl(var(--cyoda-teal) / 0.2);
+  --cyoda-aqua-dark: hsl(var(--cyoda-teal-accent));
 
   /* Surfaces */
   --cyoda-background: 0 0% 100%;
@@ -26,10 +28,10 @@
   /* Starlight slot mappings */
   --sl-font: var(--cyoda-font-sans);
   --sl-font-mono: var(--cyoda-font-mono);
-  --sl-color-accent: var(--cyoda-aqua);
+  --sl-color-accent: hsl(var(--cyoda-teal-accent));
   --sl-color-accent-low: hsl(var(--cyoda-teal) / 0.1);
-  --sl-color-accent-high: hsl(var(--cyoda-teal) / 0.9);
-  --sl-color-border-accent: var(--cyoda-aqua);
+  --sl-color-accent-high: hsl(var(--cyoda-teal-accent) / 0.9);
+  --sl-color-border-accent: hsl(var(--cyoda-teal-accent));
 }
 
 :root[data-theme='dark'] {
@@ -37,7 +39,9 @@
   --cyoda-foreground: 220 20% 96%;
   --cyoda-border: 220 10% 22%;
   --cyoda-muted: 220 10% 16%;
-  --sl-color-accent: var(--cyoda-aqua);
+  --sl-color-accent: var(--cyoda-aqua);              /* original teal #4FB8B0 — ~7:1 on dark */
+  --sl-color-accent-high: var(--cyoda-aqua);         /* explicit: keep accent-high readable on dark */
   --sl-color-accent-low: hsl(var(--cyoda-teal) / 0.15);
   --sl-color-border-accent: hsl(var(--cyoda-teal) / 0.5);
+  --sl-color-text-accent: var(--cyoda-aqua);         /* explicit: link color in dark mode stays teal */
 }

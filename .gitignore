@@ -9,8 +9,18 @@ dist/
 # auto-generated schema documentation pages (all MDX files in reference/schemas/)
 src/content/docs/reference/schemas/**/*.mdx
 
-# Materialised from vendored/schemas/ at build time
+# Fetched from pinned cyoda-go release at build time via scripts/fetch-cyoda-schemas.js
 src/schemas/
+
+# Auto-generated at build time by scripts/fetch-cyoda-help-index.js
+src/data/cyoda-help-index.json
+
+# Auto-generated at build time by scripts/fetch-cyoda-openapi.js
+public/openapi/openapi.json
+public/openapi/openapi.yaml
+
+# Binary cache downloaded by scripts/fetch-cyoda-openapi.js
+.cyoda-cache/
 
 # dependencies
 node_modules/

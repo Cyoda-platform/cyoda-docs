@@ -1,19 +1,67 @@
 ---
 title: "Helm values"
-description: "cyoda-go Helm chart values reference — awaiting upstream artefact."
+description: "cyoda-go Helm chart — narrative navigator over `cyoda help helm`."
 sidebar:
   order: 50
 ---
 
-import VendoredBanner from '../../../components/VendoredBanner.astro';
+import FromTheBinary from '../../../components/FromTheBinary.astro';
+import helpIndex from '../../../data/cyoda-help-index.json';
 
-<VendoredBanner stability="awaiting-upstream" issue="https://github.com/Cyoda-platform/cyoda-go/issues/80" />
+export const helmTopics = (() => {
+  const found = helpIndex.topics.filter(t => t.path[0] === 'helm');
+  if (found.length === 0) {
+    throw new Error(`EmptyNavigator: reference/helm.mdx filtered helpIndex to zero topics under prefix "helm" (pinned v${helpIndex.pinnedVersion}). Likely a topic rename upstream.`);
+  }
+  return found;
+})();
 
-Until the generated Helm values reference is published upstream, the
-chart's own `values.yaml` is the authoritative source:
+<FromTheBinary topic="helm" />
 
-- [`deploy/helm/cyoda/values.yaml`](https://github.com/cyoda-platform/cyoda-go/blob/main/deploy/helm/cyoda/values.yaml)
-  — the complete list of configurable keys with inline documentation.
+The `deploy/helm/cyoda` chart packages cyoda-go for Kubernetes. The
+chart's own `values.yaml` enumerates every configurable key; this page
+covers the model that shapes how those values map to Kubernetes objects
+and how secrets are provisioned.
+
+## What the chart provisions
+
+A standard deployment per release: a `Deployment`, a `Service` for HTTP
++ gRPC + admin ports, a `ConfigMap` materialising the `.env`-format
+configuration, and a `Secret` for credential material. An optional
+`ServiceMonitor` (Prometheus Operator) and `HorizontalPodAutoscaler`
+are wired off per-value flags.
+
+## Values model
+
+Values split into two groups:
+
+- **Configuration values** — map one-to-one to the `CYODA_*` env vars
+  documented in the binary. Changing them alters runtime behaviour but
+  not Kubernetes shape. See `cyoda help config` for the list.
+- **Deployment values** — image tag, replica count, resource requests,
+  service type, ingress glue. These shape the Kubernetes objects the
+  chart renders; they never reach the binary.
+
+## Secret provisioning
+
+Credentials follow the same `_FILE` pattern as bare-metal deployments.
+The chart mounts the `Secret` at a known path and sets `CYODA_*_FILE`
+env vars accordingly, so the binary reads each secret at startup. You
+never put raw credentials into the chart's `values.yaml` in a
+production deployment — wire an existing `Secret` via `existingSecret`
+or equivalent.
+
+## Related topics
+
+<ul>
+  {helmTopics.map((t) => (
+    <li>
+      <strong><code>cyoda help {t.path.join(' ')}</code></strong> — {t.title.replace(/^[^—]*—\s*/, '')}
+      <br />
+      <span style="opacity: 0.8;">{t.synopsis}</span>
+    </li>
+  ))}
+</ul>
 
 See [Run → Kubernetes](/run/kubernetes/) for the deployment pattern and
 production-sizing guidance.

@@ -1,0 +1,27 @@
+{
+  "schema": 1,
+  "version": "test-fixture",
+  "topics": [
+    {
+      "topic": "search",
+      "path": ["search"],
+      "title": "search — entity search API",
+      "synopsis": "Query entities by predicate.",
+      "body": "# search\n\nThis body will be stripped.\n"
+    },
+    {
+      "topic": "async",
+      "path": ["search", "async"],
+      "title": "search async — asynchronous snapshot search",
+      "synopsis": "Queued, unbounded, paged.",
+      "body": "# search async\n\nAlso stripped.\n"
+    },
+    {
+      "topic": "cli",
+      "path": ["cli"],
+      "title": "cli — the cyoda command-line interface",
+      "synopsis": "Subcommands and global flags.",
+      "body": "# cli\n\nStripped too.\n"
+    }
+  ]
+}

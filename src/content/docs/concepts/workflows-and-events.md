@@ -27,15 +27,10 @@ actually re-entered later — it does not need to terminate at all.
 
 ## Triggers
 
-Transitions fire in response to events. The shape of the event determines how
-the transition is triggered:
+Transitions fire in one of two ways:
 
 - **Manual** — an actor (a user, a service, an admin) calls the transition by
   name through the API.
-- **Time-based** — schedules or delays expressed in the workflow; the platform
-  fires the transition when the clock reaches the configured point.
-- **Message-based** — an incoming message (an ingest event, an upstream
-  notification) drives the transition.
 - **Automatic** — on entering a state, the first valid auto transition fires
   within the same transaction, recursing until no further auto transition
   applies.

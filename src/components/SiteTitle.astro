@@ -19,7 +19,7 @@ import config from 'virtual:starlight/user-config';
     align-items: center;
     gap: 0.75rem;
     text-decoration: none;
-    color: var(--cyoda-aqua);
+    color: var(--sl-color-accent);
     font-weight: 600;
     font-size: 1.25rem;
     transition: opacity 0.2s ease;
@@ -35,16 +35,10 @@ import config from 'virtual:starlight/user-config';
   }
 
   .site-title-text {
-    color: var(--cyoda-aqua);
+    color: var(--sl-color-accent);
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
-  }
-
-  /* Ensure aqua color in both light and dark modes */
-  :root[data-theme='dark'] .site-title-text,
-  :root[data-theme='light'] .site-title-text {
-    color: var(--cyoda-aqua);
   }
 
   /* Responsive adjustments */

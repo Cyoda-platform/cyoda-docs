@@ -6,6 +6,7 @@ sidebar:
 ---
 
 import { Aside } from '@astrojs/starlight/components';
+import FromTheBinary from '../../../components/FromTheBinary.astro';
 
 This page takes you from nothing installed to a persisted entity you can query,
 running entirely on your own machine. The default backend is **SQLite** — zero
@@ -22,9 +23,13 @@ authoritative list of installers lives in the
 brew install cyoda-platform/cyoda-go/cyoda
 ```
 
-The Homebrew formula runs `cyoda init` for you, enabling SQLite persistence with
-data stored in `~/.local/share/cyoda/cyoda.db`. A `curl | sh` installer, Debian
+The Homebrew formula is expected to run `cyoda init` automatically, enabling
+SQLite persistence with data at `~/.local/share/cyoda/cyoda.db` on macOS/Linux.
+If it didn't (or if you installed another way), run `cyoda init` yourself — see
+`cyoda help cli init` for what it does. A `curl | sh` installer, Debian
 packages, and Fedora RPMs are available for other environments.
+
+<FromTheBinary topic="cli init" />
 
 ## Why SQLite is the default
 
@@ -55,6 +60,28 @@ Flip to JWT mode by setting `CYODA_IAM_MODE=jwt` plus
 `CYODA_JWT_SIGNING_KEY` (RSA private key, PEM). For the full auth-mode
 configuration see [Configuration](/reference/configuration/).
 </Aside>
+
+## Discover everything else with `cyoda help`
+
+Every flag, environment variable, endpoint, error code, metric, and operation
+is documented in the binary. Browse the topic tree:
+
+```bash
+cyoda help
+```
+
+Drill in on anything:
+
+```bash
+cyoda help config        # configuration model and precedence
+cyoda help crud          # entity CRUD over REST
+cyoda help search        # query predicates and search modes
+cyoda help errors        # the error catalogue
+cyoda help telemetry     # metrics, health, tracing, logs
+```
+
+`cyoda help <topic> --format=json` emits a machine-readable shape suitable
+for tools; `--format=markdown` is the default off a TTY.
 
 ## Import a workflow
 
@@ -148,6 +175,9 @@ see the [API reference](/reference/api/).
 
 ## Next steps
 
+- **Explore the binary.** Every flag, env var, endpoint, and error is
+  described by a `cyoda help <topic>` action. Browse the full tree at
+  [Reference → `cyoda help`](/reference/cyoda-help/).
 - **Understand the model.** Read [Design principles](/concepts/design-principles/)
   and [Entities and lifecycle](/concepts/entities-and-lifecycle/) for the mental
   model behind what you just did.
