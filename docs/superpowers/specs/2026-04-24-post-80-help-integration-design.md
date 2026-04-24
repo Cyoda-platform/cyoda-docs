@@ -121,9 +121,25 @@ later phase.
 
 ### `scripts/fetch-cyoda-help-index.js` (NEW)
 
-Exports a `run({ fetch, versionFilePath, outputPath })` function so
-tests can inject a mocked `fetch` without monkey-patching globals.
-The CLI entry point wires it to `globalThis.fetch` and real paths.
+Exports a `run({ fetch, versionFilePath, outputPath, ifMissing })`
+function so tests can inject a mocked `fetch` without
+monkey-patching globals. The CLI entry point wires it to
+`globalThis.fetch` and real paths, and parses a single `--if-missing`
+flag that sets `ifMissing: true`: when set, the script is a no-op if
+`outputPath` already exists. This is the single mechanism `npm run
+dev` uses to avoid refetching on every dev-server restart; no second
+ensure-script exists.
+
+Logger style matches `scripts/generate-schema-pages.js` — emoji-
+prefixed `console.log` for progress lines and `console.error` for
+failures. Operators reading `npm run build` output see a consistent
+step header (`📚 Fetching cyoda help index (pinned v<version>)…`)
+next to the existing schema generator's header.
+
+The emitted index's `topics` array is sorted lexicographically by
+`path.join("/")` so the artifact is diff-stable across builds. This
+eliminates churn in any downstream that snapshots the file, and
+makes manual inspection during debugging trivial.
 
 Writes `src/data/cyoda-help-index.json` with this shape:
 
@@ -219,8 +235,10 @@ Audit confirmed the three navigator pages are the only callers of
 
 Add `fetch-help` script that runs `scripts/fetch-cyoda-help-index.js`.
 Extend `build` to invoke it before `astro build`. Extend `dev` to
-invoke it only if `src/data/cyoda-help-index.json` is missing, so
-contributors don't need to remember a separate command on first run.
+invoke `scripts/fetch-cyoda-help-index.js --if-missing` so
+contributors don't need to remember a separate command on first run
+and repeat dev-server starts don't re-fetch. Same script, one flag —
+no second ensure-script.
 
 ### `.gitignore` (MODIFIED)
 
@@ -291,8 +309,11 @@ Fixtures live under `tests/fixtures/help/`:
 - `SHA256SUMS.valid`, `SHA256SUMS.wrong`, `SHA256SUMS.missing-entry`
 
 One test per fatal error class plus one happy path. Happy path
-asserts the emitted index has no `body` fields and carries the
-pinned version + `generatedAt`.
+asserts the emitted index has no `body` fields, carries the pinned
+version + `generatedAt`, and is sorted lexicographically by
+`path.join("/")`. An additional test exercises `--if-missing`: a
+pre-existing output file short-circuits the run and no network call
+happens.
 
 ### Integration — `tests/build-help-integration.spec.ts`
 
@@ -348,18 +369,6 @@ existing config.
 - [ ] `npm test` runs unit + integration + Playwright; all pass in CI.
 - [ ] `CLAUDE.md` build-pipeline section mentions step 1a and its
       input file.
-
-## Open questions (to resolve during planning)
-
-- Exact placement of the fetcher's error output — plain `console.error`
-  vs. a styled logger that matches `generate-schema-pages.js`'s output
-  style. Lean toward matching the existing generator for visual
-  consistency; plan-phase decision.
-- Whether the `dev`-script conditional re-fetch uses a shell one-liner
-  or a separate `scripts/ensure-help-index.js`. Cosmetic.
-- Whether to pre-sort the index's `topics` array for diff stability
-  across builds. Lean yes (sort by `path.join("/")`) — negligible
-  cost, large diff-noise reduction.
 
 ## Follow-ups filed / to file
 
