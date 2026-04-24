@@ -1,0 +1,87 @@
+---
+title: "cyoda help"
+description: "Every flag, env var, endpoint, error, metric, and operation — browsable from the binary. This page is a navigator over the full topic tree."
+sidebar:
+  order: 20
+---
+
+import helpIndex from '../../../data/cyoda-help-index.json';
+
+export const byTopLevel = (() => {
+  const groups = new Map();
+  for (const t of helpIndex.topics) {
+    const top = t.path[0];
+    if (!groups.has(top)) groups.set(top, []);
+    groups.get(top).push(t);
+  }
+  return Array.from(groups.entries()).map(([top, topics]) => {
+    topics.sort((a, b) => a.path.join('/').localeCompare(b.path.join('/')));
+    return { top, topics };
+  });
+})();
+
+The cyoda binary is self-documenting. Every flag, environment variable,
+endpoint, error code, metric, header, and operation is described by a
+**help topic** that ships with the binary. Topics are structured; many
+subdivide into drilldowns. The tree is stable across patch releases and
+evolves with minor releases.
+
+## How to use it
+
+```bash
+cyoda help                          # browse the whole tree
+cyoda help <topic>                  # read one topic (e.g. `cyoda help search`)
+cyoda help <topic> <subtopic>       # drill down (e.g. `cyoda help search async`)
+cyoda help <topic> --format=json    # machine-readable
+cyoda help <topic> --format=markdown # default off-TTY — paste into docs, PRs, chat
+```
+
+The binary you run is the authority for the version you run. This page
+lists the tree as shipped by the cyoda-go release this site was built
+against — other releases may add or rename topics.
+
+## The tree
+
+<dl class="cyoda-help-tree">
+  {byTopLevel.map(({ top, topics }) => (
+    <>
+      <dt><code>cyoda help {top}</code></dt>
+      <dd>
+        <p>{topics.find(t => t.path.length === 1)?.synopsis ?? ''}</p>
+        {topics.filter(t => t.path.length > 1).length > 0 && (
+          <ul>
+            {topics.filter(t => t.path.length > 1).map(t => (
+              <li>
+                <code>cyoda help {t.path.join(' ')}</code> — {t.synopsis}
+              </li>
+            ))}
+          </ul>
+        )}
+      </dd>
+    </>
+  ))}
+</dl>
+
+<style>{`
+  .cyoda-help-tree dt {
+    margin-top: 1.2rem;
+    font-weight: 600;
+  }
+  .cyoda-help-tree dd {
+    margin-left: 1.5rem;
+    margin-top: 0.25rem;
+  }
+  .cyoda-help-tree dd p {
+    margin: 0 0 0.4rem 0;
+  }
+  .cyoda-help-tree dd ul {
+    margin: 0.25rem 0 0 0;
+    padding-left: 1.2rem;
+  }
+  .cyoda-help-tree dd li {
+    margin-block: 0.15rem;
+  }
+  .cyoda-help-tree dd code {
+    font-size: 0.9em;
+  }
+`}</style>
