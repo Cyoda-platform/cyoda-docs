@@ -7,7 +7,12 @@ import { test, expect } from '@playwright/test';
 
 test.describe('Cookie Consent Integration Tests', () => {
 
-  test('should verify cookie consent library files are accessible', async ({ page }) => {
+  // This test hits `http://localhost:4321/node_modules/vanilla-cookieconsent/dist/*`
+  // which is only served by `astro dev`. In production builds (`astro build` + `npx serve dist`)
+  // node_modules isn't exposed, so the requests 404. The useful compliance coverage
+  // lives in cookie-consent-test.spec.ts which asserts actual modal behavior against
+  // the built site. TODO: either port this to test bundled/_astro chunks, or delete.
+  test.skip('should verify cookie consent library files are accessible', async ({ page }) => {
     // Test that the cookie consent CSS loads
     const cssResponse = await page.goto('http://localhost:4321/node_modules/vanilla-cookieconsent/dist/cookieconsent.css');
     expect(cssResponse?.status()).toBe(200);

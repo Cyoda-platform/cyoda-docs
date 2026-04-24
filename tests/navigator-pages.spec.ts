@@ -22,10 +22,14 @@ for (const { path, topic } of pages) {
 
     test('has at least one related-topic bullet', async ({ page }) => {
       await page.goto(path);
-      // Root on the stable heading id; the two selectors handle Starlight's
-      // current wrapper-div sibling structure AND a future layout where the
-      // <ul> is a direct sibling of the <h2>.
-      const bullets = page.locator('h2#related-topics + * ~ ul li, h2#related-topics ~ ul li');
+      // Root on the stable heading id. Starlight currently wraps each <h2>
+      // in a <div class="sl-heading-wrapper">, so the <ul> is a sibling of
+      // that wrapper — NOT of the <h2>. Use document-order XPath traversal
+      // ("find the first <ul> that follows this <h2> anywhere in the tree")
+      // so the test works regardless of wrapper changes in future Starlight.
+      const bullets = page
+        .locator('h2#related-topics')
+        .locator('xpath=following::ul[1]/li');
       await expect(bullets.first()).toBeVisible();
     });
 
