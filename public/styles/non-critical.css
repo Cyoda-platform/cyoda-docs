@@ -147,11 +147,11 @@
  * somewhere" (read-more callouts, section-level links, external CTAs).
  */
 .sl-markdown-content a[href]:not(.cyoda-btn):not(.sl-anchor-link) {
-  color: hsl(178 40% 30%);
+  color: var(--sl-color-text-accent);
   text-decoration: none;
   /* Default underline is the non-colour link affordance (WCAG 1.4.1).
    * Since the arrow is opt-in, links need a visible cue without hover. */
-  border-bottom: 1px solid hsl(178 40% 30%);
+  border-bottom: 1px solid var(--sl-color-text-accent);
   transition: all 0.2s ease;
 }
 
