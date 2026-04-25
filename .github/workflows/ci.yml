@@ -1,0 +1,43 @@
+# Build and test on every PR targeting main. No deploy.
+name: CI
+
+on:
+  pull_request:
+    branches: ["main"]
+
+permissions:
+  contents: read
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v6
+      - name: Setup Node.js
+        uses: actions/setup-node@v6
+        with:
+          node-version: '22'
+          cache: 'npm'
+      - name: Install dependencies
+        run: npm ci --omit=dev
+      - name: Install Playwright browsers for Mermaid rendering and testing
+        run: npx playwright install --with-deps chromium
+        env:
+          PLAYWRIGHT_SKIP_BROWSER_DOWNLOAD: false
+          CI: true
+      - name: Build site
+        run: npm run build
+        env:
+          NODE_ENV: production
+          GA_MEASUREMENT_ID: ${{ secrets.GA_MEASUREMENT_ID }}
+          CI: true
+      - name: Install serve for testing
+        run: npm install -g serve
+      - name: Run node:test + Playwright (GDPR, GA, navigators, build integration)
+        run: npm test
+        env:
+          NODE_ENV: production
+          GA_MEASUREMENT_ID: ${{ secrets.GA_MEASUREMENT_ID }}
+          CI: true
