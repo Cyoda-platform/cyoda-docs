@@ -1,0 +1,112 @@
+---
+title: "Analytics with SQL"
+description: "Query entities with Trino SQL — when it's the right surface, how to connect, and where to find the full grammar."
+sidebar:
+  order: 45
+---
+
+:::caution[Upcoming]
+Trino SQL is on the roadmap and not yet available in cyoda-go at this release. This page documents the planned surface; names and shapes may change before release.
+:::
+
+Cyoda projects every entity model into a set of virtual SQL tables and
+exposes them through a Trino connector. Use this surface for cross-entity
+analytics: joins across entity types, aggregates, reporting, time-series,
+BI dashboards. For operational read/write, stay on [REST](/build/working-with-entities/);
+for compute that runs against transitions, use [gRPC compute
+nodes](/build/client-compute-nodes/).
+
+## When to use SQL
+
+- Ad-hoc analysis against live data in a notebook or BI tool.
+- Scheduled reports aggregating entities across a tenant.
+- Historical queries using the `point_time` column for as-of reads.
+- Cross-entity joins — e.g. orders joined to customers joined to
+  payments.
+
+If the question is *transactional* ("read this one entity", "fire this
+transition"), it does not belong here. REST is faster, cheaper, and
+correctly scoped for that.
+
+## Connect
+
+The JDBC connection string pattern:
+
+```
+jdbc:trino://trino-client-<caas_user_id>.eu.cyoda.net:443/cyoda/<your_schema>
+```
+
+- `caas_user_id` — your CAAS user ID.
+- `<your_schema>` — the SQL schema name you configured (create one in
+  the Cyoda UI under **Trino/SQL**, or via
+  `PUT /sql/schema/putDefault/{schemaName}`).
+
+Authenticate with a bearer token issued by the platform. For
+technical-user setup and the OAuth 2.0 client-credentials flow, see
+[Authentication and identity](/concepts/authentication-and-identity/).
+
+## A first query
+
+Given an entity model `orders` with nested `lines`, Cyoda produces one
+table per nested level plus a JSON reconstruction table:
+
+- `orders` — root columns + top-level fields
+- `orders_lines` — one row per line item, with `index_0` marking
+  position
+- `orders_json` — the complete JSON document per entity
+
+Read a single order and its lines:
+
+```sql
+SELECT
+  o.entity_id,
+  o.state,
+  o.customer_id,
+  l.index_0 AS line_no,
+  l.sku,
+  l.quantity,
+  l.price
+FROM orders o
+JOIN orders_lines l
+  ON l.entity_id = o.entity_id
+WHERE o.entity_id = '00000000-0000-0000-0000-000000000001';
+```
+
+Query as of last Tuesday:
+
+```sql
+SELECT * FROM orders
+WHERE point_time = TIMESTAMP '2026-04-14 00:00:00'
+  AND state = 'submitted';
+```
+
+## Table-naming rules, at a glance
+
+- Root node of an entity → table named after the model
+  (e.g. `orders`).
+- Array-of-objects node → `<model>_<field>` (e.g. `orders_lines`).
+- Multi-dimensional arrays → `<model>_<field>_<N>d_array` (detached
+  array naming).
+- JSON reconstruction → `<model>_json`.
+
+The full projection rules — node decomposition, detached arrays, type
+mapping, polymorphic fields — live in the
+[Trino SQL reference](/reference/trino/).
+
+## Performance notes
+
+- When querying a `<model>_json` table, **always include `entity_id` in
+  the WHERE clause**. Without that predicate the query scans the
+  reconstruction table for every entity and gets very slow.
+- For joins across nested-array tables, use `entity_id` plus matching
+  `index_*` columns as join keys.
+- Omit `point_time` unless you actually need historical data.
+
+## Where to go next
+
+- [Trino SQL reference](/reference/trino/) — full projection rules,
+  type mapping, polymorphic fields, complete worked example.
+- [APIs and surfaces](/concepts/apis-and-surfaces/) — when to pick
+  REST vs gRPC vs SQL.
+- [Entities and lifecycle](/concepts/entities-and-lifecycle/) — the
+  entity model whose shape becomes your SQL tables.

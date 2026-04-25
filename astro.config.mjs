@@ -31,8 +31,13 @@ export default defineConfig({
 			target: 'es2022', // Modern browsers for better tree-shaking
 			rollupOptions: {
 				treeshake: {
-					preset: 'recommended',
-					moduleSideEffects: false
+					preset: 'recommended'
+					// Do NOT set moduleSideEffects: false here. It strips
+					// CSS-only side-effect imports (e.g. Starlight's
+					// `import '../style/anchor-links.css'` in Page.astro
+					// via virtual:starlight/optional-css), producing
+					// broken rendering for heading anchor links and
+					// other styled Starlight features.
 				}
 			},
 			// Optimize CSS delivery
@@ -55,6 +60,25 @@ export default defineConfig({
 				colorScheme: 'default'
 			}]
 		]
+	},
+	redirects: {
+		'/getting-started/introduction/': '/concepts/what-is-cyoda/',
+		'/getting-started/quickstart/': '/getting-started/install-and-first-entity/',
+		'/guides/cyoda-design-principles/': '/concepts/design-principles/',
+		'/guides/api-saving-and-getting-data/': '/build/working-with-entities/',
+		'/guides/authentication-authorization/': '/concepts/authentication-and-identity/',
+		'/guides/iam-jwt-keys-and-oidc/': '/run/cyoda-cloud/identity-and-entitlements/',
+		'/guides/iam-oidc-and-jwt-claims/': '/run/cyoda-cloud/identity-and-entitlements/',
+		'/guides/workflow-config-guide/': '/build/workflows-and-processors/',
+		'/guides/client-calculation-member-guide/': '/build/client-compute-nodes/',
+		'/guides/entity-model-simple-view-specification/': '/reference/entity-model-export/',
+		'/guides/sql-and-trino/': '/reference/trino/',
+		'/guides/provision-environment/': '/run/cyoda-cloud/provisioning/',
+		'/architecture/cyoda-cloud-architecture/': '/run/cyoda-cloud/',
+		'/cloud/entitlements/': '/run/cyoda-cloud/identity-and-entitlements/',
+		'/cloud/roadmap/': '/run/cyoda-cloud/status-and-roadmap/',
+		'/cloud/service-details/': '/run/cyoda-cloud/',
+		'/cloud/status/': '/run/cyoda-cloud/status-and-roadmap/',
 	},
 	integrations: [
 		react(),
@@ -223,12 +247,16 @@ export default defineConfig({
 				// for better performance and conditional loading
 			],
 			customCss: [
+				// Design tokens - source of truth for palette + typography (load first)
+				'./src/styles/tokens.css',
 				// Critical CSS - inlined for immediate rendering
 				'./src/styles/critical.css',
 				// Primer primitives with Cyoda branding - optimized loading
 				'./src/styles/primer.css',
 				// Custom styles for components
 				'./src/styles/custom.css',
+				// Visual look-and-feel utilities (dotted-grid bg, hero/separator/card helpers) — load last so utilities can layer on top
+				'./src/styles/visual.css',
 				// Non-critical CSS removed from bundle - loaded async from public directory
 			],
 			sidebar: [
@@ -238,29 +266,24 @@ export default defineConfig({
 					autogenerate: { directory: 'getting-started' }
 				},
 				{
-					label: 'Guides',
-					collapsed: true,
-					autogenerate: { directory: 'guides' }
-				},
-				{
-					label: 'Concepts and Ideas',
+					label: 'Concepts',
 					collapsed: true,
 					autogenerate: { directory: 'concepts' }
 				},
 				{
-					label: 'Architecture',
+					label: 'Build',
 					collapsed: true,
-					autogenerate: { directory: 'architecture' }
+					autogenerate: { directory: 'build' }
 				},
 				{
-					label: 'Cloud Info',
+					label: 'Run',
 					collapsed: true,
-					autogenerate: { directory: 'cloud' }
+					autogenerate: { directory: 'run' }
 				},
 				{
-					label: 'JSON Schemas',
+					label: 'Reference',
 					collapsed: true,
-					autogenerate: { directory: 'schemas' }
+					autogenerate: { directory: 'reference' }
 				},
 			],
 			components: {

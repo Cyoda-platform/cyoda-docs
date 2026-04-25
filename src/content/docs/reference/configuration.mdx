@@ -1,0 +1,71 @@
+---
+title: "Configuration"
+description: "cyoda-go configuration model — narrative navigator over `cyoda help config`."
+sidebar:
+  order: 40
+---
+
+import FromTheBinary from '../../../components/FromTheBinary.astro';
+import helpIndex from '../../../data/cyoda-help-index.json';
+
+export const configTopics = (() => {
+  const found = helpIndex.topics.filter(t => t.path[0] === 'config');
+  if (found.length === 0) {
+    throw new Error(`EmptyNavigator: reference/configuration.mdx filtered helpIndex to zero topics under prefix "config" (pinned v${helpIndex.pinnedVersion}). Likely a topic rename upstream.`);
+  }
+  return found;
+})();
+
+<FromTheBinary topic="config" />
+
+cyoda-go reads configuration from `CYODA_*` environment variables and
+from `.env`-format files. The authoritative key list — every variable,
+its type, its default — lives in the binary. This page covers the
+*model*: how sources compose, how profiles work, and how secrets are
+mounted from files.
+
+## Sources and precedence
+
+Values resolve in this order, highest to lowest:
+
+1. Shell environment
+2. `.env.{profile}` files (in `CYODA_PROFILES` declaration order; later profiles override earlier ones within their group)
+3. `.env` in the project directory
+4. User config file
+5. System config file
+6. Hardcoded defaults
+
+Format is `.env` only (godotenv-parsed). No TOML, no YAML, no `--config`
+flag. Subcommand flags (e.g. `cyoda init --force`) are operation-scoped
+and do not override server-runtime configuration.
+
+**User config path** varies by OS: `~/.config/cyoda/cyoda.env` (Linux,
+macOS with XDG), `%AppData%\cyoda\cyoda.env` (Windows). **System config**
+lives at `/etc/cyoda/cyoda.env` on POSIX.
+
+## Profiles
+
+`CYODA_PROFILES` is comma-separated and evaluated in declaration order.
+Within a profile, regular `.env` precedence applies; across profiles,
+later entries in the list override earlier ones.
+
+## Secrets via `_FILE` suffix
+
+Any variable that accepts a credential (Postgres URL, JWT signing key,
+metrics bearer, gossip HMAC, bootstrap client secret) accepts a
+companion `*_FILE` variable that reads from a mounted file. Trailing
+whitespace is stripped. The `_FILE` variant takes precedence when both
+are set — the pattern designed for Kubernetes Secrets and Docker
+secrets mounts.
+
+## Related topics
+
+<ul>
+  {configTopics.map((t) => (
+    <li>
+      <strong><code>cyoda help {t.path.join(' ')}</code></strong> — {t.title.replace(/^[^—]*—\s*/, '')}
+      <br />
+      <span style="opacity: 0.8;">{t.synopsis}</span>
+    </li>
+  ))}
+</ul>

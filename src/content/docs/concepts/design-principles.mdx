@@ -1,0 +1,92 @@
+---
+title: "Design principles"
+description: "The mental model behind Cyoda: entities as durable state machines, transitions as the unit of change, and history as a first-class query surface."
+sidebar:
+  order: 1
+---
+
+import { Aside } from '@astrojs/starlight/components';
+
+Cyoda's shape follows from a few connected ideas. Once those click, the rest of the
+platform — the APIs, the workflows, the audit trail, the deployment tiers — is just
+what falls out of them. This page is the high-level picture; the pages that follow
+drill into each idea in depth.
+
+## Everything is an entity
+
+In Cyoda, every piece of persisted data is an **entity**: a JSON document that
+belongs to a typed model and carries a lifecycle state. Entities are not rows to be
+updated in place and they are not messages passing through a pipe. They are the
+objects your system reasons about — customers, orders, documents, trades — with
+identity, state, and history.
+
+Models are discovered from the data, not declared up front, and widen as new
+shapes arrive. Once a model is good enough to rely on, it can be **locked** so new
+data must conform.
+
+## An entity is a durable state machine
+
+Each entity type has a **workflow** — a set of named states, the legal transitions
+between them, and the criteria and processors that run along each transition. The
+entity lives inside that machine.
+
+Cyoda's state machines are close in spirit to BPM flows but looser: transitions can
+be **automatic** (fire on entering a state) or **manual** (invoked by an actor), and
+a workflow need not be linear or terminate. Cycles and branches are first-class.
+
+See [Entities and lifecycle](/concepts/entities-and-lifecycle/) for the full model,
+including the state-machine diagram.
+
+## Transitions are the unit of change
+
+Nothing in Cyoda is overwritten. Every transition produces a new, durable revision
+of the entity, validated against the model at the moment it happened. Processors run
+under a defined event contract; criteria gate whether the transition is allowed to
+fire at all.
+
+Because revisions accumulate instead of replacing each other, **history is not an
+add-on audit layer — it is the storage model**. Point-in-time reads, transition
+logs, and schema-lineage queries are all native operations.
+
+## Events drive the machine
+
+Events — "file uploaded", "payment received", "a manual transition issued by an operator" — trigger transitions.
+Transitions invoke processors. Processors can be synchronous or asynchronous, and
+can run inside or alongside the transition's transaction. The platform keeps the
+whole chain observable and replayable.
+
+## Same semantics, every tier
+
+The same entity, workflow, and transition semantics run on every deployment tier
+Cyoda supports: in-memory for tests, SQLite on a desktop, Docker for a single
+machine, Kubernetes via Helm, or Cyoda Cloud for a managed fleet. Applications
+move between tiers without rewriting their domain model.
+
+## TL;DR
+
+<Aside type="note" title="The mental model in one breath">
+- All persisted data is an **entity** with a typed model and a lifecycle state.
+- Each entity follows a **workflow** — a state machine of states, transitions,
+  criteria, and processors.
+- **Transitions** are the atomic unit of change; each one produces a new revision.
+- Transitions can be **automatic** (fire on state entry) or **manual** (invoked).
+- Criteria **guard** transitions; processors **execute** along them, sync or async.
+- **History** is the storage model, not an add-on; every revision is addressable.
+- **Events** drive transitions; the whole chain is observable and replayable.
+- The same semantics apply on every tier, from in-memory tests to the cloud.
+</Aside>
+
+## Where to go next
+
+- [Entities and lifecycle](/concepts/entities-and-lifecycle/) — schemas, states,
+  history, and the state-machine shape of an entity.
+- Workflows and events — how transitions, processors, and criteria are wired
+  together. *(Coming as the Concepts section fills out.)*
+- History and audit — query patterns for time travel and schema lineage.
+  *(Coming.)*
+- APIs and surfaces, tiers and deployment options, authentication and identity —
+  each has its own page in this section.
+
+For the long-form argument behind these ideas, see
+[Entity Workflows for Event-Driven Architectures](https://medium.com/@paul_42036/entity-workflows-for-event-driven-architectures-4d491cf898a5)
+and [What's an Entity Database?](https://medium.com/@paul_42036/whats-an-entity-database-11f8538b631a).

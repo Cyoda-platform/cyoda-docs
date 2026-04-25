@@ -1,0 +1,35 @@
+---
+// src/components/ViewAsMarkdown.astro
+// Inline "View Markdown" link under the right-side page navigation.
+// URL derivation mirrors CopyPageButton.astro — driven by Astro.url.pathname
+// so every page points at its own markdown export.
+
+const { pathname } = Astro.url;
+
+function getMarkdownUrl(p: string): string {
+  const clean = p.replace(/^\/+|\/+$/g, '');
+  if (!clean) return '/markdown/index.md';
+  return `/markdown/${clean}.md`;
+}
+
+const mdPath = getMarkdownUrl(pathname);
+---
+<a class="view-as-md" href={mdPath} data-astro-prefetch="false" target="_blank" rel="noopener">
+  View Markdown
+</a>
+
+<style>
+  .view-as-md {
+    display: inline-block;
+    font-size: 0.85rem;
+    color: var(--sl-color-text-accent);
+    text-decoration: none;
+    margin-top: 0.5rem;
+    padding: 0.3rem 0.6rem;
+    border: 1px solid var(--sl-color-accent-low);
+    border-radius: 0.25rem;
+  }
+  .view-as-md:hover {
+    background: var(--sl-color-accent-low);
+  }
+</style>

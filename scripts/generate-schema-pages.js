@@ -15,7 +15,7 @@ async function generateSchemaPages() {
 
   const projectRoot = path.resolve(__dirname, '..');
   const schemasDir = path.join(projectRoot, 'src', 'schemas');
-  const docsDir = path.join(projectRoot, 'src', 'content', 'docs', 'schemas');
+  const docsDir = path.join(projectRoot, 'src', 'content', 'docs', 'reference', 'schemas');
 
   // Find all JSON schema files
   const schemaFiles = await glob('**/*.json', {
@@ -65,10 +65,10 @@ async function generateSchemaPages() {
     const mdxPath = path.join(outputDir, `${urlName}.mdx`);
 
     // Calculate the number of directory levels to go up
-    // MDX is in src/content/docs/schemas/[relativePath]/file.mdx
+    // MDX is in src/content/docs/reference/schemas/[relativePath]/file.mdx
     // Need to go up to src/ then into schemas/
     const depth = relativePath.split(path.sep).length; // e.g., 'common/statemachine' = 2
-    const upLevels = '../'.repeat(depth + 2); // +2 for 'docs' and 'schemas'
+    const upLevels = '../'.repeat(depth + 3); // +3 for 'docs', 'reference', 'schemas'
 
     // Build the import paths
     const componentImport = `${upLevels}../components/JsonSchemaViewer.tsx`;
@@ -89,9 +89,10 @@ ${schemaDescription}
 
 ## Schema Viewer
 
-<JsonSchemaViewer 
-  schema={schema} 
+<JsonSchemaViewer
+  schema={schema}
   name="${schemaName}"
+  category="${category}"
   client:load
 />
 
@@ -184,6 +185,19 @@ ${schemaLinks}
 async function generateMainIndex(docsDir, schemaFiles) {
   const indexPath = path.join(docsDir, 'index.mdx');
 
+  // Read pinned cyoda-go version from the help index.
+  // Generator runs AFTER the help-index fetch in the build pipeline, so the
+  // file is expected to be present; we degrade gracefully if it isn't
+  // (generator can still be run standalone for dev iteration).
+  const helpIndexPath = path.resolve(__dirname, '..', 'src', 'data', 'cyoda-help-index.json');
+  let pinnedVersion = null;
+  try {
+    const helpIndex = JSON.parse(fs.readFileSync(helpIndexPath, 'utf-8'));
+    pinnedVersion = helpIndex.pinnedVersion;
+  } catch {
+    // no-op — version paragraph is skipped below
+  }
+
   // Get top-level categories
   const categories = new Set();
   for (const file of schemaFiles) {
@@ -191,10 +205,15 @@ async function generateMainIndex(docsDir, schemaFiles) {
     categories.add(parts[0]);
   }
 
-  const categoryLinks = Array.from(categories).sort().map(cat => {
-    const displayName = cat.charAt(0).toUpperCase() + cat.slice(1);
-    return `  - [${displayName}](./${cat}/)`;
-  }).join('\n');
+  const versionParagraph = pinnedVersion
+    ? `The schemas shown here were captured against **cyoda-go v${pinnedVersion}**.
+For the version you are running, \`cyoda help cloudevents\` (narrative) and
+\`cyoda help cloudevents json\` (machine-readable) on your own binary are
+authoritative — the binary ships its own schema tree and always matches its
+own code.
+
+`
+    : '';
 
   const mainIndexContent = `---
 title: JSON Schemas
@@ -205,9 +224,11 @@ import { Card, CardGrid } from '@astrojs/starlight/components';
 
 # JSON Schemas
 
-This section provides complete documentation for all JSON schemas used in the Cyoda platform.
+This section documents the JSON schemas used by the Cyoda platform — CloudEvent
+payloads exchanged over the gRPC processing stream, plus the entity and model
+structures that travel over REST and gRPC.
 
-## Download Schemas
+${versionParagraph}## Download Schemas
 
 You can download all schemas as a ZIP file: [schemas.zip](/schemas.zip)
 
@@ -235,7 +256,7 @@ Navigate to any category above to explore the available schemas.
 `;
 
   fs.writeFileSync(indexPath, mainIndexContent, 'utf-8');
-  console.log(`✅ Generated main schemas index page`);
+  console.log(`✅ Generated main schemas index page${pinnedVersion ? ` (pinned v${pinnedVersion})` : ''}`);
 }
 
 /**
@@ -267,7 +288,7 @@ function generateRelatedSchemasSection(category, schemaName) {
   // This is a placeholder - you can enhance this to detect actual references
   return `## Related Schemas
 
-See other schemas in the [${category}](/schemas/${category}/) category.
+See other schemas in the [${category}](/reference/schemas/${category}/) category.
 `;
 }
 

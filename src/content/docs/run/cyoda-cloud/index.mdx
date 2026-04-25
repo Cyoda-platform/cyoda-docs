@@ -1,0 +1,246 @@
+---
+title: Cyoda Cloud
+description: Hosted Cyoda offering — test/demo today, commercial SLA offering planned.
+sidebar:
+  order: 0
+---
+
+import Badge from '../../../../components/Badge.astro';
+import { Aside } from '@astrojs/starlight/components';
+
+<Badge variant="orange">Evolving · Test / demo only</Badge>
+
+Cyoda Cloud is currently a test and demonstration platform. Use at
+your own risk. A commercial offering with SLAs is planned.
+
+This page gives an implementation-oriented overview of Cyoda Cloud: its
+physical architecture (how client compute integrates with the platform)
+and the current operational characteristics, service boundaries, and
+considerations that matter when you use it.
+
+## Architecture
+
+Cyoda models entities via configuration and provides persistence, transactional workflow orchestration and processing, and distributed querying via API and SQL in a write-only, horizontally distributed architecture. This enables building scalable event-driven systems with ease, with client-specific logic executed as independent compute.
+
+![Cyoda Cloud Architecture](../../../../assets/architecture/Cyoda-Cloud-Client-View-compact.svg)
+
+Key points:
+- Cyoda calls client compute via **gRPC + CloudEvents**
+- Client compute is **client-owned**, **polyglot**, and **independently scalable**
+- Data is stored in **Cassandra (bare metal, per-tenant keyspaces)**
+- Data is **queried via HTTP API or Trino SQL**, in both cases as distributed queries with horizontally scalability
+- Each cluster layer (Cyoda, Trino, client compute, Cassandra) **scales horizontally**; nothing is coupled
+
+### Platform overview
+
+Cyoda Cloud is deployed on Hetzner bare‑metal infrastructure in Helsinki, Finland, supplemented by selected internal services running on Hetzner Cloud. Each lifecycle stage (development, staging, production) is deployed as an independent environment with its own Kubernetes and Cassandra clusters.
+
+Key characteristics:
+- **Bare metal first**: Cassandra runs directly on bare‑metal servers for predictable latency and I/O performance, and is intentionally not containerised.
+- **High‑bandwidth internal network**: Bare‑metal nodes are connected via a private 10 Gbit LAN.
+- **Strict network isolation**: External access is fronted by Cloudflare. All ingress to internal services occurs through VPN‑secured channels.
+- **Horizontal scalability by design**: Cyoda services, Trino, and client compute nodes scale independently.
+
+### Client compute model
+
+Cyoda delegates all client‑specific business logic to Client Compute Nodes. These nodes:
+- Connect to Cyoda via gRPC and CloudEvents
+- Execute processors within workflows
+- Evaluate criteria that control gateway transitions
+- Are fully owned and implemented by the client
+
+Client compute is a first‑class part of the architecture and can be deployed flexibly depending on latency, isolation, and operational requirements.
+
+Currently supported client runtimes:
+- Java/Kotlin
+- Python
+
+Additional languages are planned, enabling a fully polyglot execution model.
+
+### Developer mode
+
+In developer mode, client compute nodes typically run on the developer's local machine.
+
+![Cyoda Cloud Architecture](../../../../assets/architecture/Cyoda-Cloud-Client-View-developer-mode.svg)
+
+Characteristics:
+- Client nodes connect to Cyoda Cloud via a **Cloudflare tunnel**
+- Developers use their preferred IDE, language, and local tooling
+- Hot‑reload and rapid iteration are supported
+
+In this mode:
+- **Client applications** interact with Cyoda using the HTTP API or the Trino JDBC driver to perform CRUD operations and queries
+- **SQL tooling** can be used directly against entity data via Trino
+
+Despite its simplicity, the architecture remains fully horizontally scalable:
+- Cyoda services scale elastically per tenant
+- Trino scales independently for analytical workloads
+- Client compute nodes scale independently
+- Cassandra scales horizontally and is shared across tenants
+
+### Multi-cloud
+
+Cyoda supports multi‑cloud deployments where tenant resources run in a separate cloud or region from the Cyoda control plane.
+
+![Cyoda Cloud Architecture](../../../../assets/architecture/Cyoda-Cloud-Client-View-multi-cloud.svg)
+
+### Multi-language
+
+Each client compute node can be implemented in a different programming language.
+
+This enables:
+- Polyglot architectures
+- Team autonomy
+- Incremental migration between languages
+
+Cyoda treats all client nodes uniformly at the protocol level, regardless of implementation language.
+
+![Cyoda Cloud Architecture](../../../../assets/architecture/Cyoda-Cloud-Client-View-multi-language.svg)
+
+### Single-cloud
+
+An entire Cyoda instance (control plane and tenant workloads) can be deployed into a single cloud environment.
+
+![Cyoda Cloud Architecture](../../../../assets/architecture/Cyoda-Cloud-Client-View-single-cloud.svg)
+
+### Sharded by client tag
+
+For advanced workloads, client tags can be used to route events to specific subsets of client compute nodes.
+
+This enables targeted execution strategies, such as:
+- Separating GPU/TPU‑backed compute from CPU‑only workloads
+- Isolating high‑throughput, low‑latency processing from batch workloads
+- Running specialised processors with different cost or performance characteristics
+
+Routing is explicit and deterministic, making this model suitable for complex or heterogeneous compute requirements.
+
+![Cyoda Cloud Architecture](../../../../assets/architecture/Cyoda-Cloud-Client-View-tag-sharded.svg)
+
+### Cyoda Cloud layout
+
+The current Cyoda Cloud deployment is a multi‑tenant platform running on bare‑metal infrastructure in Hetzner datacenters (EU).
+
+![Cyoda Cloud Architecture](../../../../assets/architecture/Cyoda-Cloud-Client-View-cyoda-details.svg)
+
+High‑level characteristics:
+- Each tenant maps to a dedicated Kubernetes namespace
+- Each tenant has:
+  - Its own Cyoda pods
+  - A dedicated Cassandra keyspace
+  - A dedicated Trino deployment for SQL access
+
+Cyoda and Trino can both be elastically scaled per tenant to meet:
+- Event processing throughput
+- Workflow execution demand
+- Complex analytical query workloads
+
+In addition to the core runtime components, the platform includes:
+
+- Cyoda UI SPA for interactive use
+- Cyoda Toolbox Server for administrators, exposing a GraphQL API for maintenance and analysis
+- Apache Zookeeper for Cyoda cluster state management (multi‑tenant across namespaces)
+- Prometheus and Grafana (LGTM stack) for metrics and observability
+- Alertmanager for alert routing, with notifications sent to internal Google Chat
+
+Log aggregation and analysis are currently handled by Elasticsearch and Kibana. This is expected to be consolidated into Loki and Grafana LogQL in the future.
+
+The diagrams intentionally omit some infrastructure components (gateways and edge routing, VPN and internal network details, authentication and identity services, AI Studio and Cloud Manager applications, auxiliary load balancers and supporting services) to keep the focus on data flow and execution topology.
+
+## Service details
+
+<Aside type="caution" title="Beta phase">
+    During Beta, we are still moving fast and we might be making breaking
+    changes along the way, although we try to keep that to a minimum.
+    Make sure you backup your data, and check before redeploying your
+    Cyoda Cloud environment. It's good practice to set yourself up with
+    some CI/CD pipelines to automate tearing down and rebuilding your
+    data and environment. Contact us on
+    [Discord](https://discord.com/invite/95rdAyBZr2) if you need help.
+</Aside>
+
+For current service status and known issues, and for upcoming work, see [Status and roadmap](./status-and-roadmap/).
+For tier limits and entitlements, see [Identity and entitlements](./identity-and-entitlements/).
+
+### Service availability
+
+**Uptime and maintenance**
+
+- Service operates 24/7
+- Planned maintenance notifications posted on the [Status and roadmap](./status-and-roadmap/) page
+
+**Geographic deployment**
+
+- Single datacenter deployment in Helsinki, Finland
+- Latency characteristics suitable for most development and testing use cases
+- Contact us via [Discord](https://discord.com/invite/95rdAyBZr2) if latency impacts your use case
+
+### Client integration points
+
+- **HTTP API**: REST endpoints for application integration
+- **gRPC**: High-performance interface for compute externalization
+- **JDBC**: SQL querying via Trino
+- **AI Studio**: Entry point for signing up, creating new applications via chat dialogue, provisioning and controlling your environment(s), and getting help. Available at [https://ai.cyoda.net](https://ai.cyoda.net)
+- **Cyoda UI**: Web interface for your Cyoda environment. It's our legacy UI, but with extensive features including entity lifecycle configuration and observability, distributed report configuration and execution, entity model viewing and navigation, Trino SQL schema configuration, and deep processing manager analysis. Available at `https://client-<caas_user_id>.eu.cyoda.net`
+
+### Data management
+
+**Storage characteristics**
+
+- Apache Cassandra backend with replication factor 3
+- Write-only entity persistence for complete audit trails
+- Point-in-time querying capabilities
+- No automatic backups in Free Tier
+
+**Data retention**
+
+- Data persists until explicitly deleted by user or exported via API
+- Users responsible for data export and backup
+- Data export available via HTTP API endpoints
+
+### API and integration
+
+**Rate limiting**
+
+Rate limits vary by subscription tier. See [Identity and entitlements](./identity-and-entitlements/) for specific limits.
+
+- HTTP 429 responses when limits exceeded
+- Burst capacity available within limits
+
+**Authentication**
+
+- Auth0-based human authentication for web interfaces
+- OAuth 2.0 client credentials flow for technical users
+- Technical user creation via [AI Studio](https://ai.cyoda.net)
+
+For complete authentication details, see [Authentication and identity](/concepts/authentication-and-identity/).
+
+### Current service limitations
+
+**Beta phase considerations**
+
+- Frequent platform updates and changes
+- Feature set under active development
+- Documentation continuously updated
+
+**Support channels**
+
+- Primary support via [Discord](https://discord.com/invite/95rdAyBZr2)
+- Global team coverage across time zones
+- Community-driven support model
+
+**API versioning**
+
+- API versioning planned for post-Beta release
+- Client libraries available on GitHub. Lots of active development there.
+- In Beta, expect breaking changes. We'll keep people informed on [Status and roadmap](./status-and-roadmap/) and [Discord](https://discord.com/invite/95rdAyBZr2).
+
+### Migration and data portability
+
+- Full data export via HTTP API
+- User responsibility for backup and migration
+
+## In this section
+
+- [Provisioning](./provisioning/)
+- [Identity and entitlements](./identity-and-entitlements/)
+- [Status and roadmap](./status-and-roadmap/)

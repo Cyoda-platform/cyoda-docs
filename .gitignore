@@ -6,8 +6,21 @@ dist/
 # generated types
 .astro/
 
-# auto-generated schema documentation pages (all MDX files in schemas/)
-src/content/docs/schemas/**/*.mdx
+# auto-generated schema documentation pages (all MDX files in reference/schemas/)
+src/content/docs/reference/schemas/**/*.mdx
+
+# Fetched from pinned cyoda-go release at build time via scripts/fetch-cyoda-schemas.js
+src/schemas/
+
+# Auto-generated at build time by scripts/fetch-cyoda-help-index.js
+src/data/cyoda-help-index.json
+
+# Auto-generated at build time by scripts/fetch-cyoda-openapi.js
+public/openapi/openapi.json
+public/openapi/openapi.yaml
+
+# Binary cache downloaded by scripts/fetch-cyoda-openapi.js
+.cyoda-cache/
 
 # dependencies
 node_modules/
@@ -30,6 +43,14 @@ pnpm-debug.log*
 
 test-results/
 playwright-report/
+
+# Playwright MCP session artefacts + screenshots.
+# The MCP is configured with `--output-dir .playwright-mcp` (via the
+# Claude CLI `claude mcp` config) so page snapshots, console logs,
+# and any screenshots Claude asks it to take land here — not at the
+# repo root. This ignore keeps the directory out of git regardless
+# of whether the --output-dir flag is set on a given host/worktree.
+.playwright-mcp/
 
 # agent-safehouse local settings
 .sandbox/

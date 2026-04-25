@@ -1,0 +1,195 @@
+---
+title: "Install cyoda-go and create your first entity"
+description: "Install cyoda-go with SQLite (the default), define an entity model, trigger a workflow, and read state back."
+sidebar:
+  order: 0
+---
+
+import { Aside } from '@astrojs/starlight/components';
+import FromTheBinary from '../../../components/FromTheBinary.astro';
+
+This page takes you from nothing installed to a persisted entity you can query,
+running entirely on your own machine. The default backend is **SQLite** — zero
+operational overhead, one file on disk, data survives restarts.
+
+## Install
+
+cyoda-go ships as a single binary. Pick the flavour that fits your machine; the
+authoritative list of installers lives in the
+[cyoda-go README](https://github.com/cyoda-platform/cyoda-go#install).
+
+```bash
+# macOS / Linux via Homebrew
+brew install cyoda-platform/cyoda-go/cyoda
+```
+
+The Homebrew formula is expected to run `cyoda init` automatically, enabling
+SQLite persistence with data at `~/.local/share/cyoda/cyoda.db` on macOS/Linux.
+If it didn't (or if you installed another way), run `cyoda init` yourself — see
+`cyoda help cli init` for what it does. A `curl | sh` installer, Debian
+packages, and Fedora RPMs are available for other environments.
+
+<FromTheBinary topic="cli init" />
+
+## Why SQLite is the default
+
+SQLite is durable (data survives restarts), zero-ops (no server to run), and
+single-file (easy to inspect, back up, or delete). It is the right starting
+point for everyone except two groups: teams running functional tests where
+latency matters more than durability (use **in-memory** mode — see the callout
+below), and teams building production services (graduate to **PostgreSQL** when
+you need active-active HA; see [Run → overview](/run/)).
+
+## Start the server
+
+Start the server with the defaults:
+
+```bash
+cyoda
+```
+
+<Aside type="note" title="No token? That's expected locally.">
+Running `cyoda` (no subcommand) defaults to **mock auth** (`CYODA_IAM_MODE=mock`): every
+request is authenticated as a configurable default user, no bearer token
+required. You'll see examples elsewhere in the docs with
+`-H "Authorization: Bearer $TOKEN"`; those are written for production
+deployments running in JWT mode. On a fresh local install you can drop
+the header — or keep it and send any placeholder; mock mode ignores it.
+
+Flip to JWT mode by setting `CYODA_IAM_MODE=jwt` plus
+`CYODA_JWT_SIGNING_KEY` (RSA private key, PEM). For the full auth-mode
+configuration see [Configuration](/reference/configuration/).
+</Aside>
+
+## Discover everything else with `cyoda help`
+
+Every flag, environment variable, endpoint, error code, metric, and operation
+is documented in the binary. Browse the topic tree:
+
+```bash
+cyoda help
+```
+
+Drill in on anything:
+
+```bash
+cyoda help config        # configuration model and precedence
+cyoda help crud          # entity CRUD over REST
+cyoda help search        # query predicates and search modes
+cyoda help errors        # the error catalogue
+cyoda help telemetry     # metrics, health, tracing, logs
+```
+
+`cyoda help <topic> --format=json` emits a machine-readable shape suitable
+for tools; `--format=markdown` is the default off a TTY.
+
+## Import a workflow
+
+Before creating an entity, import a workflow so the platform knows which
+state machine to apply. Save this as `workflow.json` — two states
+(`draft` and `submitted`) with one manual transition. States are keyed by
+name; each state owns its outgoing transitions:
+
+```json
+{
+  "workflows": [
+    {
+      "version": "1",
+      "name": "orders-wf",
+      "initialState": "draft",
+      "active": true,
+      "states": {
+        "draft": {
+          "transitions": [
+            { "name": "submit", "next": "submitted", "manual": true }
+          ]
+        },
+        "submitted": {}
+      }
+    }
+  ]
+}
+```
+
+Post it to the import endpoint for the `orders` model at version `1`:
+
+```bash
+curl -X POST http://localhost:8080/api/model/orders/1/workflow/import \
+  -H 'Content-Type: application/json' \
+  -d @workflow.json
+```
+
+Without this step, cyoda-go applies its default workflow (`NONE` →
+`CREATED` → `DELETED` with a single automatic transition), and the
+`submit` transition used below will not exist.
+
+For the full workflow schema — processors, criteria, automatic
+transitions, nested conditions — see
+[Build → workflows and processors](/build/workflows-and-processors/).
+
+## Create your first entity
+
+Define a minimal model and push an entity. Cyoda discovers the schema from the
+sample you send, so you do not need to declare it up front:
+
+```bash
+ENTITY_ID=$(curl -s -X POST http://localhost:8080/api/entity/JSON/orders/1 \
+  -H 'Content-Type: application/json' \
+  -d '{ "orderId": "ORD-1", "amount": 42.00, "currency": "EUR" }' \
+  | jq -r '.[0].entityIds[0]')
+echo "$ENTITY_ID"
+```
+
+The create response is an array; `entityIds[0]` on the first element is the
+**system-assigned UUID** of the new entity. Subsequent reads and transitions
+address the entity by that UUID (`${ENTITY_ID}` here), not by the business
+key `orderId`.
+
+Automatic transitions (`manual: false`) fire immediately on creation,
+cascading the entity through applicable states until it reaches one with
+no outgoing auto transitions. The `orders-wf` workflow you just imported
+has none, so the entity settles in `draft` and waits for the manual
+`submit` transition below.
+
+## Invoke a manual transition
+
+Trigger the `submit` transition on your entity. `{entityId}` (here
+`${ENTITY_ID}`) is the system-assigned UUID captured from the create
+response, not the business key `orderId`:
+
+```bash
+curl -X PUT http://localhost:8080/api/entity/JSON/${ENTITY_ID}/submit
+```
+
+## Read state back
+
+Fetch the current state and the transition log:
+
+```bash
+curl http://localhost:8080/api/entity/${ENTITY_ID}
+```
+
+The response shows the entity in its new `submitted` state plus a record of
+every revision it has been through. For the full request and response shapes,
+see the [API reference](/reference/api/).
+
+## Next steps
+
+- **Explore the binary.** Every flag, env var, endpoint, and error is
+  described by a `cyoda help <topic>` action. Browse the full tree at
+  [Reference → `cyoda help`](/reference/cyoda-help/).
+- **Understand the model.** Read [Design principles](/concepts/design-principles/)
+  and [Entities and lifecycle](/concepts/entities-and-lifecycle/) for the mental
+  model behind what you just did.
+- **Build real applications.** Start with
+  [Build → working with entities](/build/working-with-entities/) for the
+  end-to-end patterns.
+- **Choose a deployment tier.** See [Run → overview](/run/) when you outgrow
+  local SQLite.
+
+<Aside type="tip" title="Testing without disk">
+If you want fast functional tests without durability, run cyoda-go in
+**in-memory** mode (`go run ./cmd/cyoda` or the `CYODA_STORAGE_BACKEND=memory` profile).
+See [Testing with digital twins](/build/testing-with-digital-twins/) for the
+pattern.
+</Aside>

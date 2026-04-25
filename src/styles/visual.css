@@ -1,0 +1,145 @@
+/* src/styles/visual.css — look-and-feel utilities aligned with cyoda-launchpad */
+
+/*
+ * Hero band — faint blueprint SVG painted behind the page title only.
+ *
+ * Starlight renders page sections as <div class="content-panel">; the first
+ * one contains the <h1>. We apply the hero SVG via a ::before layer on that
+ * first panel so every doc page gets a subtle blueprint band behind its
+ * title, and body text remains on a clean surface for reading.
+ *
+ * Source: public/img/hero-banner-{light,dark}.svg (pure SVG — scales
+ * losslessly, ~2KB each, no raster assets).
+ */
+.content-panel:first-of-type {
+  position: relative;
+  isolation: isolate;
+}
+
+.content-panel:first-of-type::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background-image: url('/img/hero-banner-light.svg');
+  background-repeat: no-repeat;
+  background-position: center center;
+  background-size: cover;
+  z-index: -1;
+  pointer-events: none;
+  border-bottom: 1px solid hsl(var(--cyoda-teal) / 0.12);
+}
+
+:root[data-theme='dark'] .content-panel:first-of-type::before {
+  background-image: url('/img/hero-banner-dark.svg');
+}
+
+/* Subtle teal wash for splash/landing pages (opt-in via class) */
+.section-hero {
+  background: linear-gradient(
+    to bottom,
+    hsl(var(--cyoda-teal) / 0.06),
+    transparent
+  );
+  padding-block-end: 2rem;
+  margin-block-end: 2rem;
+}
+
+/* Tighten the vertical rhythm inside the hero.
+ *
+ * Starlight's default h1 margin-top is ~4rem which leaves a gaping
+ * void between the badge and the heading. And the buttons have no
+ * default margin at all, so they collide with the paragraph above.
+ * Re-balance so the flow is: badge -> heading -> paragraph -> buttons
+ * with consistent 1-1.25rem gaps.
+ */
+.section-hero .sl-heading-wrapper {
+  margin-top: 1.25rem;
+}
+.section-hero .cyoda-btn {
+  margin-top: 1.25rem;
+}
+.section-hero .cyoda-btn + .cyoda-btn {
+  margin-left: 0.5rem;
+}
+
+/* Dotted divider */
+.section-separator {
+  height: 1rem;
+  background-image: radial-gradient(
+    circle at center,
+    hsl(var(--cyoda-foreground) / 0.2) 1px,
+    transparent 1.5px
+  );
+  background-size: 8px 8px;
+  background-repeat: repeat-x;
+  background-position: center;
+  margin-block: 2rem;
+}
+
+/* Teal-tinted card variant */
+.card-teal {
+  background: hsl(var(--cyoda-teal) / 0.05);
+  border: 1px solid hsl(var(--cyoda-teal) / 0.3);
+  border-radius: 0.5rem;
+  padding: 1.25rem;
+}
+
+/*
+ * Heading rules — thin teal lines matching the banner strokes.
+ *
+ * - H1 (page title): no underline; the hero banner below it demarcates.
+ * - H2: full-width 1px teal divider.
+ * - H3: short 1px line only under the heading text (inline-block box).
+ * - H4–H6: pure typography, no line.
+ *
+ * primer.css (inherited) adds heavy 2–3px aqua underlines plus an h3
+ * chevron ::before. Override all of it here; visual.css is last in
+ * customCss so these rules win.
+ */
+.sl-markdown-content h1,
+.content-panel h1:first-of-type,
+.main-frame h1:first-of-type {
+  border-bottom: none;
+  padding-bottom: 0;
+}
+
+/*
+ * Apply the H2 underline to the `.sl-heading-wrapper` — not the h2 itself —
+ * so Starlight's inline anchor link stays on the same line as the heading
+ * text. Starlight wraps each heading in `<div class="sl-heading-wrapper
+ * level-h2"><h2>…</h2><a class="sl-anchor-link">…</a></div>` and sets the
+ * h2 to `display: inline` via `@layer starlight.content` so the anchor can
+ * trail the final word. Styling the block-level wrapper gives us a
+ * full-width underline without clobbering that inline display.
+ */
+.sl-markdown-content .sl-heading-wrapper.level-h2 {
+  border-bottom: 1px solid hsl(var(--cyoda-teal) / 0.35);
+  padding-bottom: 0.4rem;
+}
+
+/* Strip the heavy 2px aqua underline that primer.css applies directly to
+   the h2 element — we want the thin wrapper line to be the only rule. */
+.sl-markdown-content h2 {
+  border-bottom: none;
+  padding-bottom: 0;
+}
+
+/* Fallback for any H2 that isn't wrapped (shouldn't happen with Starlight's
+   default `markdown.headingLinks: true`, but keeps the visual consistent
+   if that ever changes). */
+.sl-markdown-content h2:not(.sl-heading-wrapper > h2) {
+  border-bottom: 1px solid hsl(var(--cyoda-teal) / 0.35);
+  padding-bottom: 0.4rem;
+}
+
+.sl-markdown-content h3,
+.sl-markdown-content h4,
+.sl-markdown-content h5,
+.sl-markdown-content h6 {
+  border-bottom: none;
+  padding-bottom: 0;
+}
+
+.sl-markdown-content h3::before {
+  content: none;
+}

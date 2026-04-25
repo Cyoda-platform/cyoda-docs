@@ -6,6 +6,10 @@ on:
   push:
     branches: ["main"]
 
+  # Runs build + tests on every PR targeting main (deploy job is gated below)
+  pull_request:
+    branches: ["main"]
+
   # Allows you to run this workflow manually from the Actions tab
   workflow_dispatch:
 
@@ -46,15 +50,14 @@ jobs:
           NODE_ENV: production
           GA_MEASUREMENT_ID: ${{ secrets.GA_MEASUREMENT_ID }}
           CI: true
-      # Temporarily disabled for deployment
-      # - name: Install serve for testing
-      #   run: npm install -g serve
-      # - name: Run GDPR compliance and Google Analytics tests
-      #   run: npm test
-      #   env:
-      #     NODE_ENV: production
-      #     GA_MEASUREMENT_ID: ${{ secrets.GA_MEASUREMENT_ID }}
-      #     CI: true
+      - name: Install serve for testing
+        run: npm install -g serve
+      - name: Run node:test + Playwright (GDPR, GA, navigators, build integration)
+        run: npm test
+        env:
+          NODE_ENV: production
+          GA_MEASUREMENT_ID: ${{ secrets.GA_MEASUREMENT_ID }}
+          CI: true
       - name: Setup Pages
         uses: actions/configure-pages@v6
       - name: Upload artifact
@@ -63,6 +66,8 @@ jobs:
           path: dist/
 
   deploy:
+    # Only deploy on actual merges / manual dispatches — never from a PR
+    if: github.event_name != 'pull_request'
     environment:
       name: github-pages
       url: ${{ steps.deployment.outputs.page_url }}

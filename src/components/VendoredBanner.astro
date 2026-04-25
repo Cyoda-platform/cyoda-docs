@@ -1,0 +1,41 @@
+---
+// src/components/VendoredBanner.astro — banner on pages sourced from cyoda-go
+interface Props {
+  source?: { repo?: string; path?: string; vendored_at?: string };
+  stability?: 'stable' | 'evolving' | 'upcoming';
+}
+const { source, stability = 'stable' } = Astro.props;
+const showBanner = stability !== 'stable' || source;
+---
+{showBanner && (
+  <aside class="vendored-banner" data-stability={stability}>
+    {stability === 'evolving' && (
+      <><strong>Evolving.</strong> This page may change rapidly with cyoda-go releases.</>
+    )}
+    {stability === 'upcoming' && (
+      <><strong>Upcoming.</strong> This describes a feature on the roadmap; it is not yet available in cyoda-go at this release. Names and shapes may change before release.</>
+    )}
+    {stability === 'stable' && source && (
+      <>
+        Sourced from <a href={`https://github.com/${source.repo}/blob/${source.vendored_at ?? 'main'}/${source.path}`}>
+          {source.repo}/{source.path}
+        </a>. Edit upstream.
+      </>
+    )}
+  </aside>
+)}
+
+<style>
+  .vendored-banner {
+    border-left: 4px solid hsl(var(--cyoda-orange));
+    background: hsl(var(--cyoda-orange) / 0.08);
+    padding: 0.75rem 1rem;
+    border-radius: 0.25rem;
+    margin-block-end: 1.5rem;
+    font-size: 0.9rem;
+  }
+  .vendored-banner[data-stability='upcoming'] {
+    border-left-color: hsl(var(--cyoda-blue, 210 80% 55%));
+    background: hsl(var(--cyoda-blue, 210 80% 55%) / 0.08);
+  }
+</style>

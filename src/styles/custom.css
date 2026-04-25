@@ -24,6 +24,109 @@
   background-color: transparent;
 }
 
+/* Code panels — clean and minimal.
+ *
+ * Hide expressive-code's decorative chrome (macOS-style three dots
+ * on `is-terminal` blocks, tab-style header on `has-title` blocks).
+ * Keep just what matters: a thin Cyoda-aqua border around the pre,
+ * a small language label in the top-left (read from
+ * `pre[data-language]`), the copy button in the top-right (EC-
+ * provided), and syntax-highlighted code in between.
+ */
+.sl-markdown-content .expressive-code .frame.is-terminal .header,
+.sl-markdown-content .expressive-code .frame.has-title .header {
+  display: none;
+}
+
+.sl-markdown-content .expressive-code .frame {
+  position: relative;
+}
+
+.sl-markdown-content .expressive-code .frame pre {
+  border: 1px solid var(--cyoda-aqua-medium);
+  border-radius: 6px;
+  padding-top: 1.75rem;
+}
+
+.sl-markdown-content .expressive-code .frame pre::before {
+  content: attr(data-language);
+  position: absolute;
+  top: 0.4rem;
+  left: 0.75rem;
+  font-size: 0.7rem;
+  font-family: var(--__sl-font-mono, ui-monospace, monospace);
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: hsl(var(--cyoda-teal) / 0.75);
+  font-weight: 600;
+  pointer-events: none;
+  z-index: 1;
+}
+
+/* Dark-mode code-block language label uses full-strength teal for visual coherence. */
+:root[data-theme='dark'] .sl-markdown-content .expressive-code .frame pre::before {
+  color: hsl(var(--cyoda-teal));
+}
+
+/* Starlight asides (note / tip / caution / danger) — desaturated
+ * Cyoda-adjacent palette. Starlight's defaults use vivid lavender /
+ * neon-tip purple that clashes with the Cyoda voice; we re-tint to
+ * muted teal (tip), muted orange (caution), desaturated red (danger),
+ * and cool grey (note). Title/icon colours are a darker variant of
+ * the border hue so they hit WCAG AA on the pale background.
+ *
+ * Unlayered overrides beat Starlight's @layer starlight.components
+ * rules, so no !important needed.
+ */
+.starlight-aside--note {
+  --sl-color-asides-text-accent: hsl(220 10% 35%);
+  --sl-color-asides-border: hsl(220 10% 55%);
+  background-color: hsl(220 10% 55% / 0.06);
+}
+.starlight-aside--tip {
+  --sl-color-asides-text-accent: hsl(175 40% 32%);
+  --sl-color-asides-border: hsl(175 40% 50%);
+  background-color: hsl(175 40% 50% / 0.08);
+}
+.starlight-aside--caution {
+  --sl-color-asides-text-accent: hsl(33 55% 38%);
+  --sl-color-asides-border: hsl(33 55% 55%);
+  background-color: hsl(33 55% 55% / 0.10);
+}
+.starlight-aside--danger {
+  --sl-color-asides-text-accent: hsl(0 50% 40%);
+  --sl-color-asides-border: hsl(0 55% 55%);
+  background-color: hsl(0 55% 55% / 0.08);
+}
+
+/* Landing-page hero image — fills the content column width with the
+ * natural aspect preserved, gets a subtle rounded corner so it sits
+ * comfortably between the page title and the hero panel.
+ *
+ * Pair with `class="landing-hero"` on an Astro <Image /> in the
+ * landing MDX (src/content/docs/index.mdx). No explicit width/height
+ * on the Image tag — Astro reads natural dimensions from the import
+ * and produces optimised variants.
+ */
+.sl-markdown-content img.landing-hero {
+  max-width: 100%;
+  height: auto;
+  min-height: 0;
+  margin-block: 1.25rem 1.5rem;
+  border-radius: 0.5rem;
+}
+
+/* UI-screenshot images — cap at 600px wide, natural aspect preserved.
+ * Pair with `class="screenshot"` on an Astro <Image /> tag in MDX.
+ * Prevents life-size banner rendering of app screenshots when the
+ * content column is wider than the screenshot makes sense to be. */
+.sl-markdown-content img.screenshot {
+  max-width: 600px;
+  height: auto;
+  /* min-height from img[loading="lazy"] doesn't help narrow screenshots */
+  min-height: 0;
+}
+
 /* Footer styling */
 .footer {
   border-top: 1px solid var(--cyoda-aqua-medium);
@@ -58,8 +161,14 @@
 }
 
 .footer-links a:hover {
-  text-decoration: underline;
   border-bottom: 2px solid var(--cyoda-aqua);
+}
+
+.footer-links a:focus-visible,
+.footer-link-button:focus-visible {
+  outline: 2px solid hsl(var(--cyoda-teal));
+  outline-offset: 3px;
+  border-radius: 2px;
 }
 
 .footer-link-button {
@@ -76,7 +185,6 @@
 }
 
 .footer-link-button:hover {
-  text-decoration: underline;
   border-bottom: 2px solid var(--cyoda-aqua);
 }
 
@@ -152,7 +260,7 @@
 
 .json-schema-viewer-wrapper .schema-header h3 {
   margin: 0 0 var(--base-size-8, 0.5rem) 0;
-  color: var(--cyoda-aqua);
+  color: var(--sl-color-accent);
   font-size: var(--base-text-size-20, 1.25rem);
 }
 
@@ -190,11 +298,11 @@
 }
 
 .json-schema-viewer-wrapper .expand-button:hover {
-  color: var(--cyoda-aqua);
+  color: var(--sl-color-accent);
 }
 
 .json-schema-viewer-wrapper .property-name {
-  color: var(--cyoda-aqua);
+  color: var(--sl-color-accent);
   font-weight: var(--base-text-weight-semibold, 600);
   font-family: var(--sl-font-mono);
 }
@@ -209,7 +317,7 @@
 }
 
 .json-schema-viewer-wrapper .property-ref-link {
-  color: var(--cyoda-aqua);
+  color: var(--sl-color-accent);
   text-decoration: none;
   font-weight: var(--base-text-weight-semibold, 600);
   transition: all 0.2s ease;

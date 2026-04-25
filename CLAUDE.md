@@ -1,0 +1,75 @@
+# CLAUDE.md
+
+This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
+
+## Project
+
+Static documentation site for the Cyoda platform, deployed to https://docs.cyoda.net via GitHub Pages. Built with Astro + Starlight, with embedded interactive API reference (Scalar / Stoplight Elements) and auto-generated JSON Schema documentation.
+
+## Commands
+
+```bash
+npm run dev           # Astro dev server on http://localhost:4321
+npm run build         # Full production build (see pipeline below)
+npm run build:only    # Astro build without the generate/export/package steps
+npm run preview       # Preview the built site
+npm test              # node:test (fetch script + build integration) + Playwright (GDPR, GA, navigators)
+npm run test:ui       # Playwright interactive runner
+npx playwright test tests/cookie-consent-test.spec.ts   # run a single test file
+npx playwright test -g "Modal Display"                   # run a single test by name
+```
+
+### Build pipeline (`npm run build`)
+
+Order matters — several steps read the outputs of earlier ones:
+
+1. `scripts/generate-schema-pages.js` — scans `src/schemas/**/*.json` and writes MDX viewer pages into `src/content/docs/schemas/**/*.mdx` (these MDX files are git-ignored; Astro needs them present at build time).
+1a. `scripts/fetch-cyoda-help-index.js` — reads `cyoda-go-version.json`, fetches `cyoda_help_<v>.json` + `SHA256SUMS` from the pinned cyoda-go release, verifies the checksum, strips topic bodies, and writes `src/data/cyoda-help-index.json` (git-ignored). The `FromTheBinary` component and the three navigator pages (`reference/cli|configuration|helm.mdx`) import this index at build time; a dangling `<FromTheBinary topic="…">` fails the build.
+2. `astro build` — produces `dist/`.
+3. `scripts/export-markdown.js` — exports cleaned markdown copies of each doc into `dist/markdown/` (used by the in-page "Copy page" button).
+4. `scripts/generate-llms-txt.js` — writes `dist/llms.txt` for LLM consumers.
+5. `scripts/package-schemas.js` — produces `dist/schemas.zip` containing all raw schemas.
+
+If you change `src/schemas/` or any script, run the full `npm run build` — `build:only` will leave the schema pages, markdown export, llms.txt, and zip stale.
+
+## Architecture
+
+### Content authoring
+
+- `src/content/docs/` — all human-written docs (MDX/MD), organized by sidebar section: `getting-started/`, `guides/`, `concepts/`, `architecture/`, `cloud/`, `schemas/`.
+- Sidebar sections auto-generate from those directories (see `astro.config.mjs` → `starlight.sidebar`). Adding a new top-level section requires both a directory and a sidebar entry.
+- `src/content/docs/schemas/**/*.mdx` is **auto-generated and git-ignored** — do not edit by hand; change the JSON source under `src/schemas/` or the generator script.
+
+### JSON Schemas
+
+- Source of truth: `src/schemas/{common,entity,model,processing,search}/*.json`.
+- `scripts/generate-schema-pages.js` preserves directory structure and builds one MDX per schema plus category/subcategory index pages, wrapping each in the React `JsonSchemaViewer` component (`src/components/JsonSchemaViewer.tsx`, Stoplight-based, `client:load`).
+- See `docs/SCHEMAS_IMPLEMENTATION.md` for the full scheme.
+
+### API reference (OpenAPI)
+
+- Rendered in an iframe to isolate its CSS/JS from Starlight.
+- Renderer is switched via the `API_RENDERER` constant in `src/pages/api-reference.astro` (`'scalar'` | `'stoplight'`). Direct routes also exist at `/api-reference-scalar/` and `/api-reference-stoplight/`.
+- The spec lives at `dist/openapi/openapi.json` (served as a static asset). See `docs/API_REFERENCE_CONFIGURATION.md`.
+
+### Starlight customization
+
+Component overrides in `astro.config.mjs` → `starlight.components`: `Head`, `Footer`, `Header`, `SiteTitle`, `TableOfContents`. When changing chrome/layout, edit these in `src/components/` rather than adding wrappers.
+
+### Cookie consent + Google Analytics
+
+- EU/UK-compliant consent is configured in `astro.config.mjs` via `@jop-software/astro-cookieconsent`. GA is loaded by `src/components/Analytics.astro` only after consent.
+- `GA_MEASUREMENT_ID` is read from env (`.env` locally, GitHub Secret in CI). Compliance behavior is covered by Playwright tests — changes to consent/analytics logic must keep those passing. See `docs/TESTING_INTEGRATION.md`.
+
+### Deployment
+
+- `.github/workflows/static.yml` — production deploy to GitHub Pages on push to `main`. Runs `npm test` with `GA_MEASUREMENT_ID` injected before deploy.
+- `.github/workflows/preview-deploy.yml` / `cleanup-preview.yml` — Surge.sh branch previews.
+
+## Conventions for AI assistants
+
+- **`.augment/rules/` is off-limits.** Per `.augment/rules/README.md`, no AI may modify files in that folder under any circumstances.
+- **`.sandbox/` is local-only.** Never stage, commit, or push anything under `.sandbox/` (also git-ignored).
+- **Never hand-edit `src/content/docs/schemas/**/*.mdx`** — they are regenerated by the build. Modify the source JSON under `src/schemas/` or `scripts/generate-schema-pages.js`.
+- **Never hand-edit `src/data/cyoda-help-index.json`** — it is regenerated by `scripts/fetch-cyoda-help-index.js` from the pinned cyoda-go release asset. Bump `cyoda-go-version.json` at repo root to change which release the build targets.
+- `dist/` is a build artifact and also git-ignored; don't commit changes there.

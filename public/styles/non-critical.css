@@ -123,17 +123,53 @@
   color: var(--cyoda-aqua);
 }
 
-/* Links - Non-critical */
-.sl-markdown-content a {
-  color: var(--cyoda-purple);
+/* Links - Non-critical
+ *
+ * Exclusions:
+ *   :not(.cyoda-btn)       — button-styled anchors keep their own border
+ *   :not(.sl-anchor-link)  — Starlight heading-anchor chain icons have an
+ *                            absolutely-positioned ::after used as a click-
+ *                            target overlay; we mustn't stretch a glyph
+ *                            across it.
+ *
+ * Specificity: `[href]` bumps the selector to 0,3,1 so we win against
+ * Starlight's own `.sl-markdown-content a:not(:where(.not-content *))`
+ * (0,1,1, layered) which otherwise paints links in the generic body
+ * accent colour.
+ *
+ * Default state: darkened teal colour (hsl(178 40% 30%) ≈ 5.5:1 on
+ * white — passes WCAG AA 4.5:1 for body text), no underline. Hover
+ * reveals a matching underline via `border-bottom-color`.
+ *
+ * Trailing-arrow affordance is OPT-IN via the `cta` class — keep it
+ * sparing. Inline body-text references shouldn't sprout arrows mid-
+ * sentence; arrows are for links that genuinely read as "follow me
+ * somewhere" (read-more callouts, section-level links, external CTAs).
+ */
+.sl-markdown-content a[href]:not(.cyoda-btn):not(.sl-anchor-link) {
+  color: var(--sl-color-text-accent);
   text-decoration: none;
-  border-bottom: 1px solid transparent;
+  /* Default underline is the non-colour link affordance (WCAG 1.4.1).
+   * Since the arrow is opt-in, links need a visible cue without hover. */
+  border-bottom: 1px solid var(--sl-color-text-accent);
   transition: all 0.2s ease;
 }
 
-.sl-markdown-content a:hover {
+.sl-markdown-content a[href]:not(.cyoda-btn):not(.sl-anchor-link).cta::after {
+  /* Non-breaking space keeps the arrow glued to the last word when wrapping */
+  content: "\00a0→";
+}
+
+.sl-markdown-content a[href]:not(.cyoda-btn):not(.sl-anchor-link):hover {
+  /* Hover pops to the brand aqua for interactive feedback */
   color: var(--cyoda-aqua);
   border-bottom-color: var(--cyoda-aqua);
+}
+
+.sl-markdown-content a[href]:not(.cyoda-btn):not(.sl-anchor-link):focus-visible {
+  outline: 2px solid hsl(var(--cyoda-teal));
+  outline-offset: 2px;
+  border-radius: 2px;
 }
 
 /* Button and interactive elements - Non-critical */
