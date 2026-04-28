@@ -52,7 +52,7 @@ it is running against — and that is the point.
 | **In-memory** | Ephemeral | None — restart loses data | Bounded by host RAM | Single binary, no deps | OSS — ships with cyoda-go | Tests, digital-twin sims |
 | **SQLite** | Durable (single file) | Single-process; survives restart, not disk loss | Single node, disk-bound | Single binary, no deps | OSS — ships with cyoda-go | Desktop, edge, single-node prod |
 | **PostgreSQL** | Durable, replicated via PostgreSQL | HA via PostgreSQL replication & failover; mid-transaction node loss returns `TRANSACTION_NODE_UNAVAILABLE` (client retries) | Multi-node stateless cluster; writes bounded by single PG primary | cyoda-go nodes + PostgreSQL 14+ (managed or self-hosted) | OSS — ships with cyoda-go | Multi-node production; audit / compliance |
-| **Cassandra** | Durable, replicated via Cassandra | Cluster-tolerant; transactions survive mid-flight node loss (no `TRANSACTION_NODE_UNAVAILABLE`) | Horizontal write scale-out, multi-cluster | cyoda-go nodes + Cassandra + Redpanda | Commercial — Enterprise edition or via Cyoda Cloud | Write-heavy scale-out; HA without retry-on-node-loss |
+| **Cassandra** | Durable, replicated via Cassandra | Cluster-tolerant; transactions survive mid-flight node loss | Horizontal write scale-out, multi-cluster | cyoda-go nodes + Cassandra + Redpanda | Commercial — Enterprise edition or via Cyoda Cloud | Write-heavy scale-out; HA without retry-on-node-loss |
 | **CPL / Classic** | Durable, replicated via Cassandra | Production-hardened since 2017; Cassandra-backed HA | Horizontal scale-out (Cassandra-backed); managed by Cyoda | None on your side | Managed service — Cyoda Cloud | Consume Cyoda as a service |
 
 All five share the same SI+FCW application contract. *Distribution*
@@ -139,13 +139,16 @@ Cassandra cluster, a Redpanda message broker, and the `cyoda-go` nodes.
 This is the same storage lineage that has run Cyoda Cloud in production
 since 2017 — operational provenance, not a sales pitch.
 
-There is one important anti-pattern. The plugin is designed for
-entities updated at moderate frequency — tens to low hundreds of
-versions over an entity's lifetime. Workloads that update individual
-entities thousands of times per day are **not supported**: the version
-chain, partition size, and checkpoint cost grow unbounded. If your data
-shape is "many entities with moderate update rates," the plugin fits;
-if it is "few entities with extreme update rates," it does not.
+There is one shape to watch for. The plugin is designed for entities
+updated at moderate frequency — tens to low hundreds of versions over
+an entity's lifetime. A single entity updated thousands of times per
+day will let its version chain, partition size, and checkpoint cost
+grow unbounded. The fix is a modelling one: represent the high-churn
+state as a linked list of entities, where each "version" is its own
+entity (a node in the list) rather than a new revision of one
+long-lived entity. The pattern is well-supported and routinely used in
+production — it just needs to be chosen explicitly rather than
+discovered late.
 
 The Cassandra plugin is available commercially — as the **Enterprise**
 edition for self-hosted deployments and as the storage tier underneath
