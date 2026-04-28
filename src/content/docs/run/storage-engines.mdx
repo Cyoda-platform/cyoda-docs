@@ -146,9 +146,7 @@ day will let its version chain, partition size, and checkpoint cost
 grow unbounded. The fix is a modelling one: represent the high-churn
 state as a linked list of entities, where each "version" is its own
 entity (a node in the list) rather than a new revision of one
-long-lived entity. The pattern is well-supported and routinely used in
-production — it just needs to be chosen explicitly rather than
-discovered late.
+long-lived entity.
 
 The Cassandra plugin is available commercially — as the **Enterprise**
 edition for self-hosted deployments and as the storage tier underneath
