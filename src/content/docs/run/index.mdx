@@ -7,17 +7,19 @@ sidebar:
 
 Cyoda runs on the tier that fits the job. Every packaging runs the same
 application and the same workflow semantics; what changes is durability,
-consistency guarantees, and operational cost. Pick your packaging by what
+fault tolerance, and operational cost. Pick your packaging by what
 you need to operate, not by what your app needs to do.
 
 ## Pick your packaging
 
-|                  | In-Memory | SQLite        | PostgreSQL       | Cassandra |
-|------------------|-----------|---------------|------------------|-----------|
-| **Desktop**      | ✓         | ✓ *(default)* |                  |           |
-| **Docker**       | ✓         | ✓             | ✓                |           |
-| **Kubernetes**   |           |               | ✓ *(production)* |           |
-| **Cyoda Cloud**  |           |               |                  | ✓         |
+|                  | In-Memory | SQLite        | PostgreSQL       | Cassandra        |
+|------------------|-----------|---------------|------------------|------------------|
+| **Desktop**      | ✓         | ✓ *(default)* |                  |                  |
+| **Docker**       | ✓         | ✓             | ✓                |                  |
+| **Kubernetes**   |           |               | ✓ *(production)* | ✓ *(Enterprise)* |
+| **Cyoda Cloud**  |           |               |                  | ✓ *(managed)*    |
+
+→ For per-engine durability, fault tolerance, and deployment scope, see [Storage engines](./storage-engines/).
 
 ## When to pick what
 
@@ -28,19 +30,23 @@ you need to operate, not by what your app needs to do.
   bespoke integrations, composition with other services, local PostgreSQL
   runs, and CI pipelines.
 - **[Kubernetes](./kubernetes/)** — the production packaging for
-  self-hosted clusters. Active-active stateless cyoda-go pods behind a load
-  balancer with PostgreSQL as the only stateful dependency. Helm chart
-  ships from cyoda-go.
-- **[Cyoda Cloud](./cyoda-cloud/)** — a managed service backed by
-  Cassandra. Right when you need enterprise-grade identity, multi-tenancy,
-  and provisioning, and you do not want to operate the infrastructure.
+  self-hosted clusters. Active-active stateless cyoda-go pods behind a
+  load balancer with PostgreSQL as the only stateful dependency. Helm
+  chart ships from cyoda-go. The same Helm-deployed cluster, licensed
+  under **Enterprise**, runs against the Cassandra plugin for horizontal
+  write scale-out — same packaging, different storage tier.
+- **[Cyoda Cloud](/cyoda-cloud/)** — the same Cassandra-backed tier
+  delivered as a managed service. Right when you need enterprise-grade
+  identity, multi-tenancy, and provisioning, and you do not want to
+  operate the infrastructure.
 
 ## Moving between tiers
 
-The application does not change when you move. That is the whole point of the
-growth path: start on Desktop, containerise when integration demands it,
-cluster when scale demands it, migrate to Cyoda Cloud when operating it no
-longer pays for itself.
+The application does not change when you move. That is the whole point of
+the growth path: start on Desktop, containerise when integration demands
+it, cluster on Kubernetes when scale demands it, and switch to the
+Cassandra-backed tier — self-hosted under Enterprise or managed via
+Cyoda Cloud — when single-PG write capacity becomes the constraint.
 
 See [Digital twins and the growth path](/concepts/digital-twins-and-growth-path/)
 for the decision framework.
@@ -53,15 +59,17 @@ application contract is the same across all three.
 | Edition | License | Storage tiers | Status |
 |---|---|---|---|
 | **cyoda-go** | Apache 2.0 (OSS) | In-memory, SQLite, PostgreSQL | Generally available |
-| **Cyoda Cloud** | Commercial (hosted service) | Cassandra-backed | Beta — test/demo only; commercial SLAs planned |
 | **Enterprise** | Commercial (self-hosted) | Cassandra-backed | Available — contact sales |
+| **Cyoda Cloud** | Commercial (hosted service) | Cassandra-backed | Beta — test/demo only; commercial SLAs planned |
 
 The **cyoda-go** binary — everything in [Build](/build/) and
 [Reference](/reference/) works against it — is Apache 2.0 and free to
 use for development and production on the Desktop, Docker, and
-Kubernetes packagings. The **Cassandra-backed** tier (horizontal scale
-for write volume and distributed `async` search) ships two ways: as the
-hosted **Cyoda Cloud** service, and as a self-hosted **Enterprise**
-distribution under commercial license. Cyoda Cloud is currently a Beta
-for test and demonstration; production workloads on the Cassandra tier
-run under the Enterprise license today.
+Kubernetes packagings with the in-memory, SQLite, or PostgreSQL
+storage engines. The **Cassandra-backed** tier (horizontal scale for
+write volume and distributed `async` search) ships two ways: as a
+self-hosted **Enterprise** distribution — the same Kubernetes Helm
+chart, licensed for the Cassandra plugin — and as the hosted **Cyoda
+Cloud** managed service. Cyoda Cloud is currently a Beta for test and
+demonstration; production workloads on the Cassandra tier run under
+the Enterprise license today.

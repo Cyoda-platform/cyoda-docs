@@ -133,5 +133,5 @@ is identical in both:
   PostgreSQL or Cassandra stack for you. Same application contract,
   different operational model.
 
-See [Cyoda Cloud](./cyoda-cloud/) for the SaaS option; contact sales
+See [Cyoda Cloud](/cyoda-cloud/) for the SaaS option; contact sales
 for the commercial Cassandra plugin.

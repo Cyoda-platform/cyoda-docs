@@ -66,7 +66,7 @@ configuration.
   [cyoda-go authentication reference](https://github.com/cyoda-platform/cyoda-go#authentication)
   for the authoritative parameter list.
 - **Cyoda Cloud.** Identity is surfaced as a managed service:
-  [Run → Cyoda Cloud → identity and entitlements](/run/cyoda-cloud/identity-and-entitlements/).
+  [Cyoda Cloud → identity and entitlements](/cyoda-cloud/identity-and-entitlements/).
 
 ## What your application does
 
