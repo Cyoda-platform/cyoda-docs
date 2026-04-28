@@ -5,7 +5,7 @@ sidebar:
   order: 0
 ---
 
-import Badge from '../../../../components/Badge.astro';
+import Badge from '../../../components/Badge.astro';
 import { Aside } from '@astrojs/starlight/components';
 
 <Badge variant="orange">Evolving · Test / demo only</Badge>
@@ -22,7 +22,7 @@ considerations that matter when you use it.
 
 Cyoda models entities via configuration and provides persistence, transactional workflow orchestration and processing, and distributed querying via API and SQL in a write-only, horizontally distributed architecture. This enables building scalable event-driven systems with ease, with client-specific logic executed as independent compute.
 
-![Cyoda Cloud Architecture](../../../../assets/architecture/Cyoda-Cloud-Client-View-compact.svg)
+![Cyoda Cloud Architecture](../../../assets/architecture/Cyoda-Cloud-Client-View-compact.svg)
 
 Key points:
 - Cyoda calls client compute via **gRPC + CloudEvents**
@@ -61,7 +61,7 @@ Additional languages are planned, enabling a fully polyglot execution model.
 
 In developer mode, client compute nodes typically run on the developer's local machine.
 
-![Cyoda Cloud Architecture](../../../../assets/architecture/Cyoda-Cloud-Client-View-developer-mode.svg)
+![Cyoda Cloud Architecture](../../../assets/architecture/Cyoda-Cloud-Client-View-developer-mode.svg)
 
 Characteristics:
 - Client nodes connect to Cyoda Cloud via a **Cloudflare tunnel**
@@ -82,7 +82,7 @@ Despite its simplicity, the architecture remains fully horizontally scalable:
 
 Cyoda supports multi‑cloud deployments where tenant resources run in a separate cloud or region from the Cyoda control plane.
 
-![Cyoda Cloud Architecture](../../../../assets/architecture/Cyoda-Cloud-Client-View-multi-cloud.svg)
+![Cyoda Cloud Architecture](../../../assets/architecture/Cyoda-Cloud-Client-View-multi-cloud.svg)
 
 ### Multi-language
 
@@ -95,13 +95,13 @@ This enables:
 
 Cyoda treats all client nodes uniformly at the protocol level, regardless of implementation language.
 
-![Cyoda Cloud Architecture](../../../../assets/architecture/Cyoda-Cloud-Client-View-multi-language.svg)
+![Cyoda Cloud Architecture](../../../assets/architecture/Cyoda-Cloud-Client-View-multi-language.svg)
 
 ### Single-cloud
 
 An entire Cyoda instance (control plane and tenant workloads) can be deployed into a single cloud environment.
 
-![Cyoda Cloud Architecture](../../../../assets/architecture/Cyoda-Cloud-Client-View-single-cloud.svg)
+![Cyoda Cloud Architecture](../../../assets/architecture/Cyoda-Cloud-Client-View-single-cloud.svg)
 
 ### Sharded by client tag
 
@@ -114,13 +114,13 @@ This enables targeted execution strategies, such as:
 
 Routing is explicit and deterministic, making this model suitable for complex or heterogeneous compute requirements.
 
-![Cyoda Cloud Architecture](../../../../assets/architecture/Cyoda-Cloud-Client-View-tag-sharded.svg)
+![Cyoda Cloud Architecture](../../../assets/architecture/Cyoda-Cloud-Client-View-tag-sharded.svg)
 
 ### Cyoda Cloud layout
 
 The current Cyoda Cloud deployment is a multi‑tenant platform running on bare‑metal infrastructure in Hetzner datacenters (EU).
 
-![Cyoda Cloud Architecture](../../../../assets/architecture/Cyoda-Cloud-Client-View-cyoda-details.svg)
+![Cyoda Cloud Architecture](../../../assets/architecture/Cyoda-Cloud-Client-View-cyoda-details.svg)
 
 High‑level characteristics:
 - Each tenant maps to a dedicated Kubernetes namespace
