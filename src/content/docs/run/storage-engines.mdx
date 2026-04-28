@@ -1,0 +1,207 @@
+---
+title: Storage engines
+description: Five ways to run Cyoda — one application contract.
+sidebar:
+  order: 5
+---
+
+Cyoda runs on five storage configurations: four pluggable engines that
+ship with `cyoda-go` (in-memory, SQLite, PostgreSQL, and a commercial
+Cassandra plugin) plus the classic Kotlin runtime that has powered Cyoda
+Cloud in production since 2017. They differ in durability, fault
+tolerance, and operational footprint — but the **application contract
+is identical across all five.** Code written against one runs unchanged
+against any other.
+
+## One application contract
+
+Every Cyoda runtime offers the same isolation contract: **Snapshot
+Isolation with First-Committer-Wins on entity-level conflicts** (SI+FCW).
+
+What that gets you:
+
+- **Snapshot reads** — a transaction sees a consistent point-in-time
+  view of the data, regardless of concurrent writes.
+- **Entity-level conflict detection at commit** — if another transaction
+  modified an entity you read or wrote, your transaction aborts at
+  commit and you retry.
+- **First-committer-wins on write/write conflicts** — concurrent updates
+  to the same entity resolve deterministically; the second commit
+  aborts.
+
+What it does **not** give you:
+
+- **No phantom or predicate protection.** A transaction that counts
+  rows matching a predicate cannot rely on the count being stable
+  across the transaction's lifetime. Workflow logic that needs
+  predicate-stable counts has to be expressed as an explicit
+  serialization point — see the operational rule for workflow authors
+  in [Concepts → Entities and lifecycle](/concepts/entities-and-lifecycle/).
+
+The contract is delivered identically by every engine. cyoda-go's
+in-memory and SQLite plugins implement SI+FCW in process. The
+PostgreSQL plugin layers it on PostgreSQL `REPEATABLE READ`. The
+Cassandra plugin and the classic CPL runtime implement it against
+Cassandra primitives. The application has no way to tell which engine
+it is running against — and that is the point.
+
+## At a glance
+
+| Engine | Durability | Fault tolerance | Scale envelope | Footprint | Distribution | Best-fit scope |
+|---|---|---|---|---|---|---|
+| **In-memory** | Ephemeral | None — restart loses data | Bounded by host RAM | Single binary, no deps | OSS — ships with cyoda-go | Tests, digital-twin sims |
+| **SQLite** | Durable (single file) | Single-process; survives restart, not disk loss | Single node, disk-bound | Single binary, no deps | OSS — ships with cyoda-go | Desktop, edge, single-node prod |
+| **PostgreSQL** | Durable, replicated via PostgreSQL | HA via PostgreSQL replication & failover; mid-transaction node loss returns `TRANSACTION_NODE_UNAVAILABLE` (client retries) | Multi-node stateless cluster; writes bounded by single PG primary | cyoda-go nodes + PostgreSQL 14+ (managed or self-hosted) | OSS — ships with cyoda-go | Multi-node production; audit / compliance |
+| **Cassandra** | Durable, replicated via Cassandra | Cluster-tolerant; transactions survive mid-flight node loss (no `TRANSACTION_NODE_UNAVAILABLE`) | Horizontal write scale-out, multi-cluster | cyoda-go nodes + Cassandra + Redpanda | Commercial — Enterprise edition or via Cyoda Cloud | Write-heavy scale-out; HA without retry-on-node-loss |
+| **CPL / Classic** | Durable, replicated via Cassandra | Production-hardened since 2017; Cassandra-backed HA | Horizontal scale-out (Cassandra-backed); managed by Cyoda | None on your side | Managed service — Cyoda Cloud | Consume Cyoda as a service |
+
+All five share the same SI+FCW application contract. *Distribution*
+describes how you obtain the engine — open source in the cyoda-go repo,
+commercial license, or managed service — not uptime or fault tolerance.
+
+## In-memory
+
+The in-memory plugin keeps all entity state in process memory.
+Transactions complete in microseconds; there are no I/O paths and no
+external dependencies. State is lost when the process exits.
+
+It is the right choice for tests and for digital-twin simulations where
+durability is delegated to a snapshot mechanism elsewhere. It is **not**
+appropriate for any deployment where data must survive a restart.
+
+A single process owns the store; there is no way to share in-memory
+state across processes. Memory consumption is bounded by host RAM.
+
+## SQLite
+
+The SQLite plugin gives you durable single-node storage with the same
+zero-dependency footprint as in-memory: a single `cyoda-go` binary, a
+single database file, no other moving parts. The driver is a pure-Go
+WASM build of SQLite — no CGO, clean cross-compilation.
+
+SQLite provides only database-level write locking; entity-level
+conflict detection (SI+FCW) is layered on top by `cyoda-go`. The
+running process holds an exclusive `flock` on the database file for its
+entire lifetime, so a second `cyoda-go` against the same file fails
+fast at startup with a clear error. Two processes sharing a file would
+have independent SI+FCW state and silently corrupt each other.
+
+Best-fit deployments: desktop applications, edge devices, containerised
+single-node production. The combination of "must survive restart" and
+"single process is enough" lands here.
+
+**Not** suitable for NFS-mounted database files (SQLite itself is
+unreliable on NFS), nor for any deployment that needs more than one
+`cyoda-go` process against the same data. If either of those applies,
+move to PostgreSQL.
+
+## PostgreSQL
+
+The PostgreSQL plugin is `cyoda-go`'s production multi-node tier. A
+small cluster of stateless `cyoda-go` nodes — typical deployments run a
+handful — sits behind a load balancer with PostgreSQL as the only
+stateful dependency. Cluster discovery is gossip-based (HashiCorp
+memberlist, embedded, pure Go); there is no ZooKeeper, etcd, or Kafka
+to operate.
+
+PostgreSQL 14 or later is required. The plugin works with any managed
+PostgreSQL platform — RDS, Cloud SQL, Azure Database, Supabase, Neon,
+Aiven — or with self-hosted PostgreSQL. SI+FCW is implemented as
+PostgreSQL `REPEATABLE READ` plus an application-layer first-committer
+validation at commit time. Tenant isolation is enforced via PostgreSQL
+Row-Level Security as defense-in-depth: even an application-layer bug
+in tenant scoping cannot leak data across tenants.
+
+Write throughput is bounded by the single PostgreSQL primary's write
+capacity. The cluster scales out for connection capacity and read
+fan-out, not for writes against a single PG primary.
+
+The plugin makes one explicit, accepted trade-off: each transaction is
+pinned to the `cyoda-go` node that opened it. If that node dies
+mid-transaction, PostgreSQL rolls back the connection and the client
+receives `TRANSACTION_NODE_UNAVAILABLE` and must retry from scratch.
+This trade-off is what lets the plugin run without Paxos, Raft, or
+ZooKeeper. For deployments that cannot tolerate this failure mode, the
+Cassandra plugin removes it.
+
+## Cassandra (commercial)
+
+The Cassandra plugin is the answer for write volumes that exceed what a
+single PostgreSQL primary can absorb, and for high-availability
+deployments that cannot tolerate `TRANSACTION_NODE_UNAVAILABLE`.
+Transactions are coordinated within the plugin itself rather than
+pinned to an owning `cyoda-go` node, so a transaction survives the
+mid-flight loss of any one node. The store scales horizontally without
+a single-primary bottleneck and supports multi-DC topologies.
+
+The operational footprint is larger than the PostgreSQL plugin: a
+Cassandra cluster, a Redpanda message broker, and the `cyoda-go` nodes.
+This is the same storage lineage that has run Cyoda Cloud in production
+since 2017 — operational provenance, not a sales pitch.
+
+There is one important anti-pattern. The plugin is designed for
+entities updated at moderate frequency — tens to low hundreds of
+versions over an entity's lifetime. Workloads that update individual
+entities thousands of times per day are **not supported**: the version
+chain, partition size, and checkpoint cost grow unbounded. If your data
+shape is "many entities with moderate update rates," the plugin fits;
+if it is "few entities with extreme update rates," it does not.
+
+The Cassandra plugin is available commercially — as the **Enterprise**
+edition for self-hosted deployments and as the storage tier underneath
+**Cyoda Cloud**. For sizing or licensing, contact Cyoda.
+
+## CPL / Classic
+
+The classic Kotlin/Java runtime has powered Cyoda Cloud in production
+with clients since 2017, on a Cassandra storage backend. `cyoda-go` is
+an adaptation of the EDBMS design that emerged from CPL — same
+contract, same data model, same workflow semantics, different host
+language and operational shape.
+
+In day-to-day practice, "CPL" is what you reach for through Cyoda
+Cloud. The runtime is operated by Cyoda; you consume it as a service.
+For details on the hosted offering — provisioning, identity,
+entitlements, and roadmap — see [Cyoda Cloud](/cyoda-cloud/).
+
+## Choosing an engine
+
+Match the engine to the operational shape you can sustain:
+
+- **Local development and tests** — start on **in-memory**. Microsecond
+  transactions, no setup, no cleanup.
+- **Desktop, edge, single-node production** — **SQLite**. Durable,
+  embedded, single binary.
+- **Multi-node self-hosted production**, including audit and compliance
+  workloads — **PostgreSQL**. Managed PG keeps the operational footprint
+  small.
+- **Write throughput exceeds single-PG-primary capacity, or HA without
+  `TRANSACTION_NODE_UNAVAILABLE`** — **Cassandra** (Enterprise edition).
+- **Don't want to run any of it** — **Cyoda Cloud**.
+
+### When to switch
+
+The progression is not a forced upgrade path; some deployments stay on
+SQLite indefinitely and that is the right answer for them. Switch when:
+
+- **Write throughput approaches the single-PG-primary ceiling** in
+  PostgreSQL deployments, with no managed-PG headroom left or the
+  upgrade exceeding the cost of moving — consider Cassandra.
+- **Mid-transaction node loss is unacceptable** in your availability
+  budget — consider Cassandra; the plugin coordinates transactions at
+  the cluster level rather than pinning them to a single node.
+- **Operational footprint outweighs the benefit of self-hosting** —
+  consider Cyoda Cloud.
+
+The application contract does not change when you move. The
+[growth-path framing in Concepts](/concepts/digital-twins-and-growth-path/)
+covers the decision in narrative form.
+
+## Where to next
+
+- **Concepts** — [What is Cyoda](/concepts/what-is-cyoda/),
+  [Entities and lifecycle](/concepts/entities-and-lifecycle/),
+  [Digital twins and the growth path](/concepts/digital-twins-and-growth-path/).
+- **Reference** — [Configuration](/reference/configuration/) for per-engine
+  environment variables, [CLI](/reference/cli/) for `cyoda-go` commands.
+- **Cyoda Cloud** — [hosted service overview](/cyoda-cloud/).
