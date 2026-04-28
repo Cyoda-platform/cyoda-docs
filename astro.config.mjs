@@ -281,6 +281,11 @@ export default defineConfig({
 					autogenerate: { directory: 'run' }
 				},
 				{
+					label: 'Cyoda Cloud',
+					collapsed: true,
+					autogenerate: { directory: 'cyoda-cloud' }
+				},
+				{
 					label: 'Reference',
 					collapsed: true,
 					autogenerate: { directory: 'reference' }
