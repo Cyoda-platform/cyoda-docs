@@ -87,6 +87,13 @@ export async function run({ fullDataPath, docsHelpDir, publicHelpDir, prefix = '
   const raw = fs.readFileSync(fullDataPath, 'utf8');
   const bundle = JSON.parse(raw);
 
+  if (!Array.isArray(bundle.topics)) {
+    throw err(
+      'MalformedTopic',
+      `bundle.topics is not an array (got ${typeof bundle.topics}). The cache file at ${fullDataPath} is malformed.`
+    );
+  }
+
   for (const t of bundle.topics) {
     // Check reserved segments first so a version-style segment (e.g. "v0.6")
     // gets ReservedTopicSegment rather than MalformedTopic (the dot fails SEGMENT_RE).

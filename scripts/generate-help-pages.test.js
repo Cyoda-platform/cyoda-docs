@@ -97,17 +97,17 @@ test('ReservedTopicSegment: first segment is "topic-tree"', async () => {
 
 test('TopicSlugConflict: two distinct topics derive the same slug', async () => {
   const cacheDir = tmpDir('cache');
-  // Construct two topics with identical path arrays — degenerate but tests the guard.
+  // case-fold collision exercises slug normalization
   const file = writeBundle(cacheDir, {
     pinnedVersion: 'test', schema: 1,
     topics: [
       {
-        topic: 'a.b', path: ['a', 'b'],
+        topic: 'A.b', path: ['A', 'b'],
         title: 'first', body: '# first\n', synopsis: '',
         sections: [], see_also: [], stability: 'stable', actions: [], children: [],
       },
       {
-        topic: 'a.b', path: ['a', 'b'],
+        topic: 'a.B', path: ['a', 'B'],
         title: 'second', body: '# second\n', synopsis: '',
         sections: [], see_also: [], stability: 'stable', actions: [], children: [],
       },
@@ -117,4 +117,14 @@ test('TopicSlugConflict: two distinct topics derive the same slug', async () => 
     fullDataPath: file, docsHelpDir: tmpDir('docs'), publicHelpDir: tmpDir('public'), prefix: '',
   }).catch(e => e);
   assert.match(err.message, /TopicSlugConflict/);
+});
+
+test('MalformedTopic: bundle.topics is not an array', async () => {
+  const cacheDir = tmpDir('cache');
+  const file = writeBundle(cacheDir, { pinnedVersion: 'test', schema: 1, topics: null });
+  const err = await run({
+    fullDataPath: file, docsHelpDir: tmpDir('docs'), publicHelpDir: tmpDir('public'), prefix: '',
+  }).catch(e => e);
+  assert.match(err.message, /MalformedTopic/);
+  assert.match(err.message, /bundle\.topics is not an array/);
 });
