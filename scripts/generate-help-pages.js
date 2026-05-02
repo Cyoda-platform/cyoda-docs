@@ -269,6 +269,12 @@ export async function run({ fullDataPath, docsHelpDir, publicHelpDir, prefix = '
   const urlPrefix = prefix; // empty by default
 
   // --- Stage all outputs into side temp dirs ---
+  // Temp dirs are created as siblings of the destination dirs so the staged
+  // files and final destinations live on the same filesystem; this keeps the
+  // per-file `fs.renameSync` atomic (POSIX rename(2)). If a caller passes
+  // destination paths whose parent is on a different filesystem from the
+  // children, renameSync will throw EXDEV — that is not a supported
+  // configuration today.
   const docsTmp = fs.mkdtempSync(path.join(path.dirname(docsHelpDir), `.help-tmp-docs-${process.pid}-`));
   const publicTmp = fs.mkdtempSync(path.join(path.dirname(publicHelpDir), `.help-tmp-public-${process.pid}-`));
 
@@ -308,46 +314,51 @@ export async function run({ fullDataPath, docsHelpDir, publicHelpDir, prefix = '
   fs.mkdirSync(docsHelpDir, { recursive: true });
   fs.mkdirSync(publicHelpDir, { recursive: true });
 
-  for (const rel of stagedDocs) {
-    const dest = path.join(docsHelpDir, rel);
-    fs.mkdirSync(path.dirname(dest), { recursive: true });
-    fs.renameSync(path.join(docsTmp, rel), dest);
-  }
-  for (const rel of stagedPublic) {
-    const dest = path.join(publicHelpDir, rel);
-    fs.mkdirSync(path.dirname(dest), { recursive: true });
-    fs.renameSync(path.join(publicTmp, rel), dest);
-  }
-
-  // --- Orphan removal in destination trees ---
-  const docsKeep = new Set(stagedDocs.map(p => path.normalize(p)));
-  const publicKeep = new Set(stagedPublic.map(p => path.normalize(p)));
-  const HAND_AUTHORED_DOCS = new Set(['index.mdx', 'topic-tree.mdx']);
-
   function removeOrphans(dir, keep, skipTopLevel) {
+    // baseRel === null means "we are at the top of `dir`"; otherwise it is
+    // the path-relative-to-`dir` of the directory currently being walked.
     function walk(d, baseRel) {
       if (!fs.existsSync(d)) return;
       for (const entry of fs.readdirSync(d, { withFileTypes: true })) {
-        const rel = baseRel ? path.join(baseRel, entry.name) : entry.name;
+        const rel = baseRel === null ? entry.name : path.join(baseRel, entry.name);
         const abs = path.join(d, entry.name);
         if (entry.isDirectory()) {
           walk(abs, rel);
           // Remove now-empty directory.
           if (fs.readdirSync(abs).length === 0) fs.rmdirSync(abs);
         } else {
-          if (skipTopLevel && !baseRel && skipTopLevel.has(entry.name)) continue;
+          if (skipTopLevel && baseRel === null && skipTopLevel.has(entry.name)) continue;
           if (!keep.has(path.normalize(rel))) fs.unlinkSync(abs);
         }
       }
     }
-    walk(dir, '');
+    walk(dir, null);
   }
-  removeOrphans(docsHelpDir, docsKeep, HAND_AUTHORED_DOCS);
-  removeOrphans(publicHelpDir, publicKeep, null);
 
-  // --- Cleanup temp dirs (now empty) ---
-  fs.rmSync(docsTmp, { recursive: true, force: true });
-  fs.rmSync(publicTmp, { recursive: true, force: true });
+  try {
+    for (const rel of stagedDocs) {
+      const dest = path.join(docsHelpDir, rel);
+      fs.mkdirSync(path.dirname(dest), { recursive: true });
+      fs.renameSync(path.join(docsTmp, rel), dest);
+    }
+    for (const rel of stagedPublic) {
+      const dest = path.join(publicHelpDir, rel);
+      fs.mkdirSync(path.dirname(dest), { recursive: true });
+      fs.renameSync(path.join(publicTmp, rel), dest);
+    }
+
+    // --- Orphan removal in destination trees ---
+    const docsKeep = new Set(stagedDocs.map(p => path.normalize(p)));
+    const publicKeep = new Set(stagedPublic.map(p => path.normalize(p)));
+    const HAND_AUTHORED_DOCS = new Set(['index.mdx', 'topic-tree.mdx']);
+
+    removeOrphans(docsHelpDir, docsKeep, HAND_AUTHORED_DOCS);
+    removeOrphans(publicHelpDir, publicKeep, null);
+  } finally {
+    // Cleanup temp dirs even if promotion or orphan removal threw.
+    fs.rmSync(docsTmp, { recursive: true, force: true });
+    fs.rmSync(publicTmp, { recursive: true, force: true });
+  }
 
   return { topicCount: bundle.topics.length };
 }
