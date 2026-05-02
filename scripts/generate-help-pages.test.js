@@ -359,6 +359,24 @@ test('hand-authored files preserved across runs', async () => {
   assert.equal(fs.readFileSync(path.join(docsHelpDir, 'topic-tree.mdx'), 'utf8'), '---\ntitle: Topic tree\n---\n\nTree.\n');
 });
 
+test('--prefix=v0.6/ writes under that prefix in URLs and version registry root', async () => {
+  const fixturePath = path.join(fixtureDir, 'help-full.minimal.json');
+  const docsHelpDir = tmpDir('docs');
+  const publicHelpDir = tmpDir('public');
+  await run({
+    fullDataPath: fixturePath, docsHelpDir, publicHelpDir, prefix: 'v0.6/',
+  });
+  // Files still land at the same disk paths — prefix only affects URLs in content.
+  assert.ok(fs.existsSync(path.join(docsHelpDir, 'cli.md')));
+  // The page links use the prefix.
+  const page = fs.readFileSync(path.join(docsHelpDir, 'cli.md'), 'utf8');
+  assert.match(page, /\/v0\.6\/help\/cli\.json/);
+  // versions.json root reflects the prefix.
+  const v = JSON.parse(fs.readFileSync(path.join(publicHelpDir, 'versions.json'), 'utf8'));
+  assert.equal(v.versions[0].root, '/v0.6/help/');
+  assert.equal(v.versions[0].manifest, '/v0.6/help/index.json');
+});
+
 // Helper used above.
 function readAllFiles(dir) {
   const out = [];
