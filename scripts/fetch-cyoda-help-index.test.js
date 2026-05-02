@@ -66,8 +66,11 @@ test('happy path: writes sorted slim index AND full bundle', async () => {
   assert.equal(slim.pinnedVersion, 'test');
   assert.equal(slim.schema, 1);
   assert.equal(slim.topics.length, 3);
+  // sort order pinned by stripAndSort: by path.join('/') ascending
+  assert.deepEqual(slim.topics.map(t => t.path.join('/')), ['cli', 'search', 'search/async']);
   for (const t of slim.topics) {
     assert.ok(!('body' in t), `slim topic ${t.path.join('/')} still has body`);
+    assert.ok(t.synopsis);
   }
 
   // --- full file: new ---
@@ -262,6 +265,7 @@ test('HelpJsonBodyMissing: full output requested, but a topic lacks body', async
     fullOutputPath: tmpFullOutputFile(),
   }).catch(e => e);
   assert.match(err.message, /HelpJsonBodyMissing/);
+  assert.match(err.message, /\btopic a\b/);
   fs.rmSync(versionFile);
 });
 
