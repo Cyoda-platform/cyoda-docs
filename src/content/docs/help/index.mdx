@@ -1,11 +1,11 @@
 ---
-title: Help — browse rendered cyoda-go help
+title: Browse cyoda help
 description: "Static mirror of cyoda-go's `cyoda help` and live HTTP help API, optimized for both humans and AI agents. Pinned to a specific cyoda-go release."
 sidebar:
   order: 2
 ---
 
-import { CardGrid, Card, Badge } from '@astrojs/starlight/components';
+import { LinkCard } from '@astrojs/starlight/components';
 import helpIndex from '../../../data/cyoda-help-index.json';
 
 export const topLevelTopics = helpIndex.topics
@@ -26,15 +26,25 @@ re-pulls and regenerates the entire mirror.
 
 ## Browse the tree
 
-<CardGrid>
+<div class="help-card-grid">
   {topLevelTopics.map(t => (
-    <Card title={t.path[0]} icon="document">
-      <p><strong>{t.title}</strong></p>
-      <p>{t.synopsis}</p>
-      <p><a href={`/help/${t.path[0]}/`}>Read →</a></p>
-    </Card>
+    <LinkCard
+      title={t.title}
+      description={t.synopsis}
+      href={`/help/${t.path[0]}/`}
+    />
   ))}
-</CardGrid>
+</div>
+
+<style>{`
+  .help-card-grid {
+    display: grid;
+    gap: 1rem;
+    /* As many columns as fit at min 22rem each; collapses to one when viewport is narrower. */
+    grid-template-columns: repeat(auto-fit, minmax(min(100%, 22rem), 1fr));
+    margin-block: 1.5rem;
+  }
+`}</style>
 
 For a flat view of every topic and subtopic, see
 [Topic tree (`cyoda help`)](/help/topic-tree/).
