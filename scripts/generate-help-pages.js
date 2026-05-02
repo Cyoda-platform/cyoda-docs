@@ -82,7 +82,13 @@ function htmlEscape(s) {
 }
 
 function renderPage(t, allTopics, pinnedPatch, urlPrefix) {
-  const slugPath = t.path.join('/');
+  // URL paths are always lowercased — Astro's content-collection slug
+  // generation lowercases route segments, so an uppercase identifier
+  // like errors.BAD_REQUEST routes to /help/errors/bad_request/, not
+  // /help/errors/BAD_REQUEST/. We lowercase here so generated links
+  // match the actual rendered routes (and the lowercased on-disk
+  // public/help/ assets we write below).
+  const slugPath = t.path.join('/').toLowerCase();
   const cliInvocation = ['cyoda', 'help', ...t.path].join(' ');
   const description = truncateForDescription(t.synopsis || t.title);
 
@@ -117,7 +123,7 @@ function renderPage(t, allTopics, pinnedPatch, urlPrefix) {
       const child = findByTopic(allTopics, childId);
       if (!child) continue;
       const childCli = ['cyoda', 'help', ...child.path].join(' ');
-      const childUrl = `/${urlPrefix}help/${child.path.join('/')}/`.replace(/\/+/g, '/');
+      const childUrl = `/${urlPrefix}help/${child.path.join('/').toLowerCase()}/`.replace(/\/+/g, '/');
       lines.push(`- [\`${childCli}\`](${childUrl}) — ${child.synopsis || ''}`);
     }
     lines.push('');
@@ -135,7 +141,7 @@ function renderPage(t, allTopics, pinnedPatch, urlPrefix) {
         continue;
       }
       const peerCli = ['cyoda', 'help', ...peer.path].join(' ');
-      const peerUrl = `/${urlPrefix}help/${peer.path.join('/')}/`.replace(/\/+/g, '/');
+      const peerUrl = `/${urlPrefix}help/${peer.path.join('/').toLowerCase()}/`.replace(/\/+/g, '/');
       lines.push(`- [\`${peerCli}\`](${peerUrl}) — ${peer.synopsis || ''}`);
     }
     lines.push('');
@@ -176,7 +182,7 @@ function buildManifest(bundle) {
       see_also: Array.isArray(t.see_also) ? t.see_also : [],
     })),
     _url_convention:
-      'topic IDs use dots (e.g. "config.database"); build the URL by replace dots with slashes, e.g. /help/config/database/',
+      'topic IDs use dots and may contain uppercase (e.g. "config.database", "errors.BAD_REQUEST"); to build the URL, replace dots with slashes and lowercase the result, e.g. /help/config/database/ or /help/errors/bad_request/.',
   };
 }
 
@@ -204,9 +210,10 @@ export function buildHelpLlmsTxt(bundle) {
     '                 https://docs.cyoda.net/help/<slug>/       (rendered HTML)',
     'Version tree:    https://docs.cyoda.net/help/versions.json',
     '',
-    'URL convention:  cyoda help A B C  ↔  /help/A/B/C/  (or .md / .json)',
-    '                 Manifest topic IDs use dots (e.g. "config.database");',
-    '                 replace dots with slashes to build the URL.',
+    'URL convention:  cyoda help A B C  ↔  /help/a/b/c/  (or .md / .json)',
+    '                 Manifest topic IDs use dots and may be mixed-case',
+    '                 (e.g. "config.database", "errors.BAD_REQUEST");',
+    '                 replace dots with slashes AND lowercase to build the URL.',
     '',
     'Note: the manifest contains a non-API `_url_convention` hint field.',
     'Strict validators against the live cyoda-go GET /help schema should ignore it.',
@@ -303,15 +310,23 @@ export async function run({ fullDataPath, docsHelpDir, publicHelpDir, prefix = '
 
   try {
     for (const t of bundle.topics) {
-      const pageRel = path.join(...t.path) + '.md';
+      // On-disk paths are lowercased so the rendered Starlight URL
+      // (which lowercases route segments anyway) and the static-asset
+      // URL agree. Without this, an uppercase topic ID like
+      // errors.BAD_REQUEST writes BAD_REQUEST.md to disk but Astro
+      // routes the page at /errors/bad_request/, breaking every
+      // generated link to it.
+      const lowerPath = t.path.map(s => s.toLowerCase());
+
+      const pageRel = path.join(...lowerPath) + '.md';
       writeFileEnsuringDir(path.join(docsTmp, pageRel), renderPage(t, bundle.topics, pinnedPatch, urlPrefix));
       stagedDocs.push(pageRel);
 
-      const descRel = path.join(...t.path) + '.json';
+      const descRel = path.join(...lowerPath) + '.json';
       writeFileEnsuringDir(path.join(publicTmp, descRel), JSON.stringify(t, null, 2) + '\n');
       stagedPublic.push(descRel);
 
-      const rawMdRel = path.join(...t.path) + '.md';
+      const rawMdRel = path.join(...lowerPath) + '.md';
       writeFileEnsuringDir(path.join(publicTmp, rawMdRel), t.body.endsWith('\n') ? t.body : t.body + '\n');
       stagedPublic.push(rawMdRel);
     }

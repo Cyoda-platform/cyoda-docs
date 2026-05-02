@@ -45,7 +45,7 @@ cyoda help <topic> --format=markdown # default off-TTY — paste into docs, PRs,
 
 <dl class="cyoda-help-tree">
   {byTopLevel.map(({ top, topics }) => {
-    const topUrl = `/help/${top}/`;
+    const topUrl = `/help/${top.toLowerCase()}/`;
     const topTopic = topics.find(t => t.path.length === 1);
     return (
       <>
@@ -55,7 +55,7 @@ cyoda help <topic> --format=markdown # default off-TTY — paste into docs, PRs,
           {topics.filter(t => t.path.length > 1).length > 0 && (
             <ul>
               {topics.filter(t => t.path.length > 1).map(t => {
-                const url = `/help/${t.path.join('/')}/`;
+                const url = `/help/${t.path.map(s => s.toLowerCase()).join('/')}/`;
                 return (
                   <li>
                     <a href={url}><code>cyoda help {t.path.join(' ')}</code></a> — {t.synopsis}
