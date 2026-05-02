@@ -74,7 +74,7 @@ function renderPage(t, allTopics, pinnedPatch, urlPrefix) {
 
   const fm = [
     '---',
-    `title: ${t.title}`,
+    `title: ${yamlEscape(t.title)}`,
     `description: ${yamlEscape(description)}`,
     'sidebar:',
     '  hidden: true',

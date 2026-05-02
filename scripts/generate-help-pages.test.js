@@ -141,7 +141,7 @@ test('writes per-topic .md page with frontmatter, aside, body, and Raw formats',
 
   // frontmatter
   assert.match(content, /^---\n/);
-  assert.match(content, /\ntitle: cli — the cyoda command-line interface\n/);
+  assert.match(content, /\ntitle: "cli — the cyoda command-line interface"\n/);
   assert.match(content, /\nsidebar:\n {2}hidden: true\n/);
 
   // canonical-reference aside
