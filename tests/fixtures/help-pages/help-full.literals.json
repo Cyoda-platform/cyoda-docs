@@ -1,0 +1,18 @@
+{
+  "pinnedVersion": "0.6.1",
+  "schema": 1,
+  "topics": [
+    {
+      "topic": "openapi",
+      "path": ["openapi"],
+      "title": "openapi — discovery endpoints",
+      "synopsis": "OpenAPI spec and help endpoints.",
+      "body": "# openapi\n\n## SYNOPSIS\n\n```\nGET /openapi.json\nGET {CYODA_CONTEXT_PATH}/help\nGET {CYODA_CONTEXT_PATH}/help/{topic}\n```\n\nUsage examples reference `cyoda [<subcommand>] [<flags>]` and `<topic>`.\n",
+      "sections": [],
+      "see_also": [],
+      "stability": "stable",
+      "actions": [],
+      "children": []
+    }
+  ]
+}

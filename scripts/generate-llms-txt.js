@@ -1,9 +1,11 @@
 #!/usr/bin/env node
 
 import fs from 'fs/promises';
+import { readFileSync, existsSync } from 'fs';
 import path from 'path';
 import { fileURLToPath } from 'url';
 import { glob } from 'glob';
+import { buildHelpLlmsTxt } from './generate-help-pages.js';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -12,6 +14,19 @@ const __dirname = path.dirname(__filename);
 const SITE_URL = 'https://docs.cyoda.net';
 const CONTENT_DIR = path.join(__dirname, '../src/content/docs');
 const OUTPUT_FILE = path.join(__dirname, '../dist/llms.txt');
+
+/**
+ * Read the pinned cyoda-go version from the help cache, if present.
+ */
+function readPinnedVersion() {
+  try {
+    const p = path.resolve(__dirname, '..', '.cyoda-cache', 'cyoda-help-full.json');
+    if (!existsSync(p)) return null;
+    return JSON.parse(readFileSync(p, 'utf8')).pinnedVersion ?? null;
+  } catch {
+    return null;
+  }
+}
 
 /**
  * Extract frontmatter and content from a markdown file
@@ -158,6 +173,12 @@ async function generateLlmsTxt() {
       content += '\n';
     }
   }
+
+  // Append cyoda-go binary help section
+  const pinned = readPinnedVersion();
+  const helpSection = '\n' + buildHelpLlmsTxt({ pinnedVersion: pinned });
+
+  content += helpSection;
 
   return content.trim();
 }

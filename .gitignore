@@ -1,6 +1,9 @@
 .idea/
 .vscode/
 
+# local git worktrees (created via superpowers:using-git-worktrees)
+.worktrees/
+
 # build output
 dist/
 # generated types
@@ -54,3 +57,12 @@ playwright-report/
 
 # agent-safehouse local settings
 .sandbox/
+
+# Auto-generated cyoda-go help mirror (regenerated each build).
+# Two hand-authored files at the root are tracked exceptions.
+src/content/docs/help/**/*.md
+src/content/docs/help/**/*.mdx
+!src/content/docs/help/index.mdx
+!src/content/docs/help/topic-tree.mdx
+
+public/help/

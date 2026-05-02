@@ -1,0 +1,80 @@
+---
+title: Browse cyoda help
+description: "Static mirror of cyoda-go's `cyoda help` and live HTTP help API, optimized for both humans and AI agents. Pinned to a specific cyoda-go release."
+sidebar:
+  order: 2
+---
+
+import { LinkCard } from '@astrojs/starlight/components';
+import helpIndex from '../../../data/cyoda-help-index.json';
+
+export const topLevelTopics = helpIndex.topics
+  .filter(t => t.path.length === 1)
+  .sort((a, b) => a.path[0].localeCompare(b.path[0]));
+
+This section is a static mirror of the cyoda-go binary's help surface
+— the same content `cyoda help …` prints on the CLI and the live
+HTTP help API serves at runtime. It exists for readers who don't have
+a local cyoda-go runtime installed, and for AI agents that need to
+discover and consume cyoda-go's help without running the binary.
+
+Every rendered page below has a sibling raw-markdown view at
+`<page-url>.md` and a structured JSON descriptor at `<page-url>.json`.
+For example, [`/help/cli/`](/help/cli/) has
+[`/help/cli.md`](/help/cli.md) (markdown body only) and
+[`/help/cli.json`](/help/cli.json) (full descriptor with `body`,
+`sections`, `see_also`, `children`, etc.).
+
+The pages under `/help/` are pinned to **cyoda-go v{helpIndex.pinnedVersion}**.
+The binary you run is the authority for the version you run; if your
+binary is newer, prefer its output.
+
+## Browse the tree
+
+<div class="help-card-grid">
+  {topLevelTopics.map(t => (
+    <LinkCard
+      title={t.title}
+      description={t.synopsis}
+      href={`/help/${t.path[0]}/`}
+    />
+  ))}
+</div>
+
+<style>{`
+  .help-card-grid {
+    display: grid;
+    gap: 1rem;
+    /* As many columns as fit at min 22rem each; collapses to one when viewport is narrower. */
+    grid-template-columns: repeat(auto-fit, minmax(min(100%, 22rem), 1fr));
+    margin-block: 1.5rem;
+  }
+`}</style>
+
+For a flat view of every topic and subtopic, see
+[cyoda help topic tree](/help/topic-tree/).
+
+## For agents
+
+Agents navigate the mirror via three primitives plus a discovery file:
+
+- [`/help/index.json`](/help/index.json) — manifest of every topic
+  with `topic`, `title`, `stability`, `tagline`, `see_also`. The
+  envelope is byte-equivalent to the live API's `GET /help` response.
+- `/help/<slug>.json` — full topic descriptor including `body`,
+  `sections[]`, `see_also`, `stability`, `actions`, `children`. Same
+  shape as the live API's `GET /help/{topic}` response.
+- `/help/<slug>.md` — body only, no frontmatter, no chrome.
+- [`/help/versions.json`](/help/versions.json) — version registry.
+
+Discovery hint: [`/help/llms.txt`](/help/llms.txt) and the site-level
+[`/llms.txt`](/llms.txt) both advertise these endpoints and the URL
+convention.
+
+### URL convention
+
+`cyoda help A B C` ↔ `https://docs.cyoda.net/help/A/B/C/` for the
+rendered page, or `.md`/`.json` for the raw payloads. Manifest topic
+IDs use the live API's dotted form (`config.database`); replace dots
+with slashes to build the URL.
+

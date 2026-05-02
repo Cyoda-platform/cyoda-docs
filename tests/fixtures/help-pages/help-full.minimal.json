@@ -1,0 +1,20 @@
+{
+  "pinnedVersion": "0.6.1",
+  "schema": 1,
+  "topics": [
+    {
+      "topic": "cli",
+      "path": ["cli"],
+      "title": "cli — the cyoda command-line interface",
+      "synopsis": "Subcommands and global flags.",
+      "body": "# cli\n\n## NAME\n\ncli — the cyoda command-line interface.\n",
+      "sections": [
+        { "name": "NAME", "body": "cli — the cyoda command-line interface." }
+      ],
+      "see_also": [],
+      "stability": "stable",
+      "actions": [],
+      "children": []
+    }
+  ]
+}

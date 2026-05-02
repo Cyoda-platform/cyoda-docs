@@ -79,6 +79,7 @@ export default defineConfig({
 		'/cloud/roadmap/': '/cyoda-cloud/status-and-roadmap/',
 		'/cloud/service-details/': '/cyoda-cloud/',
 		'/cloud/status/': '/cyoda-cloud/status-and-roadmap/',
+		'/reference/cyoda-help/': '/help/topic-tree/',
 	},
 	integrations: [
 		react(),
@@ -284,6 +285,14 @@ export default defineConfig({
 					label: 'Cyoda Cloud',
 					collapsed: true,
 					autogenerate: { directory: 'cyoda-cloud' }
+				},
+				{
+					label: 'Help',
+					collapsed: true,
+					items: [
+						{ label: 'cmd line', link: '/help/topic-tree/' },
+						{ label: 'browse', link: '/help/' },
+					],
 				},
 				{
 					label: 'Reference',
