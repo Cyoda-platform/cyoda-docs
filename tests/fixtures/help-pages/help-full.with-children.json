@@ -1,0 +1,30 @@
+{
+  "pinnedVersion": "test",
+  "schema": 1,
+  "topics": [
+    {
+      "topic": "config",
+      "path": ["config"],
+      "title": "configuration",
+      "synopsis": "Environment-driven configuration for cyoda.",
+      "body": "# config\n\nTop-level config doc.\n",
+      "sections": [],
+      "see_also": [],
+      "stability": "stable",
+      "actions": [],
+      "children": ["config.database"]
+    },
+    {
+      "topic": "config.database",
+      "path": ["config", "database"],
+      "title": "database configuration",
+      "synopsis": "Storage backend selection and per-backend connection settings.",
+      "body": "# config.database\n\nBackend selection.\n",
+      "sections": [],
+      "see_also": ["config", "run"],
+      "stability": "stable",
+      "actions": [],
+      "children": []
+    }
+  ]
+}

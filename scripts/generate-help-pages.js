@@ -9,6 +9,64 @@ function err(cls, message) {
   return new Error(`${cls}: ${message}`);
 }
 
+const SEGMENT_RE = /^[A-Za-z0-9_-]+$/;
+const VERSION_SEGMENT_RE = /^v\d+(\.\d+)?$/;
+const RESERVED_FIRST_SEGMENTS = new Set(['index', 'topic-tree']);
+
+function validateTopic(t) {
+  if (!t || typeof t !== 'object') {
+    throw err('MalformedTopic', `topic entry is not an object: ${JSON.stringify(t)}`);
+  }
+  if (!Array.isArray(t.path) || t.path.length === 0) {
+    throw err('MalformedTopic', `topic missing non-empty path[]: ${JSON.stringify(t.path)}`);
+  }
+  for (const seg of t.path) {
+    if (typeof seg !== 'string' || !SEGMENT_RE.test(seg)) {
+      throw err('MalformedTopic', `path segment "${seg}" is not [A-Za-z0-9_-]+`);
+    }
+  }
+  if (typeof t.topic !== 'string' || t.topic !== t.path.join('.')) {
+    throw err(
+      'MalformedTopic',
+      `invariant violated: topic === path.join("."): topic=${JSON.stringify(t.topic)} path=${JSON.stringify(t.path)}`
+    );
+  }
+  if (typeof t.title !== 'string' || t.title.length === 0) {
+    throw err('MalformedTopic', `topic ${t.topic} missing title`);
+  }
+  if (typeof t.body !== 'string' || t.body.length === 0) {
+    throw err('MalformedTopic', `topic ${t.topic} missing body`);
+  }
+}
+
+function checkReservedSegment(t) {
+  const first = t.path[0];
+  if (VERSION_SEGMENT_RE.test(first) || RESERVED_FIRST_SEGMENTS.has(first)) {
+    throw err(
+      'ReservedTopicSegment',
+      `topic ${t.topic} uses reserved first segment "${first}". Reserved: /^v\\d+(\\.\\d+)?$/, "index", "topic-tree".`
+    );
+  }
+}
+
+function slugFor(t) {
+  return t.path.join('/').toLowerCase();
+}
+
+function checkSlugConflicts(topics) {
+  const seen = new Map();
+  for (const t of topics) {
+    const slug = slugFor(t);
+    if (seen.has(slug)) {
+      throw err(
+        'TopicSlugConflict',
+        `topics ${seen.get(slug)} and ${t.topic} both derive slug "${slug}"`
+      );
+    }
+    seen.set(slug, t.topic);
+  }
+}
+
 /**
  * Generate static help mirror artefacts from the cached full bundle.
  *
@@ -28,7 +86,17 @@ export async function run({ fullDataPath, docsHelpDir, publicHelpDir, prefix = '
   }
   const raw = fs.readFileSync(fullDataPath, 'utf8');
   const bundle = JSON.parse(raw);
-  // Stages will be added in subsequent tasks.
+
+  for (const t of bundle.topics) {
+    // Check reserved segments first so a version-style segment (e.g. "v0.6")
+    // gets ReservedTopicSegment rather than MalformedTopic (the dot fails SEGMENT_RE).
+    if (Array.isArray(t.path) && t.path.length > 0) {
+      checkReservedSegment(t);
+    }
+    validateTopic(t);
+  }
+  checkSlugConflicts(bundle.topics);
+
   return { topicCount: bundle.topics.length };
 }
 

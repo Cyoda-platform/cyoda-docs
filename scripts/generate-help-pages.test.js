@@ -23,3 +23,98 @@ test('MissingFullData: full bundle file does not exist', async () => {
   }).catch(e => e);
   assert.match(err.message, /MissingFullData/);
 });
+
+function writeBundle(dir, bundle) {
+  const file = path.join(dir, 'cyoda-help-full.json');
+  fs.writeFileSync(file, JSON.stringify(bundle));
+  return file;
+}
+
+test('MalformedTopic: topic field does not equal path.join(".")', async () => {
+  const cacheDir = tmpDir('cache');
+  const file = writeBundle(cacheDir, {
+    pinnedVersion: 'test', schema: 1,
+    topics: [{
+      topic: 'wrong', path: ['config', 'database'],
+      title: 'x', body: '# x\n', synopsis: '',
+      sections: [], see_also: [], stability: 'stable', actions: [], children: [],
+    }],
+  });
+  const err = await run({
+    fullDataPath: file, docsHelpDir: tmpDir('docs'), publicHelpDir: tmpDir('public'), prefix: '',
+  }).catch(e => e);
+  assert.match(err.message, /MalformedTopic/);
+  assert.match(err.message, /topic === path\.join/);
+});
+
+test('ReservedTopicSegment: first segment is a version pattern', async () => {
+  const cacheDir = tmpDir('cache');
+  const file = writeBundle(cacheDir, {
+    pinnedVersion: 'test', schema: 1,
+    topics: [{
+      topic: 'v0.6', path: ['v0.6'],
+      title: 'x', body: '# x\n', synopsis: '',
+      sections: [], see_also: [], stability: 'stable', actions: [], children: [],
+    }],
+  });
+  const err = await run({
+    fullDataPath: file, docsHelpDir: tmpDir('docs'), publicHelpDir: tmpDir('public'), prefix: '',
+  }).catch(e => e);
+  assert.match(err.message, /ReservedTopicSegment/);
+});
+
+test('ReservedTopicSegment: first segment is "index"', async () => {
+  const cacheDir = tmpDir('cache');
+  const file = writeBundle(cacheDir, {
+    pinnedVersion: 'test', schema: 1,
+    topics: [{
+      topic: 'index', path: ['index'],
+      title: 'x', body: '# x\n', synopsis: '',
+      sections: [], see_also: [], stability: 'stable', actions: [], children: [],
+    }],
+  });
+  const err = await run({
+    fullDataPath: file, docsHelpDir: tmpDir('docs'), publicHelpDir: tmpDir('public'), prefix: '',
+  }).catch(e => e);
+  assert.match(err.message, /ReservedTopicSegment/);
+});
+
+test('ReservedTopicSegment: first segment is "topic-tree"', async () => {
+  const cacheDir = tmpDir('cache');
+  const file = writeBundle(cacheDir, {
+    pinnedVersion: 'test', schema: 1,
+    topics: [{
+      topic: 'topic-tree', path: ['topic-tree'],
+      title: 'x', body: '# x\n', synopsis: '',
+      sections: [], see_also: [], stability: 'stable', actions: [], children: [],
+    }],
+  });
+  const err = await run({
+    fullDataPath: file, docsHelpDir: tmpDir('docs'), publicHelpDir: tmpDir('public'), prefix: '',
+  }).catch(e => e);
+  assert.match(err.message, /ReservedTopicSegment/);
+});
+
+test('TopicSlugConflict: two distinct topics derive the same slug', async () => {
+  const cacheDir = tmpDir('cache');
+  // Construct two topics with identical path arrays — degenerate but tests the guard.
+  const file = writeBundle(cacheDir, {
+    pinnedVersion: 'test', schema: 1,
+    topics: [
+      {
+        topic: 'a.b', path: ['a', 'b'],
+        title: 'first', body: '# first\n', synopsis: '',
+        sections: [], see_also: [], stability: 'stable', actions: [], children: [],
+      },
+      {
+        topic: 'a.b', path: ['a', 'b'],
+        title: 'second', body: '# second\n', synopsis: '',
+        sections: [], see_also: [], stability: 'stable', actions: [], children: [],
+      },
+    ],
+  });
+  const err = await run({
+    fullDataPath: file, docsHelpDir: tmpDir('docs'), publicHelpDir: tmpDir('public'), prefix: '',
+  }).catch(e => e);
+  assert.match(err.message, /TopicSlugConflict/);
+});
