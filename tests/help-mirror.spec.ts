@@ -3,7 +3,7 @@ import { test, expect } from '@playwright/test';
 test.describe('static help mirror', () => {
   test('landing page lists top-level topics and links to manifest', async ({ page }) => {
     await page.goto('/help/');
-    await expect(page).toHaveTitle(/Help/);
+    await expect(page).toHaveTitle(/help/i);
     await expect(page.getByText(/cyoda-go v\d/).first()).toBeVisible();
     await expect(page.getByRole('link', { name: '/help/index.json' })).toHaveAttribute('href', /\/help\/index\.json$/);
     await expect(page.getByRole('link', { name: '/help/versions.json' })).toHaveAttribute('href', /\/help\/versions\.json$/);

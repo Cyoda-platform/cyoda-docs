@@ -54,9 +54,18 @@ const RULES: Rule[] = [
 ];
 
 const CONTENT_GLOB = 'src/content/docs/**/*.{md,mdx}';
-// Auto-generated schema pages are regenerated at build time and don't
-// carry the drift patterns; excluding keeps the test fast.
-const IGNORED_GLOBS = ['src/content/docs/reference/schemas/**'];
+// Auto-generated pages are regenerated at build time from sources we
+// don't control: schemas come from src/schemas/ JSON, and the help
+// mirror under src/content/docs/help/<seg>/.../<leaf>.md is verbatim
+// from the pinned cyoda-go release. The drift patterns this test
+// guards are about hand-authored content; if the binary's prose ever
+// uses one of these phrases, that's an upstream concern, not a
+// regression in this repo. The two hand-authored entry pages
+// (index.mdx, topic-tree.mdx) at the root of help/ stay in scope.
+const IGNORED_GLOBS = [
+  'src/content/docs/reference/schemas/**',
+  'src/content/docs/help/**/*.md',
+];
 
 test.describe('Content correctness — cross-cutting sweep regression guards', () => {
   for (const rule of RULES) {

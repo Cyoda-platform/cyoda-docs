@@ -36,7 +36,7 @@ binary is newer, prefer its output.
     <LinkCard
       title={t.title}
       description={t.synopsis}
-      href={`/help/${t.path[0]}/`}
+      href={`/help/${t.path[0].toLowerCase()}/`}
     />
   ))}
 </div>
@@ -73,8 +73,10 @@ convention.
 
 ### URL convention
 
-`cyoda help A B C` ↔ `https://docs.cyoda.net/help/A/B/C/` for the
+`cyoda help A B C` ↔ `https://docs.cyoda.net/help/a/b/c/` for the
 rendered page, or `.md`/`.json` for the raw payloads. Manifest topic
-IDs use the live API's dotted form (`config.database`); replace dots
-with slashes to build the URL.
+IDs use the live API's dotted form and may be mixed-case
+(`config.database`, `errors.BAD_REQUEST`); replace dots with slashes
+**and lowercase** to build the URL — e.g. `errors.BAD_REQUEST` →
+`/help/errors/bad_request/`.
 
