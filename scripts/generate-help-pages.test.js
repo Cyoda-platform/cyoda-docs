@@ -286,3 +286,22 @@ test('writes /help/llms.txt advertising manifest, conventions, raw formats', asy
   assert.match(txt, /Pinned: cyoda-go v/);
   assert.match(txt, /_url_convention/);  // strict-validator note
 });
+
+test('body containing literal {…} and <…> round-trips through .md without mangling', async () => {
+  const fixturePath = path.join(fixtureDir, 'help-full.literals.json');
+  const docsHelpDir = tmpDir('docs');
+  const publicHelpDir = tmpDir('public');
+  await run({
+    fullDataPath: fixturePath, docsHelpDir, publicHelpDir, prefix: '',
+  });
+  const page = fs.readFileSync(path.join(docsHelpDir, 'openapi.md'), 'utf8');
+  // Literals appear verbatim in the page (inside their original code fence).
+  assert.match(page, /\{CYODA_CONTEXT_PATH\}\/help\/\{topic\}/);
+  assert.match(page, /cyoda \[<subcommand>\] \[<flags>\]/);
+  assert.match(page, /<topic>/);
+
+  // Raw markdown sibling is byte-equal to body.
+  const raw = fs.readFileSync(path.join(publicHelpDir, 'openapi.md'), 'utf8');
+  const expected = JSON.parse(fs.readFileSync(fixturePath, 'utf8')).topics[0].body;
+  assert.equal(raw, expected.endsWith('\n') ? expected : expected + '\n');
+});
