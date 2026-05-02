@@ -2,7 +2,9 @@
 
 **Date:** 2026-05-02
 **Pinned cyoda-go version targeted by this work:** v0.6.2 (current value of
-`cyoda-go-version.json`).
+`cyoda-go-version.json`). A locally-installed cyoda-go binary may be a
+later patch (e.g. v0.6.3); the build always targets the pin, not what
+happens to be installed locally.
 **Status:** design approved through brainstorming; ready to hand to
 `writing-plans` for an implementation plan.
 
@@ -64,7 +66,21 @@ help bodies. The new `/help/...` tree is a separate, opt-in surface.
 4. Manifest at `/help/index.json` with envelope identical to the live
    API's `GET /help` response.
 5. Version registry at `/help/versions.json` — single-entry today,
-   designed for future per-major.minor expansion.
+   designed for future per-major.minor expansion. Example:
+   ```json
+   {
+     "current": "0.6",
+     "versions": [
+       {
+         "majorMinor": "0.6",
+         "pinnedPatch": "0.6.2",
+         "current": true,
+         "manifest": "/help/index.json",
+         "root": "/help/"
+       }
+     ]
+   }
+   ```
 6. Top-level "Help" sidebar section between Cyoda Cloud and Reference,
    with two visible sub-entries.
 7. Relocation of the existing `/reference/cyoda-help/` navigator into
@@ -246,30 +262,52 @@ build-pipeline list, and add the new generated paths to the
 
 ## Build pipeline integration
 
+The authoritative pipeline is `package.json`'s `build` script, not the
+prose list in `CLAUDE.md` (which has already drifted from reality and
+will be updated as part of this work). Today's chain:
+
 ```
-npm run build:
-  1.  scripts/generate-schema-pages.js          (existing)
-  1a. scripts/fetch-cyoda-help-index.js         (existing, MODIFIED)
-        in:   cyoda-go-version.json
-        net:  GET cyoda_help_<v>.json + SHA256SUMS
-        out:  src/data/cyoda-help-index.json    (slim, unchanged)
-              .cyoda-cache/cyoda-help-full.json (NEW)
-  1b. scripts/generate-help-pages.js            (NEW)
-        in:   .cyoda-cache/cyoda-help-full.json
-        opts: --prefix=""  (default; reserved for future versioning)
-        out:  src/content/docs/help/index.mdx
-              src/content/docs/help/<seg>/.../<leaf>.md
-              public/help/index.json
-              public/help/<seg>/.../<leaf>.json
-              public/help/<seg>/.../<leaf>.md
-              public/help/versions.json
-              public/help/llms.txt
-  2.  astro build                                (existing)
-  3.  scripts/export-markdown.js                 (existing)
-  4.  scripts/generate-llms-txt.js               (existing, MODIFIED)
-                                                  (adds /help section)
-  5.  scripts/package-schemas.js                 (existing)
+fetch:help-index → fetch:openapi → fetch:schemas →
+generate:schema-pages → astro build → export:markdown →
+generate:llms → generate:llms-full → generate:md-sitemap →
+package:schemas
 ```
+
+The new step `generate:help-pages` is inserted between
+`fetch:help-index` (which now also produces the full bundle) and
+`generate:schema-pages`. It must run before `astro build` because it
+writes content into `src/content/docs/help/`, and after the new
+`.cyoda-cache/cyoda-help-full.json` exists.
+
+Inputs/outputs of the modified and new steps:
+
+```
+fetch:help-index   (existing, MODIFIED)
+  script: scripts/fetch-cyoda-help-index.js
+  in:   cyoda-go-version.json
+  net:  GET cyoda_help_<v>.json + SHA256SUMS
+  out:  src/data/cyoda-help-index.json    (slim, unchanged)
+        .cyoda-cache/cyoda-help-full.json (NEW)
+
+generate:help-pages   (NEW)
+  script: scripts/generate-help-pages.js
+  in:   .cyoda-cache/cyoda-help-full.json
+  opts: --prefix=""  (default; reserved for future versioning)
+  out:  src/content/docs/help/<seg>/.../<leaf>.md
+        public/help/index.json
+        public/help/<seg>/.../<leaf>.json
+        public/help/<seg>/.../<leaf>.md
+        public/help/versions.json
+        public/help/llms.txt
+
+generate:llms   (existing, MODIFIED)
+  Adds a `## cyoda-go binary help` section to dist/llms.txt.
+```
+
+`CLAUDE.md`'s build-pipeline section will be rewritten to match
+`package.json` as part of this work. Adding the new step there means
+listing every step, in order, with its inputs and outputs — not just
+patching in the new one.
 
 ### `fetch-cyoda-help-index.js` modifications
 
@@ -313,31 +351,84 @@ npm run build:
     "_url_convention": "topic IDs use dots; build URL by replacing dots with slashes, e.g. config.database -> /help/config/database/"
   }
   ```
-  (`_url_convention` is a non-API hint field; harmless and self-explaining.)
+  (`_url_convention` is a non-API hint field; harmless and
+  self-explaining. `/help/llms.txt` notes its presence so agents that
+  strictly validate against the live API's schema know to ignore it.)
 - Writes `public/help/versions.json` (single-entry today).
 - Writes `public/help/llms.txt` (small companion for agents that land
   on `/help/` first).
 - Does **not** write `index.mdx` or `topic-tree.mdx` — both are
   hand-authored, committed files. The generator only writes
   per-topic pages and the artefacts under `public/help/`.
-- Atomic-writes per output root (`src/content/docs/help/`,
-  `public/help/`) — writes into a temp directory, then renames; on
-  any error, the temp tree is unlinked. The two tracked
-  hand-authored files are explicitly preserved across the rename:
-  the generator never touches them. Prevents partial state from
-  poisoning a subsequent `astro build`.
+- Per-file atomic write strategy (see "Atomicity" below).
+
+### Atomicity
+
+Whole-tree atomic swap is impractical here: `fs.rename` over a
+non-empty directory fails on most platforms, and the two
+hand-authored files at the root of `src/content/docs/help/`
+(`index.mdx`, `topic-tree.mdx`) must not be touched.
+
+Strategy: **per-file atomic rename from a side temp directory.**
+
+1. The generator first stages every output to a sibling temp dir:
+   `src/content/docs/help/.tmp-<pid>/<slug>.md` and
+   `public/help/.tmp-<pid>/...`.
+2. Once all files are staged successfully, the generator walks the
+   temp tree and `fs.rename`s each file into its final location,
+   creating parent directories as needed.
+3. Before the renames, the generator computes a delete-set: files in
+   the destination tree under generator-owned subpaths
+   (i.e. anything under `src/content/docs/help/<segment>/...` for
+   segments that exist in the new tree, plus any orphaned per-topic
+   files from the previous build that don't appear in the new tree).
+   Hand-authored top-level files are excluded by glob.
+4. After the renames, orphaned files in the delete-set are unlinked.
+5. On any error during staging, the temp dir is `rm -rf`'d and the
+   destination tree is untouched.
+
+This gives per-file atomicity (no half-written file), preserves the
+two tracked hand-authored files unconditionally, and recovers cleanly
+from interrupted runs without leaving stale topic pages behind. It
+does not give whole-tree atomicity — a kill-9 mid-rename could leave a
+partially-updated tree — but a re-run cleanly converges to the
+intended state, and `astro build` running on a partially-updated tree
+is no worse than running on the previous tree.
+
+### Upstream invariants the generator relies on
+
+- **`topic === path.join('.')` for every topic.** The dotted form
+  used in the manifest and the slash form used in the URL must be
+  reversibly derivable from each other. The generator asserts this on
+  every topic and fails with `MalformedTopic` if violated. This
+  invariant has held in cyoda-go through v0.6.x; if it's ever
+  broken upstream, the generator catches it before producing wrong
+  URLs.
+- Path segments are limited to `[A-Za-z0-9_-]`. Already enforced by
+  cyoda-go's help-tree validator; the generator double-checks
+  defensively.
+- `body` is well-formed Markdown that contains `{`, `}`, `<`, `>` only
+  inside backtick code spans or fenced code blocks. This is what
+  makes per-topic pages safe as `.md` (where these characters are
+  literal) vs unsafe as `.mdx` (where they would be parsed as JS/JSX).
 
 ### One-time relocation of `cyoda-help.mdx` (not part of the build)
 
 This is a single human edit performed when the work lands, not a
-build step:
+build step. **Note**: the existing `<dl>` tree iteration renders flat
+text strings (e.g. `cyoda help search async`); converting each entry
+to a link to `/help/<slug>/` is more than a one-line edit — the JSX
+expression that produces `<li>` entries needs restructuring to wrap
+the inner code span in a link.
+
+Steps:
 
 1. Move `src/content/docs/reference/cyoda-help.mdx` to
    `src/content/docs/help/topic-tree.mdx`.
 2. Update its frontmatter (`title`, `sidebar.order`).
-3. Update the JSX expression that renders each tree entry so each
-   `cyoda help <path>` invocation becomes a link to its rendered
-   page (`/help/<slug>/`).
+3. Restructure the JSX so each `cyoda help <path>` invocation becomes
+   a link to `/help/<slug>/`. Compute the slug inline by joining
+   `t.path` with `/`.
 4. Add a `redirects` entry in `astro.config.mjs` mapping
    `/reference/cyoda-help/` → `/help/topic-tree/`.
 
@@ -469,9 +560,12 @@ and Reference:
 },
 ```
 
-Two explicit items, no `autogenerate`. Per-topic pages set
-`sidebar.hidden: true` so they cannot accidentally appear in sidebar
-nav.
+Two explicit items, no `autogenerate`. The primary protection against
+per-topic pages appearing in the sidebar is therefore the absence of
+an `autogenerate` directive on this section. Per-topic frontmatter
+also sets `sidebar.hidden: true` as a belt-and-braces guard so that
+adding an `autogenerate` rule somewhere up the tree later doesn't
+silently flood the sidebar with topic pages.
 
 `astro.config.mjs` `redirects` gains:
 
@@ -516,7 +610,8 @@ Three layers, each with explicit named errors that follow the existing
 **Layer 2 — generator:**
 
 - `MissingFullData` — `.cyoda-cache/cyoda-help-full.json` not present.
-- `MalformedTopic` — required field absent in the cached data.
+- `MalformedTopic` — required field absent in the cached data, or
+  the `topic === path.join('.')` invariant is violated for any topic.
 - `ReservedTopicSegment` — first path segment matches
   `^v\d+(\.\d+)?$`, or equals `index` or `topic-tree`.
 - `TopicSlugConflict` — two topics derive the same slug.
@@ -526,11 +621,11 @@ Three layers, each with explicit named errors that follow the existing
 practice to the hand-authored landing and topic-tree pages, since
 per-topic pages are `.md` (no MDX evaluation).
 
-Atomic writes per output root prevent partial state on failure.
-
 Idempotency: re-running the generator over an unchanged input must
 produce byte-identical output. The generator does not embed a
 `generatedAt` timestamp anywhere, to keep diffs clean.
+
+The atomic-write strategy is documented under "Atomicity" above.
 
 ## Testing
 
@@ -559,8 +654,21 @@ Pure file-system tests over a fixture full-data file. Cases:
 - `TopicSlugConflict` fires when two distinct topics collide.
 - Idempotency: two consecutive runs over the same input produce
   identical outputs.
-- Atomic-rename: simulated failure mid-write leaves the previous tree
-  intact.
+- Atomic-rename: simulated failure during staging leaves the
+  destination tree untouched (no partial files visible).
+- Hand-authored files preserved: a fixture run over a help/ tree
+  that already contains `index.mdx` and `topic-tree.mdx` leaves both
+  files byte-identical after generation.
+- **Body with literal `<` and `{`**: a fixture topic whose body
+  contains `<placeholder>`, `{TOKEN}`, and similar constructs
+  produces a `.md` page that loads and renders without MDX
+  evaluation. This is the entire reason for the `.md`-not-`.mdx`
+  decision and must be tested explicitly.
+- Orphan removal: a fixture run after a topic is removed from the
+  upstream JSON deletes the corresponding per-topic files from
+  `src/content/docs/help/` and `public/help/`.
+- Round-trip: for every topic, `path.join('.') === topic` (the
+  upstream invariant the generator relies on).
 
 ### Playwright (existing runner, one new spec at `tests/help-mirror.spec.ts`)
 
@@ -571,6 +679,10 @@ Pure file-system tests over a fixture full-data file. Cases:
 - `/help/index.json` returns valid JSON with the manifest envelope.
 - `/help/<slug>.json` returns valid JSON with the descriptor envelope.
 - `/help/<slug>.md` returns body as `text/markdown`.
+- `/help/<slug>.md` (asset) and `/help/<slug>/` (Starlight page)
+  coexist on the deployed site: the bare `.md` URL serves the static
+  asset (no redirect to the Starlight route), and the trailing-slash
+  URL serves the rendered HTML page. Both must succeed.
 - `/help/versions.json` returns the version registry.
 - `/reference/cyoda-help/` redirects to `/help/topic-tree/`.
 
