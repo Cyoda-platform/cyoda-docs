@@ -225,3 +225,30 @@ test('writes per-topic raw markdown body, no frontmatter, byte-equal to body', a
   // No frontmatter.
   assert.ok(!raw.startsWith('---'));
 });
+
+test('writes manifest at public/help/index.json with live-API envelope', async () => {
+  const fixturePath = path.join(fixtureDir, 'help-full.with-children.json');
+  const docsHelpDir = tmpDir('docs');
+  const publicHelpDir = tmpDir('public');
+  await run({
+    fullDataPath: fixturePath, docsHelpDir, publicHelpDir, prefix: '',
+  });
+  const manifest = JSON.parse(fs.readFileSync(path.join(publicHelpDir, 'index.json'), 'utf8'));
+  assert.equal(manifest.schema, 1);
+  assert.equal(manifest.version, '0.6.1');
+  assert.ok(Array.isArray(manifest.topics));
+  assert.equal(manifest.topics.length, 2);
+  for (const t of manifest.topics) {
+    assert.ok(t.topic);
+    assert.ok(t.title);
+    assert.ok(t.stability);
+    assert.equal(typeof t.tagline, 'string');
+    assert.ok(Array.isArray(t.see_also));
+    assert.ok(!('body' in t), 'manifest must not include body');
+  }
+  // dotted topic IDs preserved
+  assert.deepEqual(manifest.topics.map(t => t.topic).sort(), ['config', 'config.database']);
+  // hint field
+  assert.ok(typeof manifest._url_convention === 'string');
+  assert.match(manifest._url_convention, /replace dots with slashes/i);
+});

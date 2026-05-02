@@ -147,6 +147,22 @@ function writeFileEnsuringDir(file, content) {
   fs.writeFileSync(file, content);
 }
 
+function buildManifest(bundle) {
+  return {
+    schema: bundle.schema ?? 1,
+    version: bundle.pinnedVersion,
+    topics: bundle.topics.map(t => ({
+      topic: t.topic,
+      title: t.title,
+      stability: t.stability ?? 'stable',
+      tagline: t.synopsis ?? '',
+      see_also: Array.isArray(t.see_also) ? t.see_also : [],
+    })),
+    _url_convention:
+      'topic IDs use dots (e.g. "config.database"); build the URL by replace dots with slashes, e.g. /help/config/database/',
+  };
+}
+
 function checkSlugConflicts(topics) {
   const seen = new Map();
   for (const t of topics) {
@@ -211,6 +227,9 @@ export async function run({ fullDataPath, docsHelpDir, publicHelpDir, prefix = '
     const rawMdPath = path.join(publicHelpDir, ...t.path) + '.md';
     writeFileEnsuringDir(rawMdPath, t.body.endsWith('\n') ? t.body : t.body + '\n');
   }
+
+  const manifestPath = path.join(publicHelpDir, 'index.json');
+  writeFileEnsuringDir(manifestPath, JSON.stringify(buildManifest(bundle), null, 2) + '\n');
 
   return { topicCount: bundle.topics.length };
 }
