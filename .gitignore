@@ -1,6 +1,9 @@
 .idea/
 .vscode/
 
+# local git worktrees (created via superpowers:using-git-worktrees)
+.worktrees/
+
 # build output
 dist/
 # generated types
