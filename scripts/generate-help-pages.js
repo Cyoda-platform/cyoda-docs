@@ -268,23 +268,86 @@ export async function run({ fullDataPath, docsHelpDir, publicHelpDir, prefix = '
   const pinnedPatch = bundle.pinnedVersion;
   const urlPrefix = prefix; // empty by default
 
-  for (const t of bundle.topics) {
-    const pagePath = path.join(docsHelpDir, ...t.path) + '.md';
-    writeFileEnsuringDir(pagePath, renderPage(t, bundle.topics, pinnedPatch, urlPrefix));
-    const descPath = path.join(publicHelpDir, ...t.path) + '.json';
-    writeFileEnsuringDir(descPath, JSON.stringify(t, null, 2) + '\n');
-    const rawMdPath = path.join(publicHelpDir, ...t.path) + '.md';
-    writeFileEnsuringDir(rawMdPath, t.body.endsWith('\n') ? t.body : t.body + '\n');
+  // --- Stage all outputs into side temp dirs ---
+  const docsTmp = fs.mkdtempSync(path.join(path.dirname(docsHelpDir), `.help-tmp-docs-${process.pid}-`));
+  const publicTmp = fs.mkdtempSync(path.join(path.dirname(publicHelpDir), `.help-tmp-public-${process.pid}-`));
+
+  let stagedDocs = [];
+  let stagedPublic = [];
+
+  try {
+    for (const t of bundle.topics) {
+      const pageRel = path.join(...t.path) + '.md';
+      writeFileEnsuringDir(path.join(docsTmp, pageRel), renderPage(t, bundle.topics, pinnedPatch, urlPrefix));
+      stagedDocs.push(pageRel);
+
+      const descRel = path.join(...t.path) + '.json';
+      writeFileEnsuringDir(path.join(publicTmp, descRel), JSON.stringify(t, null, 2) + '\n');
+      stagedPublic.push(descRel);
+
+      const rawMdRel = path.join(...t.path) + '.md';
+      writeFileEnsuringDir(path.join(publicTmp, rawMdRel), t.body.endsWith('\n') ? t.body : t.body + '\n');
+      stagedPublic.push(rawMdRel);
+    }
+
+    writeFileEnsuringDir(path.join(publicTmp, 'index.json'), JSON.stringify(buildManifest(bundle), null, 2) + '\n');
+    stagedPublic.push('index.json');
+
+    writeFileEnsuringDir(path.join(publicTmp, 'versions.json'), JSON.stringify(buildVersionsRegistry(bundle, urlPrefix), null, 2) + '\n');
+    stagedPublic.push('versions.json');
+
+    writeFileEnsuringDir(path.join(publicTmp, 'llms.txt'), buildHelpLlmsTxt(bundle));
+    stagedPublic.push('llms.txt');
+  } catch (e) {
+    fs.rmSync(docsTmp, { recursive: true, force: true });
+    fs.rmSync(publicTmp, { recursive: true, force: true });
+    throw err('IOFailed', `staging failed: ${e.message}`);
   }
 
-  const manifestPath = path.join(publicHelpDir, 'index.json');
-  writeFileEnsuringDir(manifestPath, JSON.stringify(buildManifest(bundle), null, 2) + '\n');
+  // --- Promote staged files into final locations (per-file rename) ---
+  fs.mkdirSync(docsHelpDir, { recursive: true });
+  fs.mkdirSync(publicHelpDir, { recursive: true });
 
-  const versionsPath = path.join(publicHelpDir, 'versions.json');
-  writeFileEnsuringDir(versionsPath, JSON.stringify(buildVersionsRegistry(bundle, urlPrefix), null, 2) + '\n');
+  for (const rel of stagedDocs) {
+    const dest = path.join(docsHelpDir, rel);
+    fs.mkdirSync(path.dirname(dest), { recursive: true });
+    fs.renameSync(path.join(docsTmp, rel), dest);
+  }
+  for (const rel of stagedPublic) {
+    const dest = path.join(publicHelpDir, rel);
+    fs.mkdirSync(path.dirname(dest), { recursive: true });
+    fs.renameSync(path.join(publicTmp, rel), dest);
+  }
 
-  const helpLlmsPath = path.join(publicHelpDir, 'llms.txt');
-  writeFileEnsuringDir(helpLlmsPath, buildHelpLlmsTxt(bundle));
+  // --- Orphan removal in destination trees ---
+  const docsKeep = new Set(stagedDocs.map(p => path.normalize(p)));
+  const publicKeep = new Set(stagedPublic.map(p => path.normalize(p)));
+  const HAND_AUTHORED_DOCS = new Set(['index.mdx', 'topic-tree.mdx']);
+
+  function removeOrphans(dir, keep, skipTopLevel) {
+    function walk(d, baseRel) {
+      if (!fs.existsSync(d)) return;
+      for (const entry of fs.readdirSync(d, { withFileTypes: true })) {
+        const rel = baseRel ? path.join(baseRel, entry.name) : entry.name;
+        const abs = path.join(d, entry.name);
+        if (entry.isDirectory()) {
+          walk(abs, rel);
+          // Remove now-empty directory.
+          if (fs.readdirSync(abs).length === 0) fs.rmdirSync(abs);
+        } else {
+          if (skipTopLevel && !baseRel && skipTopLevel.has(entry.name)) continue;
+          if (!keep.has(path.normalize(rel))) fs.unlinkSync(abs);
+        }
+      }
+    }
+    walk(dir, '');
+  }
+  removeOrphans(docsHelpDir, docsKeep, HAND_AUTHORED_DOCS);
+  removeOrphans(publicHelpDir, publicKeep, null);
+
+  // --- Cleanup temp dirs (now empty) ---
+  fs.rmSync(docsTmp, { recursive: true, force: true });
+  fs.rmSync(publicTmp, { recursive: true, force: true });
 
   return { topicCount: bundle.topics.length };
 }

@@ -305,3 +305,72 @@ test('body containing literal {…} and <…> round-trips through .md without ma
   const expected = JSON.parse(fs.readFileSync(fixturePath, 'utf8')).topics[0].body;
   assert.equal(raw, expected.endsWith('\n') ? expected : expected + '\n');
 });
+
+test('idempotency: two consecutive runs over the same input produce identical outputs', async () => {
+  const fixturePath = path.join(fixtureDir, 'help-full.with-children.json');
+  const docsHelpDir = tmpDir('docs');
+  const publicHelpDir = tmpDir('public');
+
+  await run({ fullDataPath: fixturePath, docsHelpDir, publicHelpDir, prefix: '' });
+  const after1 = readAllFiles(docsHelpDir).concat(readAllFiles(publicHelpDir));
+
+  await run({ fullDataPath: fixturePath, docsHelpDir, publicHelpDir, prefix: '' });
+  const after2 = readAllFiles(docsHelpDir).concat(readAllFiles(publicHelpDir));
+
+  assert.deepEqual(after2, after1);
+});
+
+test('orphan removal: topic absent from new bundle gets unlinked', async () => {
+  const docsHelpDir = tmpDir('docs');
+  const publicHelpDir = tmpDir('public');
+  const cacheDir = tmpDir('cache');
+
+  // First run: two-topic bundle.
+  const file1 = writeBundle(cacheDir, JSON.parse(fs.readFileSync(path.join(fixtureDir, 'help-full.with-children.json'), 'utf8')));
+  await run({ fullDataPath: file1, docsHelpDir, publicHelpDir, prefix: '' });
+  assert.ok(fs.existsSync(path.join(docsHelpDir, 'config', 'database.md')));
+  assert.ok(fs.existsSync(path.join(publicHelpDir, 'config', 'database.json')));
+
+  // Second run: bundle without the child topic.
+  const file2 = writeBundle(cacheDir, {
+    pinnedVersion: '0.6.1', schema: 1,
+    topics: [
+      JSON.parse(fs.readFileSync(path.join(fixtureDir, 'help-full.with-children.json'), 'utf8')).topics[0],
+    ],
+  });
+  await run({ fullDataPath: file2, docsHelpDir, publicHelpDir, prefix: '' });
+  assert.ok(!fs.existsSync(path.join(docsHelpDir, 'config', 'database.md')), 'orphan page should be removed');
+  assert.ok(!fs.existsSync(path.join(publicHelpDir, 'config', 'database.json')), 'orphan json should be removed');
+  assert.ok(!fs.existsSync(path.join(publicHelpDir, 'config', 'database.md')), 'orphan raw md should be removed');
+});
+
+test('hand-authored files preserved across runs', async () => {
+  const fixturePath = path.join(fixtureDir, 'help-full.minimal.json');
+  const docsHelpDir = tmpDir('docs');
+  const publicHelpDir = tmpDir('public');
+
+  // Pre-seed with hand-authored files at the docsHelpDir root.
+  fs.writeFileSync(path.join(docsHelpDir, 'index.mdx'), '---\ntitle: Help\n---\n\nLanding.\n');
+  fs.writeFileSync(path.join(docsHelpDir, 'topic-tree.mdx'), '---\ntitle: Topic tree\n---\n\nTree.\n');
+
+  await run({ fullDataPath: fixturePath, docsHelpDir, publicHelpDir, prefix: '' });
+
+  assert.equal(fs.readFileSync(path.join(docsHelpDir, 'index.mdx'), 'utf8'), '---\ntitle: Help\n---\n\nLanding.\n');
+  assert.equal(fs.readFileSync(path.join(docsHelpDir, 'topic-tree.mdx'), 'utf8'), '---\ntitle: Topic tree\n---\n\nTree.\n');
+});
+
+// Helper used above.
+function readAllFiles(dir) {
+  const out = [];
+  function walk(d) {
+    if (!fs.existsSync(d)) return;
+    for (const entry of fs.readdirSync(d, { withFileTypes: true })) {
+      const p = path.join(d, entry.name);
+      if (entry.isDirectory()) walk(p);
+      else out.push({ path: path.relative(dir, p), content: fs.readFileSync(p, 'utf8') });
+    }
+  }
+  walk(dir);
+  out.sort((a, b) => a.path.localeCompare(b.path));
+  return out;
+}
