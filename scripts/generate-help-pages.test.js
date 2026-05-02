@@ -144,11 +144,10 @@ test('writes per-topic .md page with frontmatter, aside, body, and Raw formats',
   assert.match(content, /\ntitle: "cli — the cyoda command-line interface"\n/);
   assert.match(content, /\nsidebar:\n {2}hidden: true\n/);
 
-  // canonical-reference aside
-  assert.match(content, /:::note\[Canonical reference\]/);
-  assert.match(content, /cyoda help cli/);
-  assert.match(content, /cyoda-go v[\d.]+/);
-  assert.match(content, /:::/);
+  // subtle pinned-version indicator (single small italic line, not a Starlight aside)
+  assert.match(content, /<p class="cyoda-help-pinned"><em>Pinned to cyoda-go v[\d.]+\.<\/em><\/p>/);
+  // No prominent Starlight aside.
+  assert.ok(!/:::note\[/.test(content), 'expected no Starlight :::note aside');
 
   // body verbatim
   assert.match(content, /## NAME/);

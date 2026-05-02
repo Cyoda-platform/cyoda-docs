@@ -82,12 +82,13 @@ function renderPage(t, allTopics, pinnedPatch, urlPrefix) {
     '',
   ].join('\n');
 
+  // Subtle one-line pinned-version indicator — not the prominent
+  // Starlight aside we used to emit. The CLI invocation and "binary
+  // is authoritative" framing live in the page narrative or sidebar
+  // copy; here we just want to mark which release this content was
+  // captured from.
   const aside = [
-    ':::note[Canonical reference]',
-    `This page mirrors \`${cliInvocation}\` from`,
-    `**cyoda-go v${pinnedPatch}** (pinned). The binary you run is authoritative`,
-    `for the version you run.`,
-    ':::',
+    `<p class="cyoda-help-pinned"><em>Pinned to cyoda-go v${pinnedPatch}.</em></p>`,
     '',
   ].join('\n');
 
