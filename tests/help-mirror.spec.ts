@@ -18,7 +18,7 @@ test.describe('static help mirror', () => {
 
   test('per-topic page renders body, version indicator, raw-format links', async ({ page }) => {
     await page.goto('/help/cli/');
-    await expect(page.getByText(/From cyoda-go v\d/)).toBeVisible();
+    await expect(page.getByText(/From cyoda-go version \d/)).toBeVisible();
     await expect(page.getByText(/cyoda help cli/).first()).toBeVisible();
     await expect(page.getByRole('link', { name: '/help/cli.json' })).toBeVisible();
     await expect(page.getByRole('link', { name: '/help/cli.md' })).toBeVisible();

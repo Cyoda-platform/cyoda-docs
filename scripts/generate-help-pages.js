@@ -85,7 +85,7 @@ function renderPage(t, allTopics, pinnedPatch, urlPrefix) {
   // Subtle one-line version indicator — names the cyoda-go release
   // this content was captured from, in plain English.
   const aside = [
-    `<p class="cyoda-help-pinned"><em>From cyoda-go v${pinnedPatch}.</em></p>`,
+    `<p class="cyoda-help-pinned"><em>From cyoda-go version ${pinnedPatch}.</em></p>`,
     '',
   ].join('\n');
 
