@@ -290,8 +290,8 @@ export default defineConfig({
 					label: 'Help',
 					collapsed: true,
 					items: [
-						{ label: 'Topic tree (`cyoda help`)', link: '/help/topic-tree/' },
-						{ label: 'Browse rendered help', link: '/help/' },
+						{ label: 'cmd line', link: '/help/topic-tree/' },
+						{ label: 'browse', link: '/help/' },
 					],
 				},
 				{
