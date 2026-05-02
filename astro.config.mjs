@@ -287,6 +287,14 @@ export default defineConfig({
 					autogenerate: { directory: 'cyoda-cloud' }
 				},
 				{
+					label: 'Help',
+					collapsed: true,
+					items: [
+						{ label: 'Topic tree (`cyoda help`)', link: '/help/topic-tree/' },
+						{ label: 'Browse rendered help', link: '/help/' },
+					],
+				},
+				{
 					label: 'Reference',
 					collapsed: true,
 					autogenerate: { directory: 'reference' }
