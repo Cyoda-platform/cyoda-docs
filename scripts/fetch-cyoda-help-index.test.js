@@ -20,6 +20,10 @@ function tmpOutputFile() {
   return path.join(os.tmpdir(), `help-index-${Date.now()}-${Math.random()}.json`);
 }
 
+function tmpFullOutputFile() {
+  return path.join(os.tmpdir(), `help-full-${Date.now()}-${Math.random()}.json`);
+}
+
 function makeFetch(responses) {
   // responses: { [url]: { status, text, throw? } }
   return async (url) => {
@@ -43,9 +47,10 @@ const sumsValid = fs.readFileSync(path.join(fixtureDir, 'SHA256SUMS.valid'), 'ut
 const sumsWrong = fs.readFileSync(path.join(fixtureDir, 'SHA256SUMS.wrong'), 'utf8');
 const sumsMissing = fs.readFileSync(path.join(fixtureDir, 'SHA256SUMS.missing-entry'), 'utf8');
 
-test('happy path: writes sorted, body-stripped index', async () => {
+test('happy path: writes sorted slim index AND full bundle', async () => {
   const versionFile = tmpVersionFile('test');
   const outputFile = tmpOutputFile();
+  const fullOutputFile = tmpFullOutputFile();
   await run({
     fetch: makeFetch({
       [JSON_URL]: { status: 200, text: validJson },
@@ -53,22 +58,33 @@ test('happy path: writes sorted, body-stripped index', async () => {
     }),
     versionFilePath: versionFile,
     outputPath: outputFile,
+    fullOutputPath: fullOutputFile,
   });
-  const out = JSON.parse(fs.readFileSync(outputFile, 'utf8'));
-  assert.equal(out.pinnedVersion, 'test');
-  assert.equal(out.schema, 1);
-  assert.ok(out.generatedAt);
-  assert.equal(out.topics.length, 3);
-  // sort order: by path.join('/') ascending
-  assert.deepEqual(out.topics.map(t => t.path.join('/')), ['cli', 'search', 'search/async']);
-  // no body field
-  for (const t of out.topics) {
-    assert.ok(!('body' in t), `topic ${t.path.join('/')} still has body`);
-    assert.ok(t.title);
-    assert.ok(t.synopsis);
+
+  // --- slim file: unchanged shape ---
+  const slim = JSON.parse(fs.readFileSync(outputFile, 'utf8'));
+  assert.equal(slim.pinnedVersion, 'test');
+  assert.equal(slim.schema, 1);
+  assert.equal(slim.topics.length, 3);
+  for (const t of slim.topics) {
+    assert.ok(!('body' in t), `slim topic ${t.path.join('/')} still has body`);
   }
+
+  // --- full file: new ---
+  const full = JSON.parse(fs.readFileSync(fullOutputFile, 'utf8'));
+  assert.equal(full.pinnedVersion, 'test');
+  assert.equal(full.schema, 1);
+  assert.equal(full.topics.length, 3);
+  for (const t of full.topics) {
+    assert.ok(typeof t.body === 'string' && t.body.length > 0,
+      `full topic ${t.path.join('/')} missing body`);
+    assert.ok(Array.isArray(t.path));
+    assert.ok(t.title);
+  }
+
   fs.rmSync(versionFile);
   fs.rmSync(outputFile);
+  fs.rmSync(fullOutputFile);
 });
 
 test('InvalidVersionPin: missing pin file', async () => {
@@ -222,6 +238,30 @@ test('HelpJsonMalformed: topic with empty path array', async () => {
     outputPath: tmpOutputFile(),
   }).catch(e => e);
   assert.match(err.message, /HelpJsonMalformed/);
+  fs.rmSync(versionFile);
+});
+
+test('HelpJsonBodyMissing: full output requested, but a topic lacks body', async () => {
+  const versionFile = tmpVersionFile('test');
+  const noBodyJson = JSON.stringify({
+    schema: 1,
+    version: 'x',
+    topics: [
+      { topic: 'a', path: ['a'], title: 'A', synopsis: 's' },  // no body
+    ],
+  });
+  const { createHash } = await import('node:crypto');
+  const sha = createHash('sha256').update(noBodyJson).digest('hex');
+  const err = await run({
+    fetch: makeFetch({
+      [JSON_URL]: { status: 200, text: noBodyJson },
+      [SUMS_URL]: { status: 200, text: `${sha}  cyoda_help_test.json\n` },
+    }),
+    versionFilePath: versionFile,
+    outputPath: tmpOutputFile(),
+    fullOutputPath: tmpFullOutputFile(),
+  }).catch(e => e);
+  assert.match(err.message, /HelpJsonBodyMissing/);
   fs.rmSync(versionFile);
 });
 

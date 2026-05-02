@@ -96,10 +96,11 @@ function stripAndSort(helpJson) {
  * @param {typeof globalThis.fetch} opts.fetch
  * @param {string} opts.versionFilePath
  * @param {string} opts.outputPath
- * @param {boolean} [opts.ifMissing] - when true, no-op if outputPath exists
+ * @param {string} [opts.fullOutputPath] - when set, also write the full validated payload (bodies preserved) to this path
+ * @param {boolean} [opts.ifMissing] - when true, no-op if outputPath (and fullOutputPath, if set) exist
  */
-export async function run({ fetch, versionFilePath, outputPath, ifMissing }) {
-  if (ifMissing && fs.existsSync(outputPath)) {
+export async function run({ fetch, versionFilePath, outputPath, fullOutputPath, ifMissing }) {
+  if (ifMissing && fs.existsSync(outputPath) && (!fullOutputPath || fs.existsSync(fullOutputPath))) {
     return;
   }
   const version = parsePinFile(versionFilePath);
@@ -129,16 +130,40 @@ export async function run({ fetch, versionFilePath, outputPath, ifMissing }) {
 
   const topics = stripAndSort(helpJson);
 
-  const index = {
+  const generatedAt = new Date().toISOString();
+
+  // --- slim file: existing behaviour, unchanged ---
+  const slimIndex = {
     pinnedVersion: version,
     schema: helpJson.schema ?? 1,
-    generatedAt: new Date().toISOString(),
+    generatedAt,
     topics,
   };
-
   fs.mkdirSync(path.dirname(outputPath), { recursive: true });
-  fs.writeFileSync(outputPath, JSON.stringify(index, null, 2) + '\n');
+  fs.writeFileSync(outputPath, JSON.stringify(slimIndex, null, 2) + '\n');
   console.log(`   wrote ${outputPath} (${topics.length} topics, bodies stripped)`);
+
+  // --- full file: new ---
+  if (fullOutputPath) {
+    // Validate every topic has a body. The generator depends on this.
+    for (const t of helpJson.topics) {
+      if (typeof t.body !== 'string' || t.body.length === 0) {
+        throw err(
+          'HelpJsonBodyMissing',
+          `topic ${(t.path || []).join('/') || t.topic || '(unnamed)'} has no body in upstream JSON; the help-pages generator requires a non-empty body for every topic.`
+        );
+      }
+    }
+    const fullBundle = {
+      pinnedVersion: version,
+      schema: helpJson.schema ?? 1,
+      generatedAt,
+      topics: helpJson.topics,
+    };
+    fs.mkdirSync(path.dirname(fullOutputPath), { recursive: true });
+    fs.writeFileSync(fullOutputPath, JSON.stringify(fullBundle, null, 2) + '\n');
+    console.log(`   wrote ${fullOutputPath} (${helpJson.topics.length} topics, full)`);
+  }
 }
 
 // CLI entry point
@@ -147,9 +172,10 @@ if (invokedDirectly) {
   const projectRoot = path.resolve(__dirname, '..');
   const versionFilePath = path.join(projectRoot, 'cyoda-go-version.json');
   const outputPath = path.join(projectRoot, 'src', 'data', 'cyoda-help-index.json');
+  const fullOutputPath = path.join(projectRoot, '.cyoda-cache', 'cyoda-help-full.json');
   const ifMissing = process.argv.includes('--if-missing');
   try {
-    await run({ fetch: globalThis.fetch, versionFilePath, outputPath, ifMissing });
+    await run({ fetch: globalThis.fetch, versionFilePath, outputPath, fullOutputPath, ifMissing });
   } catch (e) {
     console.error(`\n❌ ${e.message}`);
     process.exit(1);
