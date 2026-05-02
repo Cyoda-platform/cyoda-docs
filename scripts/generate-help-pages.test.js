@@ -269,3 +269,20 @@ test('writes versions.json with single current entry today', async () => {
   assert.equal(v.versions[0].manifest, '/help/index.json');
   assert.equal(v.versions[0].root, '/help/');
 });
+
+test('writes /help/llms.txt advertising manifest, conventions, raw formats', async () => {
+  const fixturePath = path.join(fixtureDir, 'help-full.minimal.json');
+  const docsHelpDir = tmpDir('docs');
+  const publicHelpDir = tmpDir('public');
+  await run({
+    fullDataPath: fixturePath, docsHelpDir, publicHelpDir, prefix: '',
+  });
+  const txt = fs.readFileSync(path.join(publicHelpDir, 'llms.txt'), 'utf8');
+  assert.match(txt, /\/help\/index\.json/);
+  assert.match(txt, /\/help\/<slug>\.json/);
+  assert.match(txt, /\/help\/<slug>\.md/);
+  assert.match(txt, /\/help\/versions\.json/);
+  assert.match(txt, /replace dots with slashes/i);
+  assert.match(txt, /Pinned: cyoda-go v/);
+  assert.match(txt, /_url_convention/);  // strict-validator note
+});

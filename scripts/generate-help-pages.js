@@ -172,6 +172,28 @@ function majorMinor(version) {
   return String(version);
 }
 
+function buildHelpLlmsTxt(bundle) {
+  return [
+    '## cyoda-go binary help (mirror of CLI `cyoda help` and live HTTP API `/api/help`)',
+    '',
+    `Pinned: cyoda-go v${bundle.pinnedVersion}`,
+    '',
+    'Manifest:        https://docs.cyoda.net/help/index.json',
+    'Per topic:       https://docs.cyoda.net/help/<slug>.json   (full descriptor)',
+    '                 https://docs.cyoda.net/help/<slug>.md     (markdown body only)',
+    '                 https://docs.cyoda.net/help/<slug>/       (rendered HTML)',
+    'Version tree:    https://docs.cyoda.net/help/versions.json',
+    '',
+    'URL convention:  cyoda help A B C  ↔  /help/A/B/C/  (or .md / .json)',
+    '                 Manifest topic IDs use dots (e.g. "config.database");',
+    '                 replace dots with slashes to build the URL.',
+    '',
+    'Note: the manifest contains a non-API `_url_convention` hint field.',
+    'Strict validators against the live cyoda-go GET /help schema should ignore it.',
+    '',
+  ].join('\n');
+}
+
 function buildVersionsRegistry(bundle, urlPrefix) {
   const mm = majorMinor(bundle.pinnedVersion);
   const root = `/${urlPrefix}help/`.replace(/\/+/g, '/');
@@ -260,6 +282,9 @@ export async function run({ fullDataPath, docsHelpDir, publicHelpDir, prefix = '
 
   const versionsPath = path.join(publicHelpDir, 'versions.json');
   writeFileEnsuringDir(versionsPath, JSON.stringify(buildVersionsRegistry(bundle, urlPrefix), null, 2) + '\n');
+
+  const helpLlmsPath = path.join(publicHelpDir, 'llms.txt');
+  writeFileEnsuringDir(helpLlmsPath, buildHelpLlmsTxt(bundle));
 
   return { topicCount: bundle.topics.length };
 }
