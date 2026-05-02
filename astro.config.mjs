@@ -79,6 +79,7 @@ export default defineConfig({
 		'/cloud/roadmap/': '/cyoda-cloud/status-and-roadmap/',
 		'/cloud/service-details/': '/cyoda-cloud/',
 		'/cloud/status/': '/cyoda-cloud/status-and-roadmap/',
+		'/reference/cyoda-help/': '/help/topic-tree/',
 	},
 	integrations: [
 		react(),

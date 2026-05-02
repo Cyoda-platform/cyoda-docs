@@ -1,8 +1,8 @@
 ---
-title: "`cyoda help` — topic tree"
-description: "Every flag, env var, endpoint, error, metric, and operation — browsable from the binary. This page is a navigator over the full topic tree."
+title: "Topic tree (`cyoda help`)"
+description: "Every flag, env var, endpoint, error, metric, and operation — browsable from the binary. This page is a navigator over the full topic tree, with links into the rendered mirror."
 sidebar:
-  order: 5
+  order: 1
 ---
 
 import helpIndex from '../../../data/cyoda-help-index.json';
@@ -26,6 +26,11 @@ endpoint, error code, metric, header, and operation is described by a
 subdivide into drilldowns. The tree is stable across patch releases and
 evolves with minor releases.
 
+For each topic listed below, the rendered mirror under
+[`/help/`](/help/) carries the same content the binary's `cyoda help`
+prints (pinned to v{helpIndex.pinnedVersion}). The binary you run is
+the authority for the version you run.
+
 ## How to use it
 
 ```bash
@@ -36,30 +41,33 @@ cyoda help <topic> --format=json    # machine-readable
 cyoda help <topic> --format=markdown # default off-TTY — paste into docs, PRs, chat
 ```
 
-The binary you run is the authority for the version you run. This page
-lists the tree as shipped by the cyoda-go release this site was built
-against — other releases may add or rename topics.
-
 ## The tree
 
 <dl class="cyoda-help-tree">
-  {byTopLevel.map(({ top, topics }) => (
-    <>
-      <dt><code>cyoda help {top}</code></dt>
-      <dd>
-        <p>{topics.find(t => t.path.length === 1)?.synopsis ?? ''}</p>
-        {topics.filter(t => t.path.length > 1).length > 0 && (
-          <ul>
-            {topics.filter(t => t.path.length > 1).map(t => (
-              <li>
-                <code>cyoda help {t.path.join(' ')}</code> — {t.synopsis}
-              </li>
-            ))}
-          </ul>
-        )}
-      </dd>
-    </>
-  ))}
+  {byTopLevel.map(({ top, topics }) => {
+    const topUrl = `/help/${top}/`;
+    const topTopic = topics.find(t => t.path.length === 1);
+    return (
+      <>
+        <dt><a href={topUrl}><code>cyoda help {top}</code></a></dt>
+        <dd>
+          <p>{topTopic?.synopsis ?? ''}</p>
+          {topics.filter(t => t.path.length > 1).length > 0 && (
+            <ul>
+              {topics.filter(t => t.path.length > 1).map(t => {
+                const url = `/help/${t.path.join('/')}/`;
+                return (
+                  <li>
+                    <a href={url}><code>cyoda help {t.path.join(' ')}</code></a> — {t.synopsis}
+                  </li>
+                );
+              })}
+            </ul>
+          )}
+        </dd>
+      </>
+    );
+  })}
 </dl>
 
 <style>{`
