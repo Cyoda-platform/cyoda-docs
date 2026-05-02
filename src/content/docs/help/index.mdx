@@ -1,0 +1,75 @@
+---
+title: Help — browse rendered cyoda-go help
+description: "Static mirror of cyoda-go's `cyoda help` and live HTTP help API, optimized for both humans and AI agents. Pinned to a specific cyoda-go release."
+sidebar:
+  order: 2
+---
+
+import { CardGrid, Card, Badge } from '@astrojs/starlight/components';
+import helpIndex from '../../../data/cyoda-help-index.json';
+
+export const topLevelTopics = helpIndex.topics
+  .filter(t => t.path.length === 1)
+  .sort((a, b) => a.path[0].localeCompare(b.path[0]));
+
+This section is a static mirror of the cyoda-go binary's help surface
+— both the CLI (`cyoda help …`) and the live HTTP API
+(`{CYODA_CONTEXT_PATH}/help`, default `/api/help`). It exists for
+readers who don't have a local cyoda-go runtime installed and for AI
+agents that need to discover and consume cyoda-go's structured help
+without running the binary.
+
+The pages under `/help/` are pinned to **cyoda-go v{helpIndex.pinnedVersion}**.
+The binary you run is the authority for the version you run; if your
+binary is newer, prefer its output. Bumping `cyoda-go-version.json`
+re-pulls and regenerates the entire mirror.
+
+## Browse the tree
+
+<CardGrid>
+  {topLevelTopics.map(t => (
+    <Card title={t.path[0]} icon="document">
+      <p><strong>{t.title}</strong></p>
+      <p>{t.synopsis}</p>
+      <p><a href={`/help/${t.path[0]}/`}>Read →</a></p>
+    </Card>
+  ))}
+</CardGrid>
+
+For a flat view of every topic and subtopic, see
+[Topic tree (`cyoda help`)](/help/topic-tree/).
+
+## For agents
+
+Agents navigate the mirror via three primitives plus a discovery file:
+
+- [`/help/index.json`](/help/index.json) — manifest of every topic
+  with `topic`, `title`, `stability`, `tagline`, `see_also`. The
+  envelope is byte-equivalent to the live API's `GET /help` response.
+- `/help/<slug>.json` — full topic descriptor including `body`,
+  `sections[]`, `see_also`, `stability`, `actions`, `children`. Same
+  shape as the live API's `GET /help/{topic}` response.
+- `/help/<slug>.md` — body only, no frontmatter, no chrome.
+- [`/help/versions.json`](/help/versions.json) — version registry.
+
+Discovery hint: [`/help/llms.txt`](/help/llms.txt) and the site-level
+[`/llms.txt`](/llms.txt) both advertise these endpoints and the URL
+convention.
+
+### URL convention
+
+`cyoda help A B C` ↔ `https://docs.cyoda.net/help/A/B/C/` for the
+rendered page, or `.md`/`.json` for the raw payloads. Manifest topic
+IDs use the live API's dotted form (`config.database`); replace dots
+with slashes to build the URL.
+
+## Conventions
+
+- Pinned, not live: this mirror reflects cyoda-go v{helpIndex.pinnedVersion}
+  as captured by the docs build. Always check the binary you run for
+  authoritative output on its version.
+- No authentication: both these pages and the live binary's help
+  endpoints (`/api/help`, `/api/help/{topic}`) require no auth.
+- Divergence from the live API: prefix is `/help/` here vs
+  `/api/help/` on the binary; URL form uses slashes here vs dots on
+  the binary. JSON envelope shapes match.
