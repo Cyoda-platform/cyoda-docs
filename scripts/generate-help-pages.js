@@ -172,6 +172,8 @@ function checkSlugConflicts(topics) {
  *                                    (default empty for current frontline tree)
  */
 export async function run({ fullDataPath, docsHelpDir, publicHelpDir, prefix = '' }) {
+  // Self-enforce the contract: prefix is empty or ends with '/'.
+  prefix = prefix && !prefix.endsWith('/') ? prefix + '/' : prefix;
   if (!fs.existsSync(fullDataPath)) {
     throw err(
       'MissingFullData',

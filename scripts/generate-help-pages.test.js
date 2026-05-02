@@ -179,3 +179,17 @@ test('multi-segment topic produces nested .md page with Subtopics and See also',
   assert.match(child, /cyoda help config/);
   assert.match(child, /cyoda help run/);
 });
+
+test('prefix without trailing slash is normalized', async () => {
+  const fixturePath = path.join(fixtureDir, 'help-full.minimal.json');
+  const docsHelpDir = tmpDir('docs');
+  const publicHelpDir = tmpDir('public');
+  await run({
+    fullDataPath: fixturePath, docsHelpDir, publicHelpDir, prefix: 'v0.6',  // missing trailing slash
+  });
+  const page = fs.readFileSync(path.join(docsHelpDir, 'cli.md'), 'utf8');
+  // No malformed URL like /v0.6help/...
+  assert.ok(!/\/v0\.6help\//.test(page), 'prefix without trailing slash produced malformed URL');
+  // Normalized form appears.
+  assert.match(page, /\/v0\.6\/help\/cli\.json/);
+});
