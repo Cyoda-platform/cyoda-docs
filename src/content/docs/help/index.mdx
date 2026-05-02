@@ -13,11 +13,17 @@ export const topLevelTopics = helpIndex.topics
   .sort((a, b) => a.path[0].localeCompare(b.path[0]));
 
 This section is a static mirror of the cyoda-go binary's help surface
-— both the CLI (`cyoda help …`) and the live HTTP API
-(`{CYODA_CONTEXT_PATH}/help`, default `/api/help`). It exists for
-readers who don't have a local cyoda-go runtime installed and for AI
-agents that need to discover and consume cyoda-go's structured help
-without running the binary.
+— the same content `cyoda help …` prints on the CLI and the live
+HTTP help API serves at runtime. It exists for readers who don't have
+a local cyoda-go runtime installed, and for AI agents that need to
+discover and consume cyoda-go's help without running the binary.
+
+Every rendered page below has a sibling raw-markdown view at
+`<page-url>.md` and a structured JSON descriptor at `<page-url>.json`.
+For example, [`/help/cli/`](/help/cli/) has
+[`/help/cli.md`](/help/cli.md) (markdown body only) and
+[`/help/cli.json`](/help/cli.json) (full descriptor with `body`,
+`sections`, `see_also`, `children`, etc.).
 
 The pages under `/help/` are pinned to **cyoda-go v{helpIndex.pinnedVersion}**.
 The binary you run is the authority for the version you run; if your
@@ -72,13 +78,3 @@ rendered page, or `.md`/`.json` for the raw payloads. Manifest topic
 IDs use the live API's dotted form (`config.database`); replace dots
 with slashes to build the URL.
 
-## Conventions
-
-- Pinned, not live: this mirror reflects cyoda-go v{helpIndex.pinnedVersion}
-  as captured by the docs build. Always check the binary you run for
-  authoritative output on its version.
-- No authentication: both these pages and the live binary's help
-  endpoints (`/api/help`, `/api/help/{topic}`) require no auth.
-- Divergence from the live API: prefix is `/help/` here vs
-  `/api/help/` on the binary; URL form uses slashes here vs dots on
-  the binary. JSON envelope shapes match.
