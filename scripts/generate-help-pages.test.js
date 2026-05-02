@@ -211,3 +211,17 @@ test('writes per-topic JSON descriptor with live-API shape', async () => {
   assert.equal(desc.stability, 'stable');
   assert.deepEqual(desc.children, []);
 });
+
+test('writes per-topic raw markdown body, no frontmatter, byte-equal to body', async () => {
+  const fixturePath = path.join(fixtureDir, 'help-full.minimal.json');
+  const docsHelpDir = tmpDir('docs');
+  const publicHelpDir = tmpDir('public');
+  await run({
+    fullDataPath: fixturePath, docsHelpDir, publicHelpDir, prefix: '',
+  });
+  const raw = fs.readFileSync(path.join(publicHelpDir, 'cli.md'), 'utf8');
+  const expected = JSON.parse(fs.readFileSync(fixturePath, 'utf8')).topics[0].body;
+  assert.equal(raw, expected.endsWith('\n') ? expected : expected + '\n');
+  // No frontmatter.
+  assert.ok(!raw.startsWith('---'));
+});

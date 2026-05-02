@@ -208,6 +208,8 @@ export async function run({ fullDataPath, docsHelpDir, publicHelpDir, prefix = '
     writeFileEnsuringDir(pagePath, renderPage(t, bundle.topics, pinnedPatch, urlPrefix));
     const descPath = path.join(publicHelpDir, ...t.path) + '.json';
     writeFileEnsuringDir(descPath, JSON.stringify(t, null, 2) + '\n');
+    const rawMdPath = path.join(publicHelpDir, ...t.path) + '.md';
+    writeFileEnsuringDir(rawMdPath, t.body.endsWith('\n') ? t.body : t.body + '\n');
   }
 
   return { topicCount: bundle.topics.length };
