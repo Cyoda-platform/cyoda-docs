@@ -53,6 +53,100 @@ function slugFor(t) {
   return t.path.join('/').toLowerCase();
 }
 
+function yamlEscape(s) {
+  // YAML double-quoted scalar: escape backslash, double-quote, and control chars.
+  return '"' + String(s).replace(/\\/g, '\\\\').replace(/"/g, '\\"').replace(/\n/g, '\\n') + '"';
+}
+
+function truncateForDescription(s, max = 155) {
+  if (s.length <= max) return s;
+  return s.slice(0, max - 1) + '…';
+}
+
+function findByTopic(topics, dottedId) {
+  return topics.find(t => t.topic === dottedId);
+}
+
+function renderPage(t, allTopics, pinnedPatch, urlPrefix) {
+  const slugPath = t.path.join('/');
+  const cliInvocation = ['cyoda', 'help', ...t.path].join(' ');
+  const description = truncateForDescription(t.synopsis || t.title);
+
+  const fm = [
+    '---',
+    `title: ${t.title}`,
+    `description: ${yamlEscape(description)}`,
+    'sidebar:',
+    '  hidden: true',
+    '---',
+    '',
+  ].join('\n');
+
+  const aside = [
+    ':::note[Canonical reference]',
+    `This page mirrors \`${cliInvocation}\` from`,
+    `**cyoda-go v${pinnedPatch}** (pinned). The binary you run is authoritative`,
+    `for the version you run.`,
+    ':::',
+    '',
+  ].join('\n');
+
+  const sections = [];
+
+  // Subtopics
+  if (Array.isArray(t.children) && t.children.length > 0) {
+    const lines = ['## Subtopics', ''];
+    for (const childId of t.children) {
+      const child = findByTopic(allTopics, childId);
+      if (!child) continue;
+      const childCli = ['cyoda', 'help', ...child.path].join(' ');
+      const childUrl = `/${urlPrefix}help/${child.path.join('/')}/`.replace(/\/+/g, '/');
+      lines.push(`- [\`${childCli}\`](${childUrl}) — ${child.synopsis || ''}`);
+    }
+    lines.push('');
+    sections.push(lines.join('\n'));
+  }
+
+  // See also
+  if (Array.isArray(t.see_also) && t.see_also.length > 0) {
+    const lines = ['## See also', ''];
+    for (const peerId of t.see_also) {
+      const peer = findByTopic(allTopics, peerId);
+      if (!peer) {
+        // Reference to a topic that isn't in the bundle — render a non-link entry.
+        lines.push(`- \`cyoda help ${peerId.replaceAll('.', ' ')}\``);
+        continue;
+      }
+      const peerCli = ['cyoda', 'help', ...peer.path].join(' ');
+      const peerUrl = `/${urlPrefix}help/${peer.path.join('/')}/`.replace(/\/+/g, '/');
+      lines.push(`- [\`${peerCli}\`](${peerUrl}) — ${peer.synopsis || ''}`);
+    }
+    lines.push('');
+    sections.push(lines.join('\n'));
+  }
+
+  // Raw formats
+  const rawJson = `/${urlPrefix}help/${slugPath}.json`.replace(/\/+/g, '/');
+  const rawMd = `/${urlPrefix}help/${slugPath}.md`.replace(/\/+/g, '/');
+  sections.push([
+    '## Raw formats',
+    '',
+    `- [\`${rawJson}\`](${rawJson}) — full descriptor (matches \`GET /help/{topic}\` envelope)`,
+    `- [\`${rawMd}\`](${rawMd}) — body only`,
+    '',
+  ].join('\n'));
+
+  // Body — emit verbatim, then a single blank-line separator before sections.
+  const body = t.body.endsWith('\n') ? t.body : t.body + '\n';
+
+  return [fm, aside, body, sections.join('\n')].join('\n');
+}
+
+function writeFileEnsuringDir(file, content) {
+  fs.mkdirSync(path.dirname(file), { recursive: true });
+  fs.writeFileSync(file, content);
+}
+
 function checkSlugConflicts(topics) {
   const seen = new Map();
   for (const t of topics) {
@@ -103,6 +197,14 @@ export async function run({ fullDataPath, docsHelpDir, publicHelpDir, prefix = '
     validateTopic(t);
   }
   checkSlugConflicts(bundle.topics);
+
+  const pinnedPatch = bundle.pinnedVersion;
+  const urlPrefix = prefix; // empty by default
+
+  for (const t of bundle.topics) {
+    const pagePath = path.join(docsHelpDir, ...t.path) + '.md';
+    writeFileEnsuringDir(pagePath, renderPage(t, bundle.topics, pinnedPatch, urlPrefix));
+  }
 
   return { topicCount: bundle.topics.length };
 }

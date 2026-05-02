@@ -128,3 +128,54 @@ test('MalformedTopic: bundle.topics is not an array', async () => {
   assert.match(err.message, /MalformedTopic/);
   assert.match(err.message, /bundle\.topics is not an array/);
 });
+
+test('writes per-topic .md page with frontmatter, aside, body, and Raw formats', async () => {
+  const fixturePath = path.join(fixtureDir, 'help-full.minimal.json');
+  const docsHelpDir = tmpDir('docs');
+  const publicHelpDir = tmpDir('public');
+  await run({
+    fullDataPath: fixturePath, docsHelpDir, publicHelpDir, prefix: '',
+  });
+  const pagePath = path.join(docsHelpDir, 'cli.md');
+  const content = fs.readFileSync(pagePath, 'utf8');
+
+  // frontmatter
+  assert.match(content, /^---\n/);
+  assert.match(content, /\ntitle: cli — the cyoda command-line interface\n/);
+  assert.match(content, /\nsidebar:\n {2}hidden: true\n/);
+
+  // canonical-reference aside
+  assert.match(content, /:::note\[Canonical reference\]/);
+  assert.match(content, /cyoda help cli/);
+  assert.match(content, /cyoda-go v[\d.]+/);
+  assert.match(content, /:::/);
+
+  // body verbatim
+  assert.match(content, /## NAME/);
+  assert.match(content, /cli — the cyoda command-line interface\./);
+
+  // raw formats section
+  assert.match(content, /## Raw formats/);
+  assert.match(content, /\/help\/cli\.json/);
+  assert.match(content, /\/help\/cli\.md/);
+});
+
+test('multi-segment topic produces nested .md page with Subtopics and See also', async () => {
+  const fixturePath = path.join(fixtureDir, 'help-full.with-children.json');
+  const docsHelpDir = tmpDir('docs');
+  const publicHelpDir = tmpDir('public');
+  await run({
+    fullDataPath: fixturePath, docsHelpDir, publicHelpDir, prefix: '',
+  });
+
+  // Parent page has Subtopics
+  const parent = fs.readFileSync(path.join(docsHelpDir, 'config.md'), 'utf8');
+  assert.match(parent, /## Subtopics/);
+  assert.match(parent, /cyoda help config database/);
+
+  // Child page is at config/database.md and has See also
+  const child = fs.readFileSync(path.join(docsHelpDir, 'config', 'database.md'), 'utf8');
+  assert.match(child, /## See also/);
+  assert.match(child, /cyoda help config/);
+  assert.match(child, /cyoda help run/);
+});
