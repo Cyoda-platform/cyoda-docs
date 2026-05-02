@@ -5,6 +5,7 @@ import { readFileSync, existsSync } from 'fs';
 import path from 'path';
 import { fileURLToPath } from 'url';
 import { glob } from 'glob';
+import { buildHelpLlmsTxt } from './generate-help-pages.js';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -175,23 +176,7 @@ async function generateLlmsTxt() {
 
   // Append cyoda-go binary help section
   const pinned = readPinnedVersion();
-  const helpSection = [
-    '',
-    '## cyoda-go binary help (mirror of CLI `cyoda help` and live HTTP API `/api/help`)',
-    '',
-    pinned ? `Pinned: cyoda-go v${pinned}` : 'Pinned: (cyoda-go help cache not yet built)',
-    '',
-    'Manifest:        https://docs.cyoda.net/help/index.json',
-    'Per topic:       https://docs.cyoda.net/help/<slug>.json   (full descriptor)',
-    '                 https://docs.cyoda.net/help/<slug>.md     (markdown body only)',
-    '                 https://docs.cyoda.net/help/<slug>/       (rendered HTML)',
-    'Version tree:    https://docs.cyoda.net/help/versions.json',
-    '',
-    'URL convention:  cyoda help A B C  ↔  /help/A/B/C/  (or .md / .json)',
-    '                 Manifest topic IDs use dots (e.g. "config.database");',
-    '                 replace dots with slashes to build the URL.',
-    '',
-  ].join('\n');
+  const helpSection = '\n' + buildHelpLlmsTxt({ pinnedVersion: pinned });
 
   content += helpSection;
 

@@ -172,11 +172,14 @@ function majorMinor(version) {
   return String(version);
 }
 
-function buildHelpLlmsTxt(bundle) {
+export function buildHelpLlmsTxt(bundle) {
+  const pinnedLine = bundle.pinnedVersion
+    ? `Pinned: cyoda-go v${bundle.pinnedVersion}`
+    : 'Pinned: (cyoda-go help cache not yet built)';
   return [
     '## cyoda-go binary help (mirror of CLI `cyoda help` and live HTTP API `/api/help`)',
     '',
-    `Pinned: cyoda-go v${bundle.pinnedVersion}`,
+    pinnedLine,
     '',
     'Manifest:        https://docs.cyoda.net/help/index.json',
     'Per topic:       https://docs.cyoda.net/help/<slug>.json   (full descriptor)',
