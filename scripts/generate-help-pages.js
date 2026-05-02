@@ -163,6 +163,33 @@ function buildManifest(bundle) {
   };
 }
 
+function majorMinor(version) {
+  // Accept "0.6.2" → "0.6", or non-semver fixture strings like "test" → "test".
+  const parts = String(version).split('.');
+  if (parts.length >= 2 && /^\d+$/.test(parts[0]) && /^\d+$/.test(parts[1])) {
+    return `${parts[0]}.${parts[1]}`;
+  }
+  return String(version);
+}
+
+function buildVersionsRegistry(bundle, urlPrefix) {
+  const mm = majorMinor(bundle.pinnedVersion);
+  const root = `/${urlPrefix}help/`.replace(/\/+/g, '/');
+  const manifest = `${root}index.json`;
+  return {
+    current: mm,
+    versions: [
+      {
+        majorMinor: mm,
+        pinnedPatch: bundle.pinnedVersion,
+        current: true,
+        manifest,
+        root,
+      },
+    ],
+  };
+}
+
 function checkSlugConflicts(topics) {
   const seen = new Map();
   for (const t of topics) {
@@ -230,6 +257,9 @@ export async function run({ fullDataPath, docsHelpDir, publicHelpDir, prefix = '
 
   const manifestPath = path.join(publicHelpDir, 'index.json');
   writeFileEnsuringDir(manifestPath, JSON.stringify(buildManifest(bundle), null, 2) + '\n');
+
+  const versionsPath = path.join(publicHelpDir, 'versions.json');
+  writeFileEnsuringDir(versionsPath, JSON.stringify(buildVersionsRegistry(bundle, urlPrefix), null, 2) + '\n');
 
   return { topicCount: bundle.topics.length };
 }

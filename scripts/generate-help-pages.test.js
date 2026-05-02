@@ -252,3 +252,20 @@ test('writes manifest at public/help/index.json with live-API envelope', async (
   assert.ok(typeof manifest._url_convention === 'string');
   assert.match(manifest._url_convention, /replace dots with slashes/i);
 });
+
+test('writes versions.json with single current entry today', async () => {
+  const fixturePath = path.join(fixtureDir, 'help-full.minimal.json');
+  const docsHelpDir = tmpDir('docs');
+  const publicHelpDir = tmpDir('public');
+  await run({
+    fullDataPath: fixturePath, docsHelpDir, publicHelpDir, prefix: '',
+  });
+  const v = JSON.parse(fs.readFileSync(path.join(publicHelpDir, 'versions.json'), 'utf8'));
+  assert.equal(v.current, '0.6');
+  assert.equal(v.versions.length, 1);
+  assert.equal(v.versions[0].majorMinor, '0.6');
+  assert.equal(v.versions[0].pinnedPatch, '0.6.1');
+  assert.equal(v.versions[0].current, true);
+  assert.equal(v.versions[0].manifest, '/help/index.json');
+  assert.equal(v.versions[0].root, '/help/');
+});
