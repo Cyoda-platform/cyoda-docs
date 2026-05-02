@@ -206,6 +206,8 @@ export async function run({ fullDataPath, docsHelpDir, publicHelpDir, prefix = '
   for (const t of bundle.topics) {
     const pagePath = path.join(docsHelpDir, ...t.path) + '.md';
     writeFileEnsuringDir(pagePath, renderPage(t, bundle.topics, pinnedPatch, urlPrefix));
+    const descPath = path.join(publicHelpDir, ...t.path) + '.json';
+    writeFileEnsuringDir(descPath, JSON.stringify(t, null, 2) + '\n');
   }
 
   return { topicCount: bundle.topics.length };

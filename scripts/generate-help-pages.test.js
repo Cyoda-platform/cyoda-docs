@@ -193,3 +193,21 @@ test('prefix without trailing slash is normalized', async () => {
   // Normalized form appears.
   assert.match(page, /\/v0\.6\/help\/cli\.json/);
 });
+
+test('writes per-topic JSON descriptor with live-API shape', async () => {
+  const fixturePath = path.join(fixtureDir, 'help-full.with-children.json');
+  const docsHelpDir = tmpDir('docs');
+  const publicHelpDir = tmpDir('public');
+  await run({
+    fullDataPath: fixturePath, docsHelpDir, publicHelpDir, prefix: '',
+  });
+  const desc = JSON.parse(fs.readFileSync(path.join(publicHelpDir, 'config', 'database.json'), 'utf8'));
+  assert.equal(desc.topic, 'config.database');
+  assert.deepEqual(desc.path, ['config', 'database']);
+  assert.equal(desc.title, 'database configuration');
+  assert.equal(typeof desc.body, 'string');
+  assert.ok(desc.body.length > 0);
+  assert.deepEqual(desc.see_also, ['config', 'run']);
+  assert.equal(desc.stability, 'stable');
+  assert.deepEqual(desc.children, []);
+});
