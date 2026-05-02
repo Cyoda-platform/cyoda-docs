@@ -87,7 +87,7 @@ function renderPage(t, allTopics, pinnedPatch, urlPrefix) {
   // GitHub release tag for that version.
   const releaseUrl = `https://github.com/Cyoda-platform/cyoda-go/releases/tag/v${pinnedPatch}`;
   const aside = [
-    `<p class="cyoda-help-pinned"><em>From cyoda-go version <a href="${releaseUrl}">${pinnedPatch}</a>.</em></p>`,
+    `<p class="cyoda-help-pinned"><em>cyoda-go version <a href="${releaseUrl}">${pinnedPatch}</a></em></p>`,
     '',
   ].join('\n');
 
