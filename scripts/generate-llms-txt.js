@@ -1,6 +1,7 @@
 #!/usr/bin/env node
 
 import fs from 'fs/promises';
+import { readFileSync, existsSync } from 'fs';
 import path from 'path';
 import { fileURLToPath } from 'url';
 import { glob } from 'glob';
@@ -12,6 +13,19 @@ const __dirname = path.dirname(__filename);
 const SITE_URL = 'https://docs.cyoda.net';
 const CONTENT_DIR = path.join(__dirname, '../src/content/docs');
 const OUTPUT_FILE = path.join(__dirname, '../dist/llms.txt');
+
+/**
+ * Read the pinned cyoda-go version from the help cache, if present.
+ */
+function readPinnedVersion() {
+  try {
+    const p = path.resolve(__dirname, '..', '.cyoda-cache', 'cyoda-help-full.json');
+    if (!existsSync(p)) return null;
+    return JSON.parse(readFileSync(p, 'utf8')).pinnedVersion ?? null;
+  } catch {
+    return null;
+  }
+}
 
 /**
  * Extract frontmatter and content from a markdown file
@@ -158,6 +172,28 @@ async function generateLlmsTxt() {
       content += '\n';
     }
   }
+
+  // Append cyoda-go binary help section
+  const pinned = readPinnedVersion();
+  const helpSection = [
+    '',
+    '## cyoda-go binary help (mirror of CLI `cyoda help` and live HTTP API `/api/help`)',
+    '',
+    pinned ? `Pinned: cyoda-go v${pinned}` : 'Pinned: (cyoda-go help cache not yet built)',
+    '',
+    'Manifest:        https://docs.cyoda.net/help/index.json',
+    'Per topic:       https://docs.cyoda.net/help/<slug>.json   (full descriptor)',
+    '                 https://docs.cyoda.net/help/<slug>.md     (markdown body only)',
+    '                 https://docs.cyoda.net/help/<slug>/       (rendered HTML)',
+    'Version tree:    https://docs.cyoda.net/help/versions.json',
+    '',
+    'URL convention:  cyoda help A B C  ↔  /help/A/B/C/  (or .md / .json)',
+    '                 Manifest topic IDs use dots (e.g. "config.database");',
+    '                 replace dots with slashes to build the URL.',
+    '',
+  ].join('\n');
+
+  content += helpSection;
 
   return content.trim();
 }
