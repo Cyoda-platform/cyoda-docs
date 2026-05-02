@@ -159,6 +159,33 @@ test('writes per-topic .md page with frontmatter, aside, body, and Raw formats',
   assert.match(content, /\/help\/cli\.md/);
 });
 
+test('version indicator HTML-escapes the pinned version (defense in depth)', async () => {
+  // parsePinFile rejects non-semver up front, but the generator
+  // should still escape pinnedVersion when emitting it into HTML so a
+  // weaker upstream can never inject attribute or element markup here.
+  const cacheDir = tmpDir('cache');
+  const file = writeBundle(cacheDir, {
+    pinnedVersion: '0.6.2"><script>alert(1)</script>',
+    schema: 1,
+    topics: [{
+      topic: 'cli', path: ['cli'],
+      title: 'cli', body: '# cli\n', synopsis: 's',
+      sections: [], see_also: [], stability: 'stable', actions: [], children: [],
+    }],
+  });
+  const docsHelpDir = tmpDir('docs');
+  const publicHelpDir = tmpDir('public');
+  await run({
+    fullDataPath: file, docsHelpDir, publicHelpDir, prefix: '',
+  });
+  const page = fs.readFileSync(path.join(docsHelpDir, 'cli.md'), 'utf8');
+  // The dangerous characters must be entity-encoded.
+  assert.ok(!page.includes('"><script>'), 'raw "><script> appears unescaped in the rendered page');
+  assert.ok(!page.includes('alert(1)</script>'), 'raw </script> appears unescaped');
+  // Verify positive escaping happened.
+  assert.match(page, /&quot;&gt;&lt;script&gt;alert\(1\)&lt;\/script&gt;/);
+});
+
 test('multi-segment topic produces nested .md page with Subtopics and See also', async () => {
   const fixturePath = path.join(fixtureDir, 'help-full.with-children.json');
   const docsHelpDir = tmpDir('docs');

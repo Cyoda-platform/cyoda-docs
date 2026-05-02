@@ -35,6 +35,14 @@ function parsePinFile(versionFilePath) {
   if (parsed.version.startsWith('v')) {
     throw err('InvalidVersionPin', `${versionFilePath}: version must not start with "v" (e.g. '0.6.1', not 'v0.6.1'). Got: ${parsed.version}`);
   }
+  // Strict semver — defense in depth. The version string flows into
+  // outbound URLs (release-asset fetches) and into rendered HTML
+  // attributes/text, so reject anything that could escape its context.
+  // Allows MAJOR.MINOR.PATCH plus optional -prerelease / +build suffix
+  // built from [A-Za-z0-9.-].
+  if (!/^\d+\.\d+\.\d+(?:-[A-Za-z0-9.-]+)?(?:\+[A-Za-z0-9.-]+)?$/.test(parsed.version)) {
+    throw err('InvalidVersionPin', `${versionFilePath}: version must be strict semver (MAJOR.MINOR.PATCH with optional -prerelease/+build). Got: ${JSON.stringify(parsed.version)}`);
+  }
   return parsed.version;
 }
 

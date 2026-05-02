@@ -67,6 +67,20 @@ function findByTopic(topics, dottedId) {
   return topics.find(t => t.topic === dottedId);
 }
 
+// Defense-in-depth: even though parsePinFile constrains the version
+// to a strict semver, anything we splice into HTML still gets escaped
+// at the boundary. Cheap, eliminates a whole class of attribute-
+// injection / element-injection issues if the upstream pin layer is
+// ever weakened.
+function htmlEscape(s) {
+  return String(s)
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;')
+    .replace(/'/g, '&#39;');
+}
+
 function renderPage(t, allTopics, pinnedPatch, urlPrefix) {
   const slugPath = t.path.join('/');
   const cliInvocation = ['cyoda', 'help', ...t.path].join(' ');
@@ -84,10 +98,13 @@ function renderPage(t, allTopics, pinnedPatch, urlPrefix) {
 
   // Subtle one-line version indicator — names the cyoda-go release
   // this content was captured from, in plain English. Links to the
-  // GitHub release tag for that version.
+  // GitHub release tag for that version. Both the URL and the link
+  // text are HTML-escaped: pinnedPatch is constrained upstream by
+  // parsePinFile's semver guard, but escaping here is cheap defense
+  // in depth.
   const releaseUrl = `https://github.com/Cyoda-platform/cyoda-go/releases/tag/v${pinnedPatch}`;
   const aside = [
-    `<p class="cyoda-help-pinned"><em>cyoda-go version <a href="${releaseUrl}">${pinnedPatch}</a></em></p>`,
+    `<p class="cyoda-help-pinned"><em>cyoda-go version <a href="${htmlEscape(releaseUrl)}">${htmlEscape(pinnedPatch)}</a></em></p>`,
     '',
   ].join('\n');
 
