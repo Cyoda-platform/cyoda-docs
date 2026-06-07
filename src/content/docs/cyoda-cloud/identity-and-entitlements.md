@@ -1,9 +1,16 @@
 ---
 title: "Identity and entitlements (Cyoda Cloud)"
-description: "Configure OIDC, manage signing keys, and assign entitlements on the hosted platform."
+description: "The identity and entitlements design we are working towards for Cyoda Cloud — OIDC, signing keys, and subscription tiers."
 sidebar:
   order: 20
 ---
+
+:::caution[Design — not yet implemented]
+Cyoda Cloud is [being rebuilt](./status-and-roadmap/). This page
+describes the **current design we are working towards implementing**
+for identity and entitlements on Cyoda Cloud. Nothing on this page is
+live yet, and details may change as the design settles.
+:::
 
 > This page covers identity operations for the **hosted Cyoda Cloud**
 > platform. For self-hosted cyoda-go identity (OAuth 2.0 issuance,
@@ -202,9 +209,9 @@ The following table summarizes the claims used by the integration:
 
 ## Entitlements
 
-Access to Cyoda Cloud is subscription-tier-based. This section provides details about the available subscription tiers and their entitlements.
+Access to Cyoda Cloud will be subscription-tier-based. This section describes the planned subscription tiers and their entitlements.
 
-**Important**: The information below is for reference purposes and is not guaranteed to be correct. The authoritative source for your account's current subscription details and entitlements is available through the Cyoda Cloud API at the following endpoints:
+**Important**: The information below reflects the current design and is not guaranteed to survive into the launched service unchanged. Once Cyoda Cloud is live, the authoritative source for your account's subscription details and entitlements will be the Cyoda Cloud API, at endpoints along these lines:
 
 - **Current account information**: `GET /account` — Retrieve information about the current user's account, including current subscription.
 - **All available subscriptions**: `GET /account/subscriptions` — Retrieve all subscriptions available for the current user's legal entity.
@@ -215,7 +222,7 @@ For complete API documentation, refer to the [OpenAPI specification](/api-refere
 
 | Entitlement | Free<sup>1</sup> | Developer | Pro | Enterprise License<sup>2</sup> |
 | --- | --- | --- | --- | --- |
-| **Status** | <span style="background-color: #d4edda; color: #155724; padding: 2px 6px; border-radius: 3px;">Available</span> | <span style="background-color: #fff3cd; color: #856404; padding: 2px 6px; border-radius: 3px;">Draft</span> | <span style="background-color: #fff3cd; color: #856404; padding: 2px 6px; border-radius: 3px;">Draft</span> | <span style="background-color: #d4edda; color: #155724; padding: 2px 6px; border-radius: 3px;">Available</span> |
+| **Status** | <span style="background-color: #cce5ff; color: #004085; padding: 2px 6px; border-radius: 3px;">Planned</span> | <span style="background-color: #fff3cd; color: #856404; padding: 2px 6px; border-radius: 3px;">Draft</span> | <span style="background-color: #fff3cd; color: #856404; padding: 2px 6px; border-radius: 3px;">Draft</span> | <span style="background-color: #d4edda; color: #155724; padding: 2px 6px; border-radius: 3px;">Available</span> |
 | **Model Fields (per model)** | 150 | <span style="color: #6c757d;">150</span> | <span style="color: #6c757d;">500</span> | Unlimited |
 | **Model Fields (cumulative)** | 300 | <span style="color: #6c757d;">300</span> | <span style="color: #6c757d;">2000</span> | Unlimited |
 | **Models** | 20 | <span style="color: #6c757d;">20</span> | <span style="color: #6c757d;">100</span> | Unlimited |
@@ -225,12 +232,13 @@ For complete API documentation, refer to the [OpenAPI specification](/api-refere
 | **API Requests** | 300/min | <span style="color: #6c757d;">300/min</span> | <span style="color: #6c757d;">50/sec</span> | Unlimited |
 | **External Calls** | 300/min | <span style="color: #6c757d;">300/min</span> | <span style="color: #6c757d;">50/sec</span> | Unlimited |
 
-<sup>1</sup> _Free Tier environments are automatically reset after an expiry period. Contact us for details._
-<sup>2</sup> _Enterprise License is for the Cyoda Cloud system that clients operate themselves (outside of Cyoda Cloud). Contact us for details._
+<sup>1</sup> _Free Tier environments will be automatically reset after an expiry period. Contact us for details._
+<sup>2</sup> _Enterprise License covers the commercial `cyoda-go-cassandra` storage engine for dedicated or self-operated deployments. Contact us for details._
 
 **Status legend:**
-- **Available**: Tier is currently available for subscription.
-- **Draft (unavailable)**: Tier is in planning/development phase and not yet available.
+- **Planned**: Tier is part of the launch design for the rebuilt Cyoda Cloud.
+- **Draft (unavailable)**: Tier is in an earlier planning phase; shape and limits may change substantially.
+- **Available**: Offered today as a commercial license, independent of the Cyoda Cloud rebuild.
 
 ### Entitlement definitions
 
@@ -249,4 +257,4 @@ The following section provides detailed definitions for each entitlement ID used
 
 ---
 
-_This subscription tier information is maintained in step with the platform configuration and may deviate from your actual settings. For the most current and accurate information about your specific account entitlements, please refer to the `/account` API endpoints._
+_This subscription tier information reflects the current design for the rebuilt Cyoda Cloud. Once the service is live, the `/account` API endpoints will be the authoritative source for your specific account entitlements._

@@ -1,6 +1,6 @@
 ---
 title: "Status and roadmap (Cyoda Cloud)"
-description: "Current status, known limitations, and upcoming work for the hosted Cyoda Cloud platform."
+description: "Where the Cyoda Cloud rebuild stands and what is coming next."
 sidebar:
   order: 30
 ---
@@ -8,28 +8,45 @@ sidebar:
 ## Current status
 
 <!--
-ABOUTME: Quick reference guide providing a concise overview of the most critical caveats, limitations, and gotchas for Cyoda Cloud Free Tier users. For detailed information, see the Cyoda Cloud overview.
+ABOUTME: Quick reference giving a concise overview of where the Cyoda Cloud rebuild stands.
 
 THIS SECTION NEEDS TO BE AS COMPACT AND CONCISE AS POSSIBLE, BECAUSE IT IS SHOWN AS A PANEL ON VARIOUS UIs
 
-TONE: Direct, scannable format optimized for quick reference. Focus on the most impactful limitations that users need to be aware of immediately. Use the first-person plural form in the issue descriptions and status, and keep the tone conversational and friendly.
+TONE: Direct, scannable format. Use the first-person plural form and keep the tone conversational and friendly.
 -->
 
-**⚠️ Beta Phase** - Expect frequent changes and some interruptions.
+**🏗️ Rebuilding** — We are rebuilding Cyoda Cloud on
+[cyoda-go](https://github.com/Cyoda-platform/cyoda-go), and we are
+currently at the **design stage** of the new architecture. There is no
+hosted service to sign up for yet.
 
-**🔧 Planned Maintenance**: none at the moment.
+What's true today:
 
-| Issue                     | Description                                                                                                                                                                                                                                                            | Status                                                                                                                                                                                                                                  |
-|---------------------------|------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
-| **Environment Access**    | [AI Studio](https://ai.cyoda.net) is currently the only control interface for your environments. When you've logged in, it will give you your env details if prompted. But it's best to **write down your environment URL**                                            | We'll be releasing better options soon                                                                                                                                                                                                  |
-| **Java Code Generation**  | Generating your code-base may take a while (15-30 minutes). Please be patient. In rare cases it might not compile, but it's usually obvious to fix.                                                                                                                    | Should get better as we improve the agentic workflow and prompts                                                                                                                                                                        |
-| **Deployments**                 | In the [AI Studio](https://ai.cyoda.net) you can ask to deploy your environment to pick up the latest Cyoda version. **BEWARE**: This will reset all your data. And, might contain breaking changes in Alpha/Beta, such that your client compute node may not work. | We'll announce breaking changes in our [Discord](https://discord.gg/95rdAyBZr2) channel. This is Beta. You'll usually just need to merge the latest changes from the template projects to your codebase, and maybe adjust a few things. |
-| **Auth0 Logouts**         | Unexpected session terminations, possibly related to idle times.                                                                                                                                                                                                       | We're only monitoring this at the moment.                                                                                                                                                                                               |
-| **Transactional Deletions** | Deleting large amounts of data is slow, slightly slower than data saves.                                                                                                                                                                                               | It's in the backlog, but resolution probably not before end of Alpha Phase.                                                                                                                                                             |
+| Area | Status |
+|---|---|
+| **Architecture** | New multi-tenant design (managed cyoda-go cores, isolated Postgres per environment, client-owned compute nodes) is in active design. See the [Cyoda Cloud overview](/cyoda-cloud/). |
+| **Local development** | Fully available now. [cyoda-go](https://github.com/Cyoda-platform/cyoda-go) is Apache-2.0 OSS and runs on your machine — everything you build will carry over to the cloud unchanged. See [Run](/run/). |
+| **CLI** | [cyoda-cloud-cli](https://github.com/Cyoda-platform/cyoda-cloud-cli) is established and will be developed in the open alongside the control plane. |
+| **Identity & entitlements** | Design we're working towards is documented at [Identity and entitlements](./identity-and-entitlements/). |
 
-**Reach out to us on [Discord](https://discord.com/invite/95rdAyBZr2) if you need help**.
+**⭐ Star [cyoda-cloud-cli](https://github.com/Cyoda-platform/cyoda-cloud-cli)** to tell us you want Cyoda Cloud built, and **[join the waitlist](https://cyoda.com/cloud)** for early access.
+
+**Reach out to us on [Discord](https://discord.com/invite/95rdAyBZr2)** with questions or feedback — design-stage input has the most leverage.
 
 ## Roadmap
 
-So many things to work on.
-We'll be putting our major roadmap items here, once we have enough feedback from the community to know what's most important.
+In order, deliberately coarse while the design settles:
+
+1. **Design** *(we are here)* — multi-tenant architecture, control
+   plane, provisioning model, identity and entitlements.
+2. **Control plane and provisioning** — environment lifecycle behind
+   one versioned API, with the dashboard and
+   [cyoda-cloud-cli](https://github.com/Cyoda-platform/cyoda-cloud-cli)
+   as peer front ends.
+3. **Early access** — first hosted environments for waitlist members.
+4. **General availability** — self-service signup, subscription tiers,
+   and the [dedicated and enterprise tiers](/cyoda-cloud/#tiers) beyond
+   the shared tier.
+
+We'll keep this page and [Discord](https://discord.com/invite/95rdAyBZr2)
+updated as milestones land.
