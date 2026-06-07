@@ -6,7 +6,7 @@ sidebar:
 ---
 
 :::caution[Upcoming]
-Trino SQL is on the roadmap and not yet available in cyoda-go at this release. This page documents the planned surface; names and shapes may change before release.
+Trino SQL is on the roadmap and not yet implemented in cyoda-go. The surface below is proven in the enterprise Java/Kotlin Cyoda platform, of which cyoda-go is an adaptation; names and shapes may change before it lands in cyoda-go and [Cyoda Cloud](/cyoda-cloud/).
 :::
 
 Cyoda projects every entity model into a set of virtual SQL tables and
@@ -33,12 +33,13 @@ correctly scoped for that.
 The JDBC connection string pattern:
 
 ```
-jdbc:trino://trino-client-<caas_user_id>.eu.cyoda.net:443/cyoda/<your_schema>
+jdbc:trino://<trino-endpoint>:443/cyoda/<your_schema>
 ```
 
-- `caas_user_id` — your CAAS user ID.
-- `<your_schema>` — the SQL schema name you configured (create one in
-  the Cyoda UI under **Trino/SQL**, or via
+- `<trino-endpoint>` — the host serving the Trino connector. On
+  [Cyoda Cloud](/cyoda-cloud/), each environment will get a managed
+  endpoint.
+- `<your_schema>` — the SQL schema name you configured (via
   `PUT /sql/schema/putDefault/{schemaName}`).
 
 Authenticate with a bearer token issued by the platform. For

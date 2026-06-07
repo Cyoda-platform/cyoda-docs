@@ -129,9 +129,10 @@ is identical in both:
   with a horizontally-scaling Cassandra-backed tier. The Helm chart,
   the pod topology, and the application code are unchanged — only the
   storage plugin configuration changes.
-- **Hand operations to Cyoda Cloud.** A SaaS that runs either the
-  PostgreSQL or Cassandra stack for you. Same application contract,
+- **Hand operations to Cyoda Cloud** (coming soon) — the managed
+  service that runs the stack for you, from shared Postgres up to the
+  Cassandra-backed enterprise tier. Same application contract,
   different operational model.
 
-See [Cyoda Cloud](/cyoda-cloud/) for the SaaS option; contact sales
+See [Cyoda Cloud](/cyoda-cloud/) for the managed option; contact sales
 for the commercial Cassandra plugin.

@@ -1179,22 +1179,17 @@ You can manage and inspect your SQL schemas using the REST API:
 
 For the full grammar, see the [REST API reference](/reference/api/).
 
-### Using the Cyoda UI
-
-It is very straightforward to create SQL schemas in the Cyoda UI. Once
-logged in, navigate to the Trino/SQL menu — you can create and configure
-new schemas, or edit existing ones.
-
 ## Connecting via JDBC
 
 The JDBC connection string follows this pattern:
 
 ```
-jdbc:trino://trino-client-<caas_user_id>.eu.cyoda.net:443/cyoda/<your_schema>
+jdbc:trino://<trino-endpoint>:443/cyoda/<your_schema>
 ```
 
-where `caas_user_id` is your CAAS user ID and `your_schema` is the
-schema name you configured.
+where `<trino-endpoint>` is the host serving the Trino connector — on
+[Cyoda Cloud](/cyoda-cloud/), a managed endpoint per environment — and
+`your_schema` is the schema name you configured.
 
 For authentication credentials and technical-user setup, see
 [Authentication and identity](/concepts/authentication-and-identity/).
